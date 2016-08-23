@@ -19,6 +19,8 @@ import com.deltek.integration.maconomy.domain.Card;
 import com.deltek.integration.maconomy.domain.Data;
 import com.deltek.integration.maconomy.domain.Endpoint;
 import com.deltek.integration.maconomy.domain.Error;
+import com.deltek.integration.maconomy.domain.HasConcurrencyControl;
+import com.deltek.integration.maconomy.domain.HasLinksAndConcurrencyHolder;
 import com.deltek.integration.maconomy.domain.Record;
 import com.deltek.integration.maconomy.domain.Table;
 import com.deltek.integration.maconomy.domain.to.EmployeeCard;
@@ -39,7 +41,7 @@ public class MaconomyRestClient {
 		this.client = buildClientForCurrentUser(maconomyUser, maconomyPassword);
 	}
 	
-    private Client buildClientForCurrentUser(String maconomyUser, String maconomyPassword) {
+    private final Client buildClientForCurrentUser(String maconomyUser, String maconomyPassword) {
 
         HttpAuthenticationFeature authFeature = HttpAuthenticationFeature.basic(maconomyUser, maconomyPassword);
 
@@ -50,21 +52,24 @@ public class MaconomyRestClient {
         return client;
     }
 
-    //GET base endpoint
-    //GET http://193.17.206.162:4111/containers/v1/x1demo/jobjournal
-    //follow insert action and POST with empty body.
-    //Take the response template, fill out the required fields.
-    //follow the 
-    
-    public class APIHelper<DATA extends Data<CARD_RECORD, TABLE_RECORD>, CARD_RECORD extends Object, TABLE_RECORD extends Object> {
+    public class APIHelper<CARD_RECORD extends Object, 
+    						TABLE_RECORD extends Object> {
 
     	private final String endpointPath;
-    	private final Class<DATA> dataType;
+		private final GenericType<Data<CARD_RECORD, TABLE_RECORD>> dataGenericType;
+		private final GenericType<Record<TABLE_RECORD>> tableRecordGenericType;
+		private final GenericType<Record<CARD_RECORD>> cardRecordGenericType;
     	
-		public APIHelper(String endpointPath, Class<DATA> dataType) {
+    	//TODO: Is there a better way to do this, should be able to infer the generic type of the records from dataGenericType
+		public APIHelper(String endpointPath,  
+								GenericType<Data<CARD_RECORD, TABLE_RECORD>> dataGenericType,
+								GenericType<Record<CARD_RECORD>> cardRecordGenericType,
+								GenericType<Record<TABLE_RECORD>> tableRecordGenericType) {
 			super();
 			this.endpointPath = endpointPath;
-			this.dataType = dataType;
+			this.dataGenericType = dataGenericType;
+			this.tableRecordGenericType = tableRecordGenericType;
+			this.cardRecordGenericType = cardRecordGenericType;
 		}
 
 		public Endpoint endPoint() 
@@ -77,20 +82,84 @@ public class MaconomyRestClient {
 		}
 		
     	public Record<CARD_RECORD> init(Endpoint endpoint) {
-    		return MaconomyRestClient.this.init(endpoint);
+    		return initInternal(endpoint);
         }
     	
-    	public DATA createData(Record<CARD_RECORD> cardRecord) {
-    		return MaconomyRestClient.this.create(cardRecord, dataType);
+    	public Data<CARD_RECORD, TABLE_RECORD> createCard(Record<CARD_RECORD> cardRecord) {
+    		return createInternal(cardRecord);
     	}
     	
-    	public DATA any() {
+    	public Record<TABLE_RECORD> initTable(Table<TABLE_RECORD> table) {
+    		//Why would the Table have an add action instead of the insert action used for the card?  
+    		//TODO: Check if this is consistent with the model
+    		return postDataToAction("action:add", table, "", tableRecordGenericType);
+    	}
+        
+        private Record<CARD_RECORD> initInternal(Endpoint endpoint) {
+        	//Create the Journal.
+        	String templateJournalLink = endpoint.getLinks().getLinks().get("action:insert").getHref();
+        	Response response = client.target(templateJournalLink).request(MediaType.APPLICATION_JSON).post(Entity.entity("",  MediaType.APPLICATION_JSON));
+        	Record<CARD_RECORD> record = response.readEntity(cardRecordGenericType);
+        	return record;
+        } 
+        
+        private Data<CARD_RECORD, TABLE_RECORD> createInternal(Record<?> templateRecord) {	
+        	return postDataToAction("action:create", templateRecord, templateRecord, dataGenericType);
+        }
+	   
+		private <RESPONSE extends Object, REQUEST_BODY extends Object> 
+    		RESPONSE postDataToAction(String action, HasLinksAndConcurrencyHolder metaAndLinks, 
+    				REQUEST_BODY requestBody, 
+    				GenericType<RESPONSE> responseType) {
+        	String templateJournalLink = metaAndLinks.getLinks().getLinks().get(action).getHref();
+            Invocation.Builder invocationBuilder = client.target(templateJournalLink).request(MediaType.APPLICATION_JSON);
+            invocationBuilder = decorateConcurrencyControl(invocationBuilder, metaAndLinks.getMeta());
+        	Response response = invocationBuilder.post(Entity.entity(requestBody,  MediaType.APPLICATION_JSON));
+        	RESPONSE record = response.readEntity(responseType);
+        	return record;    		
+    	}
+    	
+        
+    	public Data<CARD_RECORD, TABLE_RECORD> addTableRecord(Record<TABLE_RECORD> tableRecord) {
+    		return createInternal(tableRecord);
+    	}
+    	
+    	//TODO: Traverse the any link, 
+    	public Data<CARD_RECORD, TABLE_RECORD> any() {
+    		return null;	
+    	}
+    	
+    	public Data<CARD_RECORD, TABLE_RECORD> filter() {
     		return null;
     	}
+    	
+    }
+    private Invocation.Builder decorateConcurrencyControl(Invocation.Builder builder, HasConcurrencyControl cc) {
+    	if(cc.getConcurrencyControl() == null || cc.getConcurrencyControl().trim().isEmpty())
+    		return builder;
+    	
+        return builder.header("Maconomy-Concurrency-Control", cc.getConcurrencyControl());
     }
     
-    public APIHelper<JobJournal, Journal, HoursJournal> jobJournal() {
-    	return new APIHelper<>("jobjournal", JobJournal.class);
+    public APIHelper<Journal, HoursJournal> jobJournal() {
+    	return new APIHelper<>("jobjournal",  
+    			new GenericType<Data<Journal, HoursJournal>>(){},
+    			new GenericType<Record<Journal>>(){},
+    			new GenericType<Record<HoursJournal>>(){});
+    }
+    
+    public APIHelper<JobBudget, JobBudgetLine> jobBudget() {
+    	return new APIHelper<>("jobbudgets", 
+    			new GenericType<Data<JobBudget, JobBudgetLine>>(){}, 
+    			new GenericType<Record<JobBudget>>(){}, 
+    			new GenericType<Record<JobBudgetLine>>(){});
+    }
+    
+    public APIHelper<EmployeeCard, EmployeeTable> employee() {
+    	return new APIHelper<>("employees", 
+    			new GenericType<Data<EmployeeCard, EmployeeTable>>(){}, 
+    			new GenericType<Record<EmployeeCard>>(){}, 
+    			new GenericType<Record<EmployeeTable>>(){});
     }
     
     private Endpoint getEndpoint(String endpointPath) {
@@ -103,26 +172,6 @@ public class MaconomyRestClient {
          }
 
          return getResponse.readEntity(new GenericType<Endpoint>(){});
-    }
-    
-    
-    
-    private <CARD extends Object> Record<CARD> init(Endpoint endpoint) {
-    	//Create the Journal.
-    	//TODO: Create from the template.
-    	String templateJournalLink = endpoint.getLinks().getLinks().get("action:insert").getHref();
-    	Response response = client.target(templateJournalLink).request(MediaType.APPLICATION_JSON).post(Entity.entity("",  MediaType.APPLICATION_JSON));
-    	Record<CARD> record = response.readEntity(new GenericType<Record<CARD>>(){});
-    	return record;
-    }
-    
-    private <DATA extends Data<CARD_RECORD, TABLE_RECORD>, CARD_RECORD extends Object, TABLE_RECORD extends Object> DATA
-    	create(Record<CARD_RECORD> templateRecord, Class<DATA> dataType) {
-    	String create = templateRecord.getLinks().getLinks().get("action:create").getHref();
-    	Response response = client.target(create).request(MediaType.APPLICATION_JSON).post(Entity.entity(templateRecord,  
-    										MediaType.APPLICATION_JSON));
-    	//Not idea, but the Class type is required to avoid type erasure of generics
-    	return response.readEntity(new GenericType<DATA>(dataType){});
     }
     
     public Data<EmployeeCard, EmployeeTable> getMaconomyEmployees(WebTarget target) {

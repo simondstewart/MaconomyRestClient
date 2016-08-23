@@ -14,7 +14,7 @@ import java.util.Map;
     "rowCount",
     "rowOffset"
 })
-public class CardMeta {
+public class CardMeta implements HasConcurrencyControl {
 
     @JsonProperty("paneName")
     private String paneName;

@@ -16,7 +16,7 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
     "concurrencyControl",
     "rowNumber",
 })
-public class RecordMeta {
+public class RecordMeta implements HasConcurrencyControl {
 
     @JsonProperty("concurrencyControl")
     private String concurrencyControl;

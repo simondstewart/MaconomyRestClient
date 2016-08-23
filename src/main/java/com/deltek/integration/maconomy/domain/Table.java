@@ -18,7 +18,7 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
     "meta",
     "records"
 })
-public class Table<T> {
+public class Table<T> implements HasLinksAndConcurrencyHolder {
 
     @JsonProperty("meta")
     private TableMeta meta;

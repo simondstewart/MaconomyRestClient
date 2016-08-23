@@ -18,7 +18,7 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
         "data",
         "links"
 })
-public class Record<T> {
+public class Record<T> implements HasLinksAndConcurrencyHolder {
 
     @JsonProperty("meta")
     private RecordMeta meta;

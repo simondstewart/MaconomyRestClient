@@ -18,7 +18,7 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
     "rowCount",
     "rowOffset"
 })
-public class TableMeta {
+public class TableMeta implements HasConcurrencyControl {
 
     @JsonProperty("paneName")
     private String paneName;
