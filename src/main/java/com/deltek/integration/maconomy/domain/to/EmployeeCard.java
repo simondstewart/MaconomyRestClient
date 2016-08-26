@@ -13,7 +13,8 @@ import java.util.Map;
         "name1",
         "name2",
         "createddate",
-        "transactiontimestamp"
+        "transactiontimestamp",
+        "country"
 })
 public class EmployeeCard {
 
@@ -26,7 +27,9 @@ public class EmployeeCard {
     @JsonProperty("createddate")
     private String createddate;
     @JsonProperty("transactiontimestamp")
-    private Boolean transactiontimestamp;
+    private String transactiontimestamp;
+    @JsonProperty("country")
+    private String country;
     @JsonIgnore
     private Map<String, Object> additionalProperties = new HashMap<String, Object>();
 
@@ -62,12 +65,20 @@ public class EmployeeCard {
 		this.createddate = createddate;
 	}
 
-	public Boolean getTransactiontimestamp() {
+	public String getTransactiontimestamp() {
 		return transactiontimestamp;
 	}
 
-	public void setTransactiontimestamp(Boolean transactiontimestamp) {
+	public void setTransactiontimestamp(String transactiontimestamp) {
 		this.transactiontimestamp = transactiontimestamp;
+	}
+
+	public String getCountry() {
+		return country;
+	}
+
+	public void setCountry(String country) {
+		this.country = country;
 	}
 
 	@JsonAnyGetter

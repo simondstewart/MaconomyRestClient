@@ -115,6 +115,7 @@ public class MaconomyRestClient {
             Invocation.Builder invocationBuilder = client.target(templateJournalLink).request(MediaType.APPLICATION_JSON);
             invocationBuilder = decorateConcurrencyControl(invocationBuilder, metaAndLinks.getMeta());
         	Response response = invocationBuilder.post(Entity.entity(requestBody,  MediaType.APPLICATION_JSON));
+        	throwApplicationExceptionFromInvalidResponse(response);
         	RESPONSE record = response.readEntity(responseType);
         	return record;    		
     	}
@@ -167,8 +168,9 @@ public class MaconomyRestClient {
          Invocation.Builder getInvocationBuilder = getTarget.request(MediaType.APPLICATION_JSON);
          Response getResponse = getInvocationBuilder.get();
 
-         if (getResponse.getStatus() != 200) {
-             throwExceptionFromResponse(getResponse);
+         //Application Error Handling
+         if (getResponse.getStatus() == 422) {
+             throwApplicationExceptionFromInvalidResponse(getResponse);
          }
 
          return getResponse.readEntity(new GenericType<Endpoint>(){});
@@ -198,25 +200,33 @@ public class MaconomyRestClient {
         Response getResponse = getInvocationBuilder.get();
 
         if (getResponse.getStatus() != 200) {
-            throwExceptionFromResponse(getResponse);
+            throwApplicationExceptionFromInvalidResponse(getResponse);
         }
 
         return getResponse.readEntity(type);
     }
     
-    private void throwExceptionFromResponse(Response response) {
-        String errorMessage = buildErrorMessage(response);
-        throw new MaconomyRestClientException(errorMessage);
+    private void throwApplicationExceptionFromInvalidResponse(Response response) {
+    	if (response.getStatus() == 422 || response.getStatus() == 500)
+    	{
+            String errorMessage = buildErrorMessageFromAppError(response);
+            throw new MaconomyRestClientException(errorMessage);
+    		
+    	} else if (response.getStatus() != 200) {
+    		throw new MaconomyRestClientException("Error Performing HTTP Request.  StatusCode: "+ response.getStatus() +
+    												"\nStatusInfo: "+response.getStatusInfo());
+    	}
     }
     
-    //TODO: This is broken, HTTP error responses are not handled correctly, they wont have an Error message.
-    private String buildErrorMessage(Response response){
+    private String buildErrorMessageFromAppError(Response response){
         Error restError = response.readEntity(Error.class);
         String message = restError.getErrorMessage();
 
         StringBuilder errorBuilder = new StringBuilder();
         errorBuilder.append(String.format("Response status: %s %s \n", response.getStatus(), response.getStatusInfo()));
         errorBuilder.append(String.format("Message: %s ", message));
+        restError.getAdditionalProperties().keySet().forEach(
+        		key -> errorBuilder.append("\n"+key+ ":"+restError.getAdditionalProperties().get(key)));
         return errorBuilder.toString();
     }
 }

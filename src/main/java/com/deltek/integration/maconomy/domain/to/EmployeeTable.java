@@ -26,7 +26,7 @@ public class EmployeeTable {
     @JsonProperty("createddate")
     private String createddate;
     @JsonProperty("transactiontimestamp")
-    private Boolean transactiontimestamp;
+    private String transactiontimestamp;
     @JsonIgnore
     private Map<String, Object> additionalProperties = new HashMap<String, Object>();
 
@@ -62,11 +62,11 @@ public class EmployeeTable {
 		this.createddate = createddate;
 	}
 
-	public Boolean getTransactiontimestamp() {
+	public String getTransactiontimestamp() {
 		return transactiontimestamp;
 	}
 
-	public void setTransactiontimestamp(Boolean transactiontimestamp) {
+	public void setTransactiontimestamp(String transactiontimestamp) {
 		this.transactiontimestamp = transactiontimestamp;
 	}
 

@@ -66,12 +66,16 @@ public class MaconomyRestClientTest {
 		Assert.assertNotNull(templateEmployee.getData());
 		Assert.assertTrue(templateEmployee.getData() instanceof EmployeeCard);
 		
-		Data<EmployeeCard, EmployeeTable> createdJournal = mrc.employee().createCard(templateEmployee);
-		Assert.assertNotNull(createdJournal);
-		Assert.assertTrue(createdJournal.getPanes().getCard().getRecords().get(0).getData() instanceof EmployeeCard);
+		templateEmployee.getData().setEmployeenumber("10101011");
+		templateEmployee.getData().setName1("Simon");
+		templateEmployee.getData().setCountry("united kingdom");
+		//TODO: Create a separate test for the Validation Error thrown here.  Mandatory Fields Are mission here.
+		Data<EmployeeCard, EmployeeTable> createdEmployee = mrc.employee().createCard(templateEmployee);
+		Assert.assertNotNull(createdEmployee);
+		Assert.assertTrue(createdEmployee.getPanes().getCard().getRecords().get(0).getData() instanceof EmployeeCard);
 		
-		Record<EmployeeTable> hoursJournal = mrc.employee().initTable(createdJournal.getPanes().getTable());
-		Assert.assertTrue(hoursJournal.getData() instanceof EmployeeTable);
+		Record<EmployeeTable> employeeTableRecord = mrc.employee().initTable(createdEmployee.getPanes().getTable());
+		Assert.assertTrue(employeeTableRecord.getData() instanceof EmployeeTable);
 	}
 	
 	//Maybe not as useful as first thought unless various domains have similar supported actions.
