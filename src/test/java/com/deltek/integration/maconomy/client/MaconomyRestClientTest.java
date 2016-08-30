@@ -1,9 +1,12 @@
 package com.deltek.integration.maconomy.client;
 
 import org.junit.Assert;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.testng.annotations.ExpectedExceptions;
 
 import com.deltek.integration.maconomy.client.MaconomyRestClient.APIHelper;
 import com.deltek.integration.maconomy.domain.Data;
@@ -18,6 +21,41 @@ import com.deltek.integration.maconomy.domain.to.Journal;
 public class MaconomyRestClientTest {
 
 	private MaconomyRestClient mrc = new MaconomyRestClient("Administrator", "123456", "http://193.17.206.162:4111/containers/v1/x1demo");
+	
+	@Rule
+	public ExpectedException expectedEx = ExpectedException.none();
+	
+	@Test
+	public void notFoundError() {
+		expectedEx.expect(MaconomyRestClientException.class);
+		MaconomyRestClient notFoundMrc = 
+				new MaconomyRestClient("Administrator", "123456", "http://193.17.206.162:4111/containers/v1/x1demo/INVALID_ENDPOINT");
+		notFoundMrc.employee().init();
+	}
+
+	@Test
+	public void authError() {
+		expectedEx.expect(MaconomyRestClientException.class);
+		MaconomyRestClient invalidMrc = new MaconomyRestClient("Administrator", "BadPassword", "http://193.17.206.162:4111/containers/v1/x1demo");
+		invalidMrc.employee().init();
+	}
+	
+	@Test
+	public void httpAppError() {
+		expectedEx.expect(MaconomyRestClientException.class);
+		Record<EmployeeCard> templateEmployee = mrc.employee().init();
+		Assert.assertNotNull(templateEmployee);
+		Assert.assertNotNull(templateEmployee.getData());
+		Assert.assertTrue(templateEmployee.getData() instanceof EmployeeCard);
+		
+		templateEmployee.getData().setEmployeenumber("10101011");
+		templateEmployee.getData().setName1("Simon");
+		templateEmployee.getData().setCountry("united kingdom");
+		//TODO: Create a separate test for the Validation Error thrown here.  Mandatory Fields Are mission here.
+		Data<EmployeeCard, EmployeeTable> createdEmployee = mrc.employee().createCard(templateEmployee);
+	}
+	
+	
 	
 	@Test
 	public void jobJobJournalEndpoint() {

@@ -3,6 +3,7 @@ package com.deltek.integration.maconomy.client;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 
+import javax.ws.rs.ProcessingException;
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.Entity;
@@ -12,6 +13,8 @@ import javax.ws.rs.core.GenericType;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.glassfish.jersey.client.authentication.HttpAuthenticationFeature;
 import org.glassfish.jersey.jackson.JacksonFeature;
 
@@ -33,6 +36,8 @@ import com.deltek.integration.maconomy.domain.to.Journal;
 
 public class MaconomyRestClient {
 
+	private static final Log LOG = LogFactory.getLog(MaconomyRestClient.class);
+	
 	private final String apiBasePath;
 	private final Client client;
 	
@@ -115,7 +120,7 @@ public class MaconomyRestClient {
             Invocation.Builder invocationBuilder = client.target(templateJournalLink).request(MediaType.APPLICATION_JSON);
             invocationBuilder = decorateConcurrencyControl(invocationBuilder, metaAndLinks.getMeta());
         	Response response = invocationBuilder.post(Entity.entity(requestBody,  MediaType.APPLICATION_JSON));
-        	throwApplicationExceptionFromInvalidResponse(response);
+        	checkThrowApplicationExceptionFromResponse(response);
         	RESPONSE record = response.readEntity(responseType);
         	return record;    		
     	}
@@ -168,11 +173,7 @@ public class MaconomyRestClient {
          Invocation.Builder getInvocationBuilder = getTarget.request(MediaType.APPLICATION_JSON);
          Response getResponse = getInvocationBuilder.get();
 
-         //Application Error Handling
-         if (getResponse.getStatus() == 422) {
-             throwApplicationExceptionFromInvalidResponse(getResponse);
-         }
-
+         checkThrowApplicationExceptionFromResponse(getResponse);
          return getResponse.readEntity(new GenericType<Endpoint>(){});
     }
     
@@ -199,34 +200,41 @@ public class MaconomyRestClient {
         Invocation.Builder getInvocationBuilder = getTarget.request(MediaType.APPLICATION_JSON);
         Response getResponse = getInvocationBuilder.get();
 
-        if (getResponse.getStatus() != 200) {
-            throwApplicationExceptionFromInvalidResponse(getResponse);
-        }
-
+        checkThrowApplicationExceptionFromResponse(getResponse);
         return getResponse.readEntity(type);
     }
     
-    private void throwApplicationExceptionFromInvalidResponse(Response response) {
-    	if (response.getStatus() == 422 || response.getStatus() == 500)
-    	{
-            String errorMessage = buildErrorMessageFromAppError(response);
-            throw new MaconomyRestClientException(errorMessage);
-    		
-    	} else if (response.getStatus() != 200) {
-    		throw new MaconomyRestClientException("Error Performing HTTP Request.  StatusCode: "+ response.getStatus() +
-    												"\nStatusInfo: "+response.getStatusInfo());
-    	}
+    private void checkThrowApplicationExceptionFromResponse(Response response) {
+
+    	//No error, HTTP Ok.
+    	if(response.getStatus() == 200) 
+    		return;
+    	
+        StringBuilder errorBuilder = new StringBuilder();
+        errorBuilder.append(String.format("Error Performing HTTP Request. Response status: %s %s \n", response.getStatus(), response.getStatusInfo()));
+        //attempt to serialise an Error object from the response for extra information.
+        errorBuilder = buildErrorMessageFromAppError(response, errorBuilder);
+        
+        String errorMessage = errorBuilder.toString();
+        if(LOG.isInfoEnabled()) {
+        	LOG.info("HTTP Response contained error: \n"+errorMessage);
+        }
+        throw new MaconomyRestClientException(errorMessage);
+        
     }
     
-    private String buildErrorMessageFromAppError(Response response){
-        Error restError = response.readEntity(Error.class);
-        String message = restError.getErrorMessage();
-
-        StringBuilder errorBuilder = new StringBuilder();
-        errorBuilder.append(String.format("Response status: %s %s \n", response.getStatus(), response.getStatusInfo()));
-        errorBuilder.append(String.format("Message: %s ", message));
-        restError.getAdditionalProperties().keySet().forEach(
-        		key -> errorBuilder.append("\n"+key+ ":"+restError.getAdditionalProperties().get(key)));
-        return errorBuilder.toString();
+    private StringBuilder buildErrorMessageFromAppError(Response response, StringBuilder errorStringBuilder){
+    	try {
+            Error restError = response.readEntity(Error.class);
+            String message = restError.getErrorMessage();
+            errorStringBuilder.append(String.format("Message: %s ", message));
+            restError.getAdditionalProperties().keySet().forEach(
+            		key -> errorStringBuilder.append("\n"+key+ ":"+restError.getAdditionalProperties().get(key)));
+    	} catch (ProcessingException pe) {
+    		if(LOG.isTraceEnabled()) {
+    			LOG.trace("Cannot Marshal an Error object from the Http response, this may be expected for some HTTP errors", pe);
+    		}
+    	}
+        return errorStringBuilder;
     }
 }
