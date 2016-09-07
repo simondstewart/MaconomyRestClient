@@ -16,7 +16,11 @@ import javax.ws.rs.core.Response;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.glassfish.jersey.client.authentication.HttpAuthenticationFeature;
+import org.glassfish.jersey.client.filter.EncodingFilter;
+import org.glassfish.jersey.filter.LoggingFilter;
 import org.glassfish.jersey.jackson.JacksonFeature;
+import org.glassfish.jersey.logging.LoggingFeature;
+import org.glassfish.jersey.message.GZipEncoder;
 
 import com.deltek.integration.maconomy.domain.Card;
 import com.deltek.integration.maconomy.domain.Data;
@@ -53,6 +57,9 @@ public class MaconomyRestClient {
         Client client = ClientBuilder.newBuilder()
                 .register(JacksonFeature.class)
                 .register(authFeature)
+                .register(EncodingFilter.class)
+                .register(GZipEncoder.class)
+                .register(LoggingFeature.class)
                 .build();
         return client;
     }
