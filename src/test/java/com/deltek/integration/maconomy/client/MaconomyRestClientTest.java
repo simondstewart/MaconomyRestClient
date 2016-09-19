@@ -1,5 +1,7 @@
 package com.deltek.integration.maconomy.client;
 
+import javax.ws.rs.core.GenericType;
+
 import org.junit.Assert;
 import org.junit.Rule;
 import org.junit.Test;
@@ -9,18 +11,24 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.testng.annotations.ExpectedExceptions;
 
 import com.deltek.integration.maconomy.client.MaconomyRestClient.APIHelper;
-import com.deltek.integration.maconomy.domain.Data;
+import com.deltek.integration.maconomy.domain.CardTableContainer;
 import com.deltek.integration.maconomy.domain.Endpoint;
+import com.deltek.integration.maconomy.domain.FilterContainer;
+import com.deltek.integration.maconomy.domain.CardTablePanes;
 import com.deltek.integration.maconomy.domain.Record;
 import com.deltek.integration.maconomy.domain.to.EmployeeCard;
 import com.deltek.integration.maconomy.domain.to.EmployeeTable;
 import com.deltek.integration.maconomy.domain.to.HoursJournal;
+import com.deltek.integration.maconomy.domain.to.JobBudget;
+import com.deltek.integration.maconomy.domain.to.JobBudgetLine;
 import com.deltek.integration.maconomy.domain.to.Journal;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 public class MaconomyRestClientTest {
 
-	private MaconomyRestClient mrc = new MaconomyRestClient("Administrator", "123456", "http://193.17.206.162:4111/containers/v1/x1demo");
+	private static final String SERVICE_URL = "http://193.17.206.162:4111/containers/v1/x1demo";
+	
+	private MaconomyRestClient mrc = new MaconomyRestClient("Administrator", "123456", SERVICE_URL);
 	
 	@Rule
 	public ExpectedException expectedEx = ExpectedException.none();
@@ -29,14 +37,14 @@ public class MaconomyRestClientTest {
 	public void notFoundError() {
 		expectedEx.expect(MaconomyRestClientException.class);
 		MaconomyRestClient notFoundMrc = 
-				new MaconomyRestClient("Administrator", "123456", "http://193.17.206.162:4111/containers/v1/x1demo/INVALID_ENDPOINT");
+				new MaconomyRestClient("Administrator", "123456", SERVICE_URL.concat("/INVALID_ENDPOINT"));
 		notFoundMrc.employee().init();
 	}
 
 	@Test
 	public void authError() {
 		expectedEx.expect(MaconomyRestClientException.class);
-		MaconomyRestClient invalidMrc = new MaconomyRestClient("Administrator", "BadPassword", "http://193.17.206.162:4111/containers/v1/x1demo");
+		MaconomyRestClient invalidMrc = new MaconomyRestClient("Administrator", "BadPassword", SERVICE_URL);
 		invalidMrc.employee().init();
 	}
 	
@@ -52,7 +60,7 @@ public class MaconomyRestClientTest {
 		templateEmployee.getData().setName1("Simon");
 		templateEmployee.getData().setCountry("united kingdom");
 		//TODO: Create a separate test for the Validation Error thrown here.  Mandatory Fields Are mission here.
-		Data<EmployeeCard, EmployeeTable> createdEmployee = mrc.employee().createCard(templateEmployee);
+		CardTableContainer<EmployeeCard, EmployeeTable> createdEmployee = mrc.employee().createCard(templateEmployee);
 	}
 	
 	
@@ -74,7 +82,7 @@ public class MaconomyRestClientTest {
 		Assert.assertNotNull(templateJournal.getData());
 		Assert.assertTrue(templateJournal.getData() instanceof Journal);
 		
-		Data<Journal, HoursJournal> createdJournal = mrc.jobJournal().createCard(templateJournal);
+		CardTableContainer<Journal, HoursJournal> createdJournal = mrc.jobJournal().createCard(templateJournal);
 		Assert.assertNotNull(createdJournal);
 		
 		Record<HoursJournal> hoursJournal = mrc.jobJournal().initTable(createdJournal.getPanes().getTable());
@@ -85,7 +93,7 @@ public class MaconomyRestClientTest {
 		hoursJournal.getData().setJobnumber(1020001);
 		hoursJournal.getData().setEmployeenumber(1001);
 		
-		Data<Journal, HoursJournal> journalWithAddedLine = mrc.jobJournal().addTableRecord(hoursJournal);
+		CardTableContainer<Journal, HoursJournal> journalWithAddedLine = mrc.jobJournal().addTableRecord(hoursJournal);
 		Assert.assertTrue(journalWithAddedLine.getPanes().getTable().getRecords().size() == 1);
 		Assert.assertTrue(journalWithAddedLine.getPanes().getTable().getRecords().get(0).getData() instanceof HoursJournal);
 		
@@ -95,6 +103,13 @@ public class MaconomyRestClientTest {
 	public void testBudgetInitCreate() {
 		Endpoint budgetEndpoint = mrc.jobBudget().endPoint();
 		Assert.assertNotNull(budgetEndpoint);
+		CardTableContainer<JobBudget, JobBudgetLine> filterResponse = mrc.jobBudget().filter();
+
+
+		
+		FilterContainer<JobBudget> budgetFilterResponse =
+				mrc.jobBudget().getDataFromAction("data:filter", budgetEndpoint, new GenericType<FilterContainer<JobBudget>>(){});
+		Assert.assertNotNull(budgetFilterResponse);
 	}
 	
 	@Test
@@ -108,7 +123,7 @@ public class MaconomyRestClientTest {
 		templateEmployee.getData().setName1("Simon");
 		templateEmployee.getData().setCountry("united kingdom");
 		//TODO: Create a separate test for the Validation Error thrown here.  Mandatory Fields Are mission here.
-		Data<EmployeeCard, EmployeeTable> createdEmployee = mrc.employee().createCard(templateEmployee);
+		CardTableContainer<EmployeeCard, EmployeeTable> createdEmployee = mrc.employee().createCard(templateEmployee);
 		Assert.assertNotNull(createdEmployee);
 		Assert.assertTrue(createdEmployee.getPanes().getCard().getRecords().get(0).getData() instanceof EmployeeCard);
 		
@@ -124,7 +139,7 @@ public class MaconomyRestClientTest {
 		Assert.assertNotNull(cardTemplateRecord.getData());
 //		Assert.assertTrue(templateJournal.getData() instanceof Journal);
 		
-		Data<CARD_RECORD_TYPE, TABLE_RECORD_TYPE> createdCardRecord = apiHelper.createCard(cardTemplateRecord);
+		CardTableContainer<CARD_RECORD_TYPE, TABLE_RECORD_TYPE> createdCardRecord = apiHelper.createCard(cardTemplateRecord);
 		Assert.assertNotNull(createdCardRecord);
 		
 		Record<TABLE_RECORD_TYPE> tableTemplateRecord = apiHelper.initTable(createdCardRecord.getPanes().getTable());

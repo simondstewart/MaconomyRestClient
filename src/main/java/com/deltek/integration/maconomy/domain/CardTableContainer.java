@@ -16,10 +16,10 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
     "panes",
     "links"
 })
-public class Data<T, U> {
+public class CardTableContainer<T, U> {
 
     @JsonProperty("panes")
-    private Panes<T, U> panes;
+    private CardTablePanes<T, U> panes;
     @JsonProperty("links")
     private Links links;
     @JsonIgnore
@@ -31,7 +31,7 @@ public class Data<T, U> {
      *     The panes
      */
     @JsonProperty("panes")
-    public Panes<T, U> getPanes() {
+    public CardTablePanes<T, U> getPanes() {
         return panes;
     }
 
@@ -41,7 +41,7 @@ public class Data<T, U> {
      *     The panes
      */
     @JsonProperty("panes")
-    public void setPanes(Panes<T, U> panes) {
+    public void setPanes(CardTablePanes<T, U> panes) {
         this.panes = panes;
     }
 

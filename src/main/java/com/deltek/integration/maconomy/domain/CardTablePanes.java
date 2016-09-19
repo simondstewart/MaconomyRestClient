@@ -16,7 +16,7 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
     "card",
     "table"
 })
-public class Panes<T, U> {
+public class CardTablePanes<T, U> {
 
     @JsonProperty("card")
     private Card<T> card;

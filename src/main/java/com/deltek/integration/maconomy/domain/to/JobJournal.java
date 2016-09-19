@@ -1,7 +1,7 @@
 package com.deltek.integration.maconomy.domain.to;
 
-import com.deltek.integration.maconomy.domain.Data;
+import com.deltek.integration.maconomy.domain.CardTableContainer;
 
-public class JobJournal extends Data<Journal, HoursJournal> {
+public class JobJournal extends CardTableContainer<Journal, HoursJournal> {
 
 }

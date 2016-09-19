@@ -15,7 +15,7 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @Generated("org.jsonschema2pojo")
 @JsonPropertyOrder({ "containerName", "links" })
-public class Endpoint {
+public class Endpoint implements HasLinks {
 
 	@JsonProperty("containerName")
 	private String containerName;

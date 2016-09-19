@@ -23,11 +23,13 @@ import org.glassfish.jersey.logging.LoggingFeature;
 import org.glassfish.jersey.message.GZipEncoder;
 
 import com.deltek.integration.maconomy.domain.Card;
-import com.deltek.integration.maconomy.domain.Data;
+import com.deltek.integration.maconomy.domain.CardTableContainer;
 import com.deltek.integration.maconomy.domain.Endpoint;
 import com.deltek.integration.maconomy.domain.Error;
 import com.deltek.integration.maconomy.domain.HasConcurrencyControl;
+import com.deltek.integration.maconomy.domain.HasLinks;
 import com.deltek.integration.maconomy.domain.HasLinksAndConcurrencyHolder;
+import com.deltek.integration.maconomy.domain.Links;
 import com.deltek.integration.maconomy.domain.Record;
 import com.deltek.integration.maconomy.domain.Table;
 import com.deltek.integration.maconomy.domain.to.EmployeeCard;
@@ -64,17 +66,72 @@ public class MaconomyRestClient {
         return client;
     }
 
+    public class BasicLinksAndConcurrency implements HasLinksAndConcurrencyHolder {
+    	
+    	private final HasLinks hasLinks;
+    	private final HasConcurrencyControl hasConcurrencyControl;
+    	
+		public BasicLinksAndConcurrency(HasLinks hasLinks, HasConcurrencyControl hasConcurrencyControl) {
+			super();
+			this.hasLinks = hasLinks;
+			this.hasConcurrencyControl = hasConcurrencyControl;
+		}
+
+		public BasicLinksAndConcurrency(HasLinks hasLinks) {
+			super();
+			this.hasLinks = hasLinks;
+			hasConcurrencyControl = new HasConcurrencyControl() {
+				
+				@Override
+				public String getConcurrencyControl() {
+					return "";
+				}
+			};
+		}
+
+		@Override
+		public Links getLinks() {
+			return hasLinks.getLinks();
+		}
+
+		@Override
+		public HasConcurrencyControl getMeta() {
+			return hasConcurrencyControl;
+		}
+    	
+    }
+    
+    
+    private class EndpointLinks implements HasLinks {
+
+    	private final String baseUrl;
+    	private final String endPoint;
+    	
+		public EndpointLinks(String baseUrl, String endPoint) {
+			super();
+			this.baseUrl = baseUrl;
+			this.endPoint = endPoint;
+		}
+
+		@Override
+		public Links getLinks() {
+			return null;
+		}
+    	
+    }
+    
+    
     public class APIHelper<CARD_RECORD extends Object, 
     						TABLE_RECORD extends Object> {
 
     	private final String endpointPath;
-		private final GenericType<Data<CARD_RECORD, TABLE_RECORD>> dataGenericType;
+		private final GenericType<CardTableContainer<CARD_RECORD, TABLE_RECORD>> dataGenericType;
 		private final GenericType<Record<TABLE_RECORD>> tableRecordGenericType;
 		private final GenericType<Record<CARD_RECORD>> cardRecordGenericType;
     	
     	//TODO: Is there a better way to do this, should be able to infer the generic type of the records from dataGenericType
 		public APIHelper(String endpointPath,  
-								GenericType<Data<CARD_RECORD, TABLE_RECORD>> dataGenericType,
+								GenericType<CardTableContainer<CARD_RECORD, TABLE_RECORD>> dataGenericType,
 								GenericType<Record<CARD_RECORD>> cardRecordGenericType,
 								GenericType<Record<TABLE_RECORD>> tableRecordGenericType) {
 			super();
@@ -94,12 +151,8 @@ public class MaconomyRestClient {
 		}
 		
     	public Record<CARD_RECORD> init(Endpoint endpoint) {
-    		return initInternal(endpoint);
+        	return postDataToAction("action:insert", new BasicLinksAndConcurrency(endpoint), "", cardRecordGenericType);
         }
-    	
-    	public Data<CARD_RECORD, TABLE_RECORD> createCard(Record<CARD_RECORD> cardRecord) {
-    		return createInternal(cardRecord);
-    	}
     	
     	public Record<TABLE_RECORD> initTable(Table<TABLE_RECORD> table) {
     		//Why would the Table have an add action instead of the insert action used for the card?  
@@ -107,15 +160,11 @@ public class MaconomyRestClient {
     		return postDataToAction("action:add", table, "", tableRecordGenericType);
     	}
         
-        private Record<CARD_RECORD> initInternal(Endpoint endpoint) {
-        	//Create the Journal.
-        	String templateJournalLink = endpoint.getLinks().getLinks().get("action:insert").getHref();
-        	Response response = client.target(templateJournalLink).request(MediaType.APPLICATION_JSON).post(Entity.entity("",  MediaType.APPLICATION_JSON));
-        	Record<CARD_RECORD> record = response.readEntity(cardRecordGenericType);
-        	return record;
-        } 
-        
-        private Data<CARD_RECORD, TABLE_RECORD> createInternal(Record<?> templateRecord) {	
+    	public CardTableContainer<CARD_RECORD, TABLE_RECORD> createCard(Record<CARD_RECORD> cardRecord) {
+    		return createInternal(cardRecord);
+    	}
+    	
+        private CardTableContainer<CARD_RECORD, TABLE_RECORD> createInternal(Record<?> templateRecord) {	
         	return postDataToAction("action:create", templateRecord, templateRecord, dataGenericType);
         }
 	   
@@ -132,20 +181,38 @@ public class MaconomyRestClient {
         	return record;    		
     	}
     	
-        
-    	public Data<CARD_RECORD, TABLE_RECORD> addTableRecord(Record<TABLE_RECORD> tableRecord) {
+		public <RESPONSE extends Object> RESPONSE getDataFromAction(String action,
+															HasLinks links,
+															GenericType<RESPONSE> responseType) {
+        	String templateJournalLink = links.getLinks().getLinks().get(action).getHref();
+			Invocation.Builder getInvocationBuilder = client.target(templateJournalLink).request(MediaType.APPLICATION_JSON);
+			Response getResponse = getInvocationBuilder.get();
+
+			checkThrowApplicationExceptionFromResponse(getResponse);
+			return getResponse.readEntity(responseType);
+		}
+
+		public CardTableContainer<CARD_RECORD, TABLE_RECORD> addTableRecord(Record<TABLE_RECORD> tableRecord) {
     		return createInternal(tableRecord);
     	}
     	
     	//TODO: Traverse the any link, 
-    	public Data<CARD_RECORD, TABLE_RECORD> any() {
+    	public CardTableContainer<CARD_RECORD, TABLE_RECORD> any() {
     		return null;	
     	}
     	
-    	public Data<CARD_RECORD, TABLE_RECORD> filter() {
-    		return null;
+    	public CardTableContainer<CARD_RECORD, TABLE_RECORD> filter() {
+    		return getDataFromAction("data:filter", endPoint(), dataGenericType);
     	}
     	
+        private Endpoint getEndpoint(String endpointPath) {
+        	 WebTarget getTarget = client.target(apiBasePath).path(endpointPath);
+             Invocation.Builder getInvocationBuilder = getTarget.request(MediaType.APPLICATION_JSON);
+             Response getResponse = getInvocationBuilder.get();
+
+             checkThrowApplicationExceptionFromResponse(getResponse);
+             return getResponse.readEntity(new GenericType<Endpoint>(){});
+        }
     }
     private Invocation.Builder decorateConcurrencyControl(Invocation.Builder builder, HasConcurrencyControl cc) {
     	if(cc.getConcurrencyControl() == null || cc.getConcurrencyControl().trim().isEmpty())
@@ -156,42 +223,34 @@ public class MaconomyRestClient {
     
     public APIHelper<Journal, HoursJournal> jobJournal() {
     	return new APIHelper<>("jobjournal",  
-    			new GenericType<Data<Journal, HoursJournal>>(){},
+    			new GenericType<CardTableContainer<Journal, HoursJournal>>(){},
     			new GenericType<Record<Journal>>(){},
     			new GenericType<Record<HoursJournal>>(){});
     }
     
     public APIHelper<JobBudget, JobBudgetLine> jobBudget() {
     	return new APIHelper<>("jobbudgets", 
-    			new GenericType<Data<JobBudget, JobBudgetLine>>(){}, 
+    			new GenericType<CardTableContainer<JobBudget, JobBudgetLine>>(){}, 
     			new GenericType<Record<JobBudget>>(){}, 
     			new GenericType<Record<JobBudgetLine>>(){});
     }
     
     public APIHelper<EmployeeCard, EmployeeTable> employee() {
     	return new APIHelper<>("employees", 
-    			new GenericType<Data<EmployeeCard, EmployeeTable>>(){}, 
+    			new GenericType<CardTableContainer<EmployeeCard, EmployeeTable>>(){}, 
     			new GenericType<Record<EmployeeCard>>(){}, 
     			new GenericType<Record<EmployeeTable>>(){});
     }
-    
-    private Endpoint getEndpoint(String endpointPath) {
-    	 WebTarget getTarget = client.target(apiBasePath).path(endpointPath);
-         Invocation.Builder getInvocationBuilder = getTarget.request(MediaType.APPLICATION_JSON);
-         Response getResponse = getInvocationBuilder.get();
 
-         checkThrowApplicationExceptionFromResponse(getResponse);
-         return getResponse.readEntity(new GenericType<Endpoint>(){});
+    
+    public CardTableContainer<EmployeeCard, EmployeeTable> getMaconomyEmployees(WebTarget target) {
+        return executeRequest(target, new GenericType<CardTableContainer<EmployeeCard, EmployeeTable>>(){});
     }
     
-    public Data<EmployeeCard, EmployeeTable> getMaconomyEmployees(WebTarget target) {
-        return executeRequest(target, new GenericType<Data<EmployeeCard, EmployeeTable>>(){});
-    }
-    
-    public Data<JobBudget, JobBudgetLine> getMaconomyBudget(WebTarget target, String jobNumber) {
+    public CardTableContainer<JobBudget, JobBudgetLine> getMaconomyBudget(WebTarget target, String jobNumber) {
         String encodedJobNumber = urlSafeEncodedString(jobNumber);
         WebTarget getTarget = target.path("jobbudgets").path(String.format("data;jobnumber=%s", encodedJobNumber));
-        return executeRequest(getTarget, new GenericType<Data<JobBudget, JobBudgetLine>>(){});
+        return executeRequest(getTarget, new GenericType<CardTableContainer<JobBudget, JobBudgetLine>>(){});
     }
     
     private String urlSafeEncodedString(String jobNumber){
@@ -202,8 +261,8 @@ public class MaconomyRestClient {
         }
     }
     
-    private <CARD extends Object, TABLE extends Object> Data<CARD, TABLE>
-    					executeRequest(WebTarget getTarget, GenericType<Data<CARD, TABLE>> type){
+    private <CARD extends Object, TABLE extends Object> CardTableContainer<CARD, TABLE>
+    					executeRequest(WebTarget getTarget, GenericType<CardTableContainer<CARD, TABLE>> type){
         Invocation.Builder getInvocationBuilder = getTarget.request(MediaType.APPLICATION_JSON);
         Response getResponse = getInvocationBuilder.get();
 

@@ -1,8 +1,6 @@
 package com.deltek.integration.maconomy.domain;
 
-public interface HasLinksAndConcurrencyHolder {
-
-    public Links getLinks(); 
+public interface HasLinksAndConcurrencyHolder extends HasLinks {
 	
     public HasConcurrencyControl getMeta();
     
