@@ -14,6 +14,7 @@ import com.deltek.integration.maconomy.client.MaconomyRestClient.APIHelper;
 import com.deltek.integration.maconomy.domain.CardTableContainer;
 import com.deltek.integration.maconomy.domain.Endpoint;
 import com.deltek.integration.maconomy.domain.FilterContainer;
+import com.deltek.integration.maconomy.domain.FilterPanes;
 import com.deltek.integration.maconomy.domain.CardTablePanes;
 import com.deltek.integration.maconomy.domain.Record;
 import com.deltek.integration.maconomy.domain.to.EmployeeCard;
@@ -57,9 +58,8 @@ public class MaconomyRestClientTest {
 		Assert.assertTrue(templateEmployee.getData() instanceof EmployeeCard);
 		
 		templateEmployee.getData().setEmployeenumber("10101011");
-		templateEmployee.getData().setName1("Simon");
-		templateEmployee.getData().setCountry("united kingdom");
-		//TODO: Create a separate test for the Validation Error thrown here.  Mandatory Fields Are mission here.
+		templateEmployee.getData().setName1(""); //missing field
+		templateEmployee.getData().setCountry("invalid country");
 		CardTableContainer<EmployeeCard, EmployeeTable> createdEmployee = mrc.employee().createCard(templateEmployee);
 	}
 	
@@ -100,16 +100,17 @@ public class MaconomyRestClientTest {
 	}
 	
 	@Test
-	public void testBudgetInitCreate() {
+	public void testBudgetFilter() {
 		Endpoint budgetEndpoint = mrc.jobBudget().endPoint();
 		Assert.assertNotNull(budgetEndpoint);
-		CardTableContainer<JobBudget, JobBudgetLine> filterResponse = mrc.jobBudget().filter();
-
-
+		FilterContainer<JobBudget> filterResponse = mrc.jobBudget().filter();
+		Assert.assertNotNull(filterResponse);
+		Assert.assertTrue(filterResponse.getPanes() instanceof FilterPanes);
 		
 		FilterContainer<JobBudget> budgetFilterResponse =
-				mrc.jobBudget().getDataFromAction("data:filter", budgetEndpoint, new GenericType<FilterContainer<JobBudget>>(){});
+				mrc.getDataFromAction("data:filter", budgetEndpoint, new GenericType<FilterContainer<JobBudget>>(){});
 		Assert.assertNotNull(budgetFilterResponse);
+		Assert.assertTrue(budgetFilterResponse.getPanes() instanceof FilterPanes);
 	}
 	
 	@Test
@@ -119,10 +120,13 @@ public class MaconomyRestClientTest {
 		Assert.assertNotNull(templateEmployee.getData());
 		Assert.assertTrue(templateEmployee.getData() instanceof EmployeeCard);
 		
+		//TODO: If we are creating unique data, remove this expected exception.
+		expectedEx.expect(MaconomyRestClientException.class);
+
 		templateEmployee.getData().setEmployeenumber("10101011");
 		templateEmployee.getData().setName1("Simon");
 		templateEmployee.getData().setCountry("united kingdom");
-		//TODO: Create a separate test for the Validation Error thrown here.  Mandatory Fields Are mission here.
+		
 		CardTableContainer<EmployeeCard, EmployeeTable> createdEmployee = mrc.employee().createCard(templateEmployee);
 		Assert.assertNotNull(createdEmployee);
 		Assert.assertTrue(createdEmployee.getPanes().getCard().getRecords().get(0).getData() instanceof EmployeeCard);
