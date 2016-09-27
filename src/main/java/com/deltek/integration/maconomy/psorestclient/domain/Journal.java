@@ -1,4 +1,4 @@
-package com.deltek.integration.maconomy.domain.to;
+package com.deltek.integration.maconomy.psorestclient.domain;
 
 import java.util.HashMap;
 import java.util.Map;

@@ -1,4 +1,4 @@
-package com.deltek.integration.maconomy.domain.to;
+package com.deltek.integration.maconomy.psorestclient.domain;
 
 import com.fasterxml.jackson.annotation.*;
 
@@ -13,10 +13,9 @@ import java.util.Map;
         "name1",
         "name2",
         "createddate",
-        "transactiontimestamp",
-        "country"
+        "transactiontimestamp"
 })
-public class EmployeeCard {
+public class EmployeeTable {
 
     @JsonProperty("employeenumber")
     private String employeenumber;
@@ -28,8 +27,6 @@ public class EmployeeCard {
     private String createddate;
     @JsonProperty("transactiontimestamp")
     private String transactiontimestamp;
-    @JsonProperty("country")
-    private String country;
     @JsonIgnore
     private Map<String, Object> additionalProperties = new HashMap<String, Object>();
 
@@ -71,14 +68,6 @@ public class EmployeeCard {
 
 	public void setTransactiontimestamp(String transactiontimestamp) {
 		this.transactiontimestamp = transactiontimestamp;
-	}
-
-	public String getCountry() {
-		return country;
-	}
-
-	public void setCountry(String country) {
-		this.country = country;
 	}
 
 	@JsonAnyGetter

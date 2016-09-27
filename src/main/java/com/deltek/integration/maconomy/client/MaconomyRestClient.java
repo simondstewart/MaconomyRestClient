@@ -31,12 +31,12 @@ import com.deltek.integration.maconomy.domain.HasLinksAndConcurrencyHolder;
 import com.deltek.integration.maconomy.domain.Links;
 import com.deltek.integration.maconomy.domain.Record;
 import com.deltek.integration.maconomy.domain.Table;
-import com.deltek.integration.maconomy.domain.to.EmployeeCard;
-import com.deltek.integration.maconomy.domain.to.EmployeeTable;
-import com.deltek.integration.maconomy.domain.to.HoursJournal;
-import com.deltek.integration.maconomy.domain.to.JobBudget;
-import com.deltek.integration.maconomy.domain.to.JobBudgetLine;
-import com.deltek.integration.maconomy.domain.to.Journal;
+import com.deltek.integration.maconomy.psorestclient.domain.EmployeeCard;
+import com.deltek.integration.maconomy.psorestclient.domain.EmployeeTable;
+import com.deltek.integration.maconomy.psorestclient.domain.HoursJournal;
+import com.deltek.integration.maconomy.psorestclient.domain.JobBudget;
+import com.deltek.integration.maconomy.psorestclient.domain.JobBudgetLine;
+import com.deltek.integration.maconomy.psorestclient.domain.Journal;
 
 public class MaconomyRestClient {
 
@@ -58,7 +58,17 @@ public class MaconomyRestClient {
 				.register(EncodingFilter.class).register(GZipEncoder.class).register(LoggingFeature.class).build();
 		return client;
 	}
+	
+	public Endpoint getEndpoint(String endpointPath) {
+		WebTarget getTarget = client.target(apiBasePath).path(endpointPath);
+		Invocation.Builder getInvocationBuilder = getTarget.request(MediaType.APPLICATION_JSON);
+		Response getResponse = getInvocationBuilder.get();
 
+		checkThrowApplicationExceptionFromResponse(getResponse);
+		return getResponse.readEntity(new GenericType<Endpoint>() {
+		});
+	}
+	
 	public <RESPONSE extends Object, REQUEST_BODY extends Object> RESPONSE postDataToAction(String action,
 			HasLinksAndConcurrencyHolder metaAndLinks, REQUEST_BODY requestBody, GenericType<RESPONSE> responseType) {
 		String templateJournalLink = metaAndLinks.getLinks().getLinks().get(action).getHref();
@@ -81,17 +91,7 @@ public class MaconomyRestClient {
 		return getResponse.readEntity(responseType);
 	}
 
-	// TODO - this was in the TrafficLIVE intergration client code, may need to
-	// consider for a more generic solution.
-	private String urlSafeEncodedString(String jobNumber) {
-		try {
-			return URLEncoder.encode(jobNumber, "UTF-8").replaceAll("\\+", "%20");
-		} catch (UnsupportedEncodingException ex) {
-			throw new RuntimeException("Error Encoding url for jobNumber: " + jobNumber, ex);
-		}
-	}
-
-	private void checkThrowApplicationExceptionFromResponse(Response response) {
+	public void checkThrowApplicationExceptionFromResponse(Response response) {
 
 		// No error, HTTP Ok.
 		if (response.getStatus() == 200)
@@ -110,6 +110,10 @@ public class MaconomyRestClient {
 		}
 		throw new MaconomyRestClientException(errorMessage);
 
+	}
+
+	public String getApiBasePath() {
+		return apiBasePath;
 	}
 
 	private StringBuilder buildErrorMessageFromAppError(Response response, StringBuilder errorStringBuilder) {
@@ -136,137 +140,14 @@ public class MaconomyRestClient {
 		return builder.header("Maconomy-Concurrency-Control", cc.getConcurrencyControl());
 	}
 
-	public class APIHelper<CARD_RECORD extends Object, TABLE_RECORD extends Object> {
-
-		private final String endpointPath;
-		private final GenericType<CardTableContainer<CARD_RECORD, TABLE_RECORD>> dataGenericType;
-		private final GenericType<FilterContainer<CARD_RECORD>> filterContainerType;
-		private final GenericType<Record<TABLE_RECORD>> tableRecordGenericType;
-		private final GenericType<Record<CARD_RECORD>> cardRecordGenericType;
-
-		// TODO: Is there a better way to do this, should be able to infer the
-		// generic type of the records from dataGenericType
-		public APIHelper(String endpointPath,
-				GenericType<CardTableContainer<CARD_RECORD, TABLE_RECORD>> dataGenericType,
-				GenericType<FilterContainer<CARD_RECORD>> filterContainerType,
-				GenericType<Record<CARD_RECORD>> cardRecordGenericType,
-				GenericType<Record<TABLE_RECORD>> tableRecordGenericType) {
-			super();
-			this.endpointPath = endpointPath;
-			this.dataGenericType = dataGenericType;
-			this.filterContainerType = filterContainerType;
-			this.tableRecordGenericType = tableRecordGenericType;
-			this.cardRecordGenericType = cardRecordGenericType;
+	// TODO - this was in the TrafficLIVE integration client code, may need to
+	// consider for a more generic solution.
+	private String urlSafeEncodedString(String getParameter) {
+		try {
+			return URLEncoder.encode(getParameter, "UTF-8").replaceAll("\\+", "%20");
+		} catch (UnsupportedEncodingException ex) {
+			throw new RuntimeException("Error Encoding url for jobNumber: " + getParameter, ex);
 		}
-
-		public Endpoint endPoint() {
-			return getEndpoint(endpointPath);
-		}
-
-		public Record<CARD_RECORD> init() {
-			return init(endPoint());
-		}
-
-		public Record<CARD_RECORD> init(Endpoint endpoint) {
-			return postDataToAction("action:insert", new BasicLinksAndConcurrency(endpoint), "", cardRecordGenericType);
-		}
-
-		public Record<TABLE_RECORD> initTable(Table<TABLE_RECORD> table) {
-			// Why would the Table have an add action instead of the insert
-			// action used for the card?
-			// TODO: Check if this is consistent with the model
-			return postDataToAction("action:add", table, "", tableRecordGenericType);
-		}
-
-		public CardTableContainer<CARD_RECORD, TABLE_RECORD> createCard(Record<CARD_RECORD> cardRecord) {
-			return createInternal(cardRecord);
-		}
-
-		private CardTableContainer<CARD_RECORD, TABLE_RECORD> createInternal(Record<?> templateRecord) {
-			return postDataToAction("action:create", templateRecord, templateRecord, dataGenericType);
-		}
-
-		public CardTableContainer<CARD_RECORD, TABLE_RECORD> addTableRecord(Record<TABLE_RECORD> tableRecord) {
-			return createInternal(tableRecord);
-		}
-
-		// TODO: Traverse the any link,
-		public CardTableContainer<CARD_RECORD, TABLE_RECORD> any() {
-			return null;
-		}
-
-		public FilterContainer<CARD_RECORD> filter() {
-			return getDataFromAction("data:filter", endPoint(), filterContainerType);
-		}
-
-		private Endpoint getEndpoint(String endpointPath) {
-			WebTarget getTarget = client.target(apiBasePath).path(endpointPath);
-			Invocation.Builder getInvocationBuilder = getTarget.request(MediaType.APPLICATION_JSON);
-			Response getResponse = getInvocationBuilder.get();
-
-			checkThrowApplicationExceptionFromResponse(getResponse);
-			return getResponse.readEntity(new GenericType<Endpoint>() {
-			});
-		}
-	}
-
-	public APIHelper<Journal, HoursJournal> jobJournal() {
-		return new APIHelper<>("jobjournal", new GenericType<CardTableContainer<Journal, HoursJournal>>() {
-		}, new GenericType<FilterContainer<Journal>>() {
-		}, new GenericType<Record<Journal>>() {
-		}, new GenericType<Record<HoursJournal>>() {
-		});
-	}
-
-	public APIHelper<JobBudget, JobBudgetLine> jobBudget() {
-		return new APIHelper<>("jobbudgets", new GenericType<CardTableContainer<JobBudget, JobBudgetLine>>() {
-		}, new GenericType<FilterContainer<JobBudget>>() {
-		}, new GenericType<Record<JobBudget>>() {
-		}, new GenericType<Record<JobBudgetLine>>() {
-		});
-	}
-
-	public APIHelper<EmployeeCard, EmployeeTable> employee() {
-		return new APIHelper<>("employees", new GenericType<CardTableContainer<EmployeeCard, EmployeeTable>>() {
-		}, new GenericType<FilterContainer<EmployeeCard>>() {
-		}, new GenericType<Record<EmployeeCard>>() {
-		}, new GenericType<Record<EmployeeTable>>() {
-		});
-	}
-
-	public class BasicLinksAndConcurrency implements HasLinksAndConcurrencyHolder {
-
-		private final HasLinks hasLinks;
-		private final HasConcurrencyControl hasConcurrencyControl;
-
-		public BasicLinksAndConcurrency(HasLinks hasLinks, HasConcurrencyControl hasConcurrencyControl) {
-			super();
-			this.hasLinks = hasLinks;
-			this.hasConcurrencyControl = hasConcurrencyControl;
-		}
-
-		public BasicLinksAndConcurrency(HasLinks hasLinks) {
-			super();
-			this.hasLinks = hasLinks;
-			hasConcurrencyControl = new HasConcurrencyControl() {
-
-				@Override
-				public String getConcurrencyControl() {
-					return "";
-				}
-			};
-		}
-
-		@Override
-		public Links getLinks() {
-			return hasLinks.getLinks();
-		}
-
-		@Override
-		public HasConcurrencyControl getMeta() {
-			return hasConcurrencyControl;
-		}
-
 	}
 
 }
