@@ -82,6 +82,8 @@ public class MaconomyPSORestContextTest {
 		CardTableContainer<Journal, HoursJournal> journalWithAddedLine = restClientContext.jobJournal().addTableRecord(hoursJournal);
 		Assert.assertTrue(journalWithAddedLine.getPanes().getTable().getRecords().size() == 1);
 		Assert.assertTrue(journalWithAddedLine.getPanes().getTable().getRecords().get(0).getData() instanceof HoursJournal);
+		Assert.assertNotNull(journalWithAddedLine.getPanes().getTable().getMeta());
+		
 		
 	}
 	
