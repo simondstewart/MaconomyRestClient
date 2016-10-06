@@ -5,7 +5,6 @@ import java.util.Map;
 
 import javax.annotation.Generated;
 
-import com.deltek.integration.maconomy.domain.Table;
 import com.fasterxml.jackson.annotation.JsonAnyGetter;
 import com.fasterxml.jackson.annotation.JsonAnySetter;
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -26,10 +25,10 @@ public class CardTablePanes<T, U> {
     @JsonProperty("table")
     private Table<U> table;
     @JsonIgnore
-    private Map<String, Object> additionalProperties = new HashMap<String, Object>();
+    private final Map<String, Object> additionalProperties = new HashMap<String, Object>();
 
     /**
-     * 
+     *
      * @return
      *     The card
      */
@@ -39,12 +38,12 @@ public class CardTablePanes<T, U> {
     }
 
     /**
-     * 
+     *
      * @param card
      *     The card
      */
     @JsonProperty("card")
-    public void setCard(Card<T> card) {
+    public void setCard(final Card<T> card) {
         this.card = card;
     }
 
@@ -64,7 +63,7 @@ public class CardTablePanes<T, U> {
      *     The table
      */
     @JsonProperty("table")
-    public void setTable(Table<U> table) {
+    public void setTable(final Table<U> table) {
         this.table = table;
     }
 
@@ -74,7 +73,7 @@ public class CardTablePanes<T, U> {
     }
 
     @JsonAnySetter
-    public void setAdditionalProperty(String name, Object value) {
+    public void setAdditionalProperty(final String name, final Object value) {
         this.additionalProperties.put(name, value);
     }
 

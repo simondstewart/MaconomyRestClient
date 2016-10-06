@@ -8,10 +8,10 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
-import com.deltek.integration.maconomy.domain.CardTableContainer;
-import com.deltek.integration.maconomy.domain.FilterContainer;
-import com.deltek.integration.maconomy.domain.FilterPanes;
-import com.deltek.integration.maconomy.domain.Record;
+import com.deltek.integration.maconomy.domain.internal.CardTableContainer;
+import com.deltek.integration.maconomy.domain.internal.FilterContainer;
+import com.deltek.integration.maconomy.domain.internal.FilterPanes;
+import com.deltek.integration.maconomy.domain.internal.Record;
 import com.deltek.integration.maconomy.psorestclient.domain.HoursJournal;
 import com.deltek.integration.maconomy.psorestclient.domain.JobBudget;
 import com.deltek.integration.maconomy.psorestclient.domain.Journal;
