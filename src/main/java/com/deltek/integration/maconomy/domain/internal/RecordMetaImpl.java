@@ -5,7 +5,7 @@ import java.util.Map;
 
 import javax.annotation.Generated;
 
-import com.deltek.integration.maconomy.domain.HasConcurrencyControl;
+import com.deltek.integration.maconomy.domain.RecordMeta;
 import com.fasterxml.jackson.annotation.JsonAnyGetter;
 import com.fasterxml.jackson.annotation.JsonAnySetter;
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -19,17 +19,17 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
     "concurrencyControl",
     "rowNumber",
 })
-public class RecordMeta implements HasConcurrencyControl {
+public class RecordMetaImpl implements RecordMeta {
 
     @JsonProperty("concurrencyControl")
     private String concurrencyControl;
     @JsonProperty("rowNumber")
     private Integer rowNumber;
     @JsonIgnore
-    private Map<String, Object> additionalProperties = new HashMap<String, Object>();
+    private final Map<String, Object> additionalProperties = new HashMap<String, Object>();
 
     /**
-     * 
+     *
      * @return
      *     The concurrencyControl
      */
@@ -39,17 +39,17 @@ public class RecordMeta implements HasConcurrencyControl {
     }
 
     /**
-     * 
+     *
      * @param concurrencyControl
      *     The concurrencyControl
      */
     @JsonProperty("concurrencyControl")
-    public void setConcurrencyControl(String concurrencyControl) {
+    public void setConcurrencyControl(final String concurrencyControl) {
         this.concurrencyControl = concurrencyControl;
     }
 
     /**
-     * 
+     *
      * @return
      *     The rowCount
      */
@@ -59,12 +59,12 @@ public class RecordMeta implements HasConcurrencyControl {
     }
 
     /**
-     * 
+     *
      * @param rowNumber
      *     The rowNumber
      */
     @JsonProperty("rowNumber")
-    public void setRowNumber(Integer rowNumber) {
+    public void setRowNumber(final Integer rowNumber) {
         this.rowNumber = rowNumber;
     }
 
@@ -74,7 +74,7 @@ public class RecordMeta implements HasConcurrencyControl {
     }
 
     @JsonAnySetter
-    public void setAdditionalProperty(String name, Object value) {
+    public void setAdditionalProperty(final String name, final Object value) {
         this.additionalProperties.put(name, value);
     }
 

@@ -1,94 +1,100 @@
 package com.deltek.integration.maconomy.domain.internal;
 
-import com.fasterxml.jackson.annotation.*;
-
-import javax.annotation.Generated;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.annotation.Generated;
+
+import com.fasterxml.jackson.annotation.JsonAnyGetter;
+import com.fasterxml.jackson.annotation.JsonAnySetter;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @Generated("org.jsonschema2pojo")
 @JsonPropertyOrder({
-    "records",
-    "links"
+  "records",
+  "links"
 })
 public class FilterPane<T> {
 
-//    @JsonProperty("meta")
-//    private String meta;
+  //    @JsonProperty("meta")
+  //    private String meta;
 
-    @JsonProperty("records")
-    private List<Record<T>> records = new ArrayList<>();
-    
-    @JsonProperty("links")
-    private Links links;
+  @JsonProperty("records")
+  private List<RecordImpl> records = new ArrayList<>();
 
-    @JsonIgnore
-    private Map<String, Object> additionalProperties = new HashMap<String, Object>();
+  @JsonProperty("links")
+  private LinksImpl links;
 
-//    /**
-//     * 
-//     * @return
-//     *     The meta
-//     */
-//    @JsonProperty("meta")
-//    public String getMeta() {
-//        return meta;
-//    }
-//
-//    /**
-//     * 
-//     * @param meta
-//     *     The meta
-//     */
-//    @JsonProperty("meta")
-//    public void setMeta(String meta) {
-//        this.meta = meta;
-//    }
+  @JsonIgnore
+  private final Map<String, Object> additionalProperties = new HashMap<String, Object>();
 
-    /**
-     * 
-     * @return
-     *     The records
-     */
-    @JsonProperty("records")
-    public List<Record<T>> getRecords() {
-        return records;
-    }
+  //    /**
+  //     *
+  //     * @return
+  //     *     The meta
+  //     */
+  //    @JsonProperty("meta")
+  //    public String getMeta() {
+  //        return meta;
+  //    }
+  //
+  //    /**
+  //     *
+  //     * @param meta
+  //     *     The meta
+  //     */
+  //    @JsonProperty("meta")
+  //    public void setMeta(String meta) {
+  //        this.meta = meta;
+  //    }
 
-    /**
-     * 
-     * @param records
-     *     The records
-     */
-    @JsonProperty("records")
-    public void setRecords(List<Record<T>> records) {
-        this.records = records;
-    }
+  /**
+   *
+   * @return
+   *     The records
+   */
+  @JsonProperty("records")
+  public List<RecordImpl> getRecords() {
+    return records;
+  }
 
-    @JsonProperty("links")
-    public Links getLinks() {
-        return links;
-    }
+  /**
+   *
+   * @param records
+   *     The records
+   */
+  @JsonProperty("records")
+  public void setRecords(final List<RecordImpl> records) {
+    this.records = records;
+  }
 
-    /**
-     * @param links The links
-     */
-    @JsonProperty("links")
-    public void setLinks(Links links) {
-        this.links = links;
-    }
+  @JsonProperty("links")
+  public LinksImpl getLinks() {
+    return links;
+  }
 
-    @JsonAnyGetter
-    public Map<String, Object> getAdditionalProperties() {
-        return this.additionalProperties;
-    }
+  /**
+   * @param links The links
+   */
+  @JsonProperty("links")
+  public void setLinks(final LinksImpl links) {
+    this.links = links;
+  }
 
-    @JsonAnySetter
-    public void setAdditionalProperty(String name, Object value) {
-        this.additionalProperties.put(name, value);
-    }
+  @JsonAnyGetter
+  public Map<String, Object> getAdditionalProperties() {
+    return this.additionalProperties;
+  }
+
+  @JsonAnySetter
+  public void setAdditionalProperty(final String name, final Object value) {
+    this.additionalProperties.put(name, value);
+  }
 
 }

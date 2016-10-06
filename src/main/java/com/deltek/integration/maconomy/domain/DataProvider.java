@@ -10,7 +10,7 @@ public interface DataProvider {
    * @param link
    * @return the container state for a given data providing link.
    */
-  ContainerState data(final Link link);
+  ContainerState getData(final Link link);
 
   /**
    * Reads the current data state of the context resource using {@code link} previously obtained from the Maconomy web service,
@@ -19,6 +19,6 @@ public interface DataProvider {
    * @param criteria
    * @return the container state for a given data providing link and search criteria.
    */
-  ContainerState data(final Link link, final Criteria criteria);
+  ContainerState getData(final Link link, final Criteria criteria);
 
 }

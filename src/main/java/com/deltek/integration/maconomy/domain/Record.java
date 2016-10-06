@@ -5,26 +5,26 @@ package com.deltek.integration.maconomy.domain;
 /**
  * Maconomy record.
  */
-public interface Record extends LinkProvider, DataProvider, Actionable {
+public interface Record extends DataProvider, Actionable, HasLinksAndConcurrencyHolder {
 
   /**
    * @return the meta information associated with this record.
    */
-  RecordMeta meta();
+  RecordMeta getMeta();
 
   /**
    * @return the data contained in this Maconomy record.
    */
-  Data data();
+  Data getData();
 
   /**
    * @return the container state that provides the possible values of an enumeration type
    */
-  ContainerState dataEnumValues();
+  ContainerState getDataEnumValues();
 
   /**
    * @return the container state that is identified by the same key as the context resource.
    */
-  ContainerState dataSameKey();
+  ContainerState getDataSameKey();
 
 }

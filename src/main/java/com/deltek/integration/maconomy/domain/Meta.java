@@ -1,6 +1,6 @@
 package com.deltek.integration.maconomy.domain;
 
-import java.util.List;
+import java.util.Map;
 
 /**
  * Meta properties associated with the resource.
@@ -8,14 +8,8 @@ import java.util.List;
 public interface Meta {
 
   /**
-   * @return the list of all the names of properties contained in this meta element.
+   * @return the map of the additional properties contained in this meta element.
    */
-  List<String> names();
-
-  /**
-   * @param name
-   * @return the value of a meta property for {@code name}, in case it does not exist {@code null} is returned.
-   */
-  String get(final String name);
+  Map<String, Object> getAdditionalProperties();
 
 }

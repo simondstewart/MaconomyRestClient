@@ -21,7 +21,7 @@ public class CardTableContainer<T, U> {
     @JsonProperty("panes")
     private CardTablePanes<T, U> panes;
     @JsonProperty("links")
-    private Links links;
+    private LinksImpl links;
     @JsonIgnore
     private Map<String, Object> additionalProperties = new HashMap<String, Object>();
 
@@ -46,12 +46,12 @@ public class CardTableContainer<T, U> {
     }
 
     @JsonProperty("links")
-    public Links getLinks() {
+    public LinksImpl getLinks() {
         return links;
     }
 
     @JsonProperty("links")
-    public void setLinks(Links links) {
+    public void setLinks(LinksImpl links) {
         this.links = links;
     }
 

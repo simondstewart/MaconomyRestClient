@@ -26,9 +26,9 @@ public class Table<T> implements HasLinksAndConcurrencyHolder {
     @JsonProperty("meta")
     private TableMeta meta;
     @JsonProperty("links")
-    private Links links;
+    private LinksImpl links;
     @JsonProperty("records")
-    private List<Record<T>> records = new ArrayList<>();
+    private List<RecordImpl> records = new ArrayList<>();
     @JsonIgnore
     private final Map<String, Object> additionalProperties = new HashMap<String, Object>();
 
@@ -53,12 +53,12 @@ public class Table<T> implements HasLinksAndConcurrencyHolder {
     }
 
     @JsonProperty("links")
-    public Links getLinks() {
+    public LinksImpl getLinks() {
         return links;
     }
 
     @JsonProperty("links")
-    public void setLinks(final Links links) {
+    public void setLinks(final LinksImpl links) {
         this.links = links;
     }
 
@@ -68,7 +68,7 @@ public class Table<T> implements HasLinksAndConcurrencyHolder {
      *     The records
      */
     @JsonProperty("records")
-    public List<Record<T>> getRecords() {
+    public List<RecordImpl> getRecords() {
         return records;
     }
 
@@ -78,7 +78,7 @@ public class Table<T> implements HasLinksAndConcurrencyHolder {
      *     The records
      */
     @JsonProperty("records")
-    public void setRecords(final List<Record<T>> records) {
+    public void setRecords(final List<RecordImpl> records) {
         this.records = records;
     }
 

@@ -4,7 +4,7 @@ package com.deltek.integration.maconomy.domain;
 /**
  * Maconomy container state.
  */
-public interface ContainerState extends LinkProvider {
+public interface ContainerState extends HasLinks {
 
   /**
    * @return the meta information associated with this container state.

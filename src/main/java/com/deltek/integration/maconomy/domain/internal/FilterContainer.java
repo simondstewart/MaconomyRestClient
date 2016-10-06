@@ -21,7 +21,7 @@ public class FilterContainer<T> {
     @JsonProperty("panes")
     private FilterPanes<T> panes;
     @JsonProperty("links")
-    private Links links;
+    private LinksImpl links;
     @JsonIgnore
     private Map<String, Object> additionalProperties = new HashMap<String, Object>();
 
@@ -46,12 +46,12 @@ public class FilterContainer<T> {
     }
 
     @JsonProperty("links")
-    public Links getLinks() {
+    public LinksImpl getLinks() {
         return links;
     }
 
     @JsonProperty("links")
-    public void setLinks(Links links) {
+    public void setLinks(LinksImpl links) {
         this.links = links;
     }
 

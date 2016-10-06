@@ -4,7 +4,7 @@ package com.deltek.integration.maconomy.domain;
 /**
  * State of a single Maconomy pane in a context Maconomy container.
  */
-public interface PaneState extends LinkProvider, Actionable {
+public interface PaneState extends HasLinks, Actionable {
 
   /**
    * @return the meta information associated with this pane state.

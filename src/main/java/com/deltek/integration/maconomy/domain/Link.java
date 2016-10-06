@@ -10,8 +10,13 @@ package com.deltek.integration.maconomy.domain;
 public interface Link {
 
   /**
+   * @return the link URL
+   */
+  String getHref();
+
+  /**
    * @return the link relation associated with this link.
    */
-  LinkRelation relation();
+  String getRel();
 
 }

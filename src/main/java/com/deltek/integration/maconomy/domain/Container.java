@@ -4,7 +4,7 @@ package com.deltek.integration.maconomy.domain;
 /**
  * Maconomy container entry.
  */
-public interface Container extends LinkProvider, DataProvider, Actionable {
+public interface Container extends HasLinks, DataProvider, Actionable {
 
   /**
    * @return the name of the context Maconomy container.

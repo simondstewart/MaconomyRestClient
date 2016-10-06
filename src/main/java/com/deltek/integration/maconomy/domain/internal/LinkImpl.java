@@ -1,5 +1,6 @@
 package com.deltek.integration.maconomy.domain.internal;
 
+import com.deltek.integration.maconomy.domain.Link;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
@@ -8,7 +9,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
  */
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class Link {
+public class LinkImpl implements Link {
 
     @JsonProperty("template")
     private String template;
@@ -26,7 +27,7 @@ public class Link {
     }
 
     @JsonProperty("template")
-    public void setTemplate(String template) {
+    public void setTemplate(final String template) {
         this.template = template;
     }
 
@@ -36,7 +37,7 @@ public class Link {
     }
 
     @JsonProperty("href")
-    public void setHref(String href) {
+    public void setHref(final String href) {
         this.href = href;
     }
 
@@ -46,7 +47,7 @@ public class Link {
     }
 
     @JsonProperty("rel")
-    public void setRel(String rel) {
+    public void setRel(final String rel) {
         this.rel = rel;
     }
 }

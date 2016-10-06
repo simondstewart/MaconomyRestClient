@@ -22,7 +22,7 @@ public class Endpoint implements HasLinks {
 	private String containerName;
 	
 	@JsonProperty("links")
-    private Links links;
+    private LinksImpl links;
 
     @JsonIgnore
     private Map<String, Object> additionalProperties = new HashMap<String, Object>();
@@ -38,12 +38,12 @@ public class Endpoint implements HasLinks {
 	}
 
 	@JsonProperty("links")
-	public Links getLinks() {
+	public LinksImpl getLinks() {
 		return links;
 	}
 
 	@JsonProperty("links")
-	public void setLinks(Links links) {
+	public void setLinks(LinksImpl links) {
 		this.links = links;
 	}
 
