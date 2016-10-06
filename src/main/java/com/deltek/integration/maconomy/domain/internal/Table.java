@@ -1,10 +1,13 @@
-package com.deltek.integration.maconomy.domain;
+package com.deltek.integration.maconomy.domain.internal;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
 import javax.annotation.Generated;
+
+import com.deltek.integration.maconomy.domain.HasLinksAndConcurrencyHolder;
 import com.fasterxml.jackson.annotation.JsonAnyGetter;
 import com.fasterxml.jackson.annotation.JsonAnySetter;
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -27,10 +30,10 @@ public class Table<T> implements HasLinksAndConcurrencyHolder {
     @JsonProperty("records")
     private List<Record<T>> records = new ArrayList<>();
     @JsonIgnore
-    private Map<String, Object> additionalProperties = new HashMap<String, Object>();
+    private final Map<String, Object> additionalProperties = new HashMap<String, Object>();
 
     /**
-     * 
+     *
      * @return
      *     The meta
      */
@@ -40,12 +43,12 @@ public class Table<T> implements HasLinksAndConcurrencyHolder {
     }
 
     /**
-     * 
+     *
      * @param meta
      *     The meta
      */
     @JsonProperty("meta")
-    public void setMeta(TableMeta meta) {
+    public void setMeta(final TableMeta meta) {
         this.meta = meta;
     }
 
@@ -55,12 +58,12 @@ public class Table<T> implements HasLinksAndConcurrencyHolder {
     }
 
     @JsonProperty("links")
-    public void setLinks(Links links) {
+    public void setLinks(final Links links) {
         this.links = links;
     }
 
     /**
-     * 
+     *
      * @return
      *     The records
      */
@@ -70,12 +73,12 @@ public class Table<T> implements HasLinksAndConcurrencyHolder {
     }
 
     /**
-     * 
+     *
      * @param records
      *     The records
      */
     @JsonProperty("records")
-    public void setRecords(List<Record<T>> records) {
+    public void setRecords(final List<Record<T>> records) {
         this.records = records;
     }
 
@@ -85,7 +88,7 @@ public class Table<T> implements HasLinksAndConcurrencyHolder {
     }
 
     @JsonAnySetter
-    public void setAdditionalProperty(String name, Object value) {
+    public void setAdditionalProperty(final String name, final Object value) {
         this.additionalProperties.put(name, value);
     }
 

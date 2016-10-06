@@ -1,10 +1,11 @@
-package com.deltek.integration.maconomy.domain;
+package com.deltek.integration.maconomy.domain.internal;
 
 import java.util.HashMap;
 import java.util.Map;
 
 import javax.annotation.Generated;
 
+import com.deltek.integration.maconomy.domain.HasLinks;
 import com.fasterxml.jackson.annotation.JsonAnyGetter;
 import com.fasterxml.jackson.annotation.JsonAnySetter;
 import com.fasterxml.jackson.annotation.JsonIgnore;

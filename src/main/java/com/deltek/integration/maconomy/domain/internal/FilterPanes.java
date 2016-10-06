@@ -1,8 +1,10 @@
-package com.deltek.integration.maconomy.domain;
+package com.deltek.integration.maconomy.domain.internal;
 
 import java.util.HashMap;
 import java.util.Map;
+
 import javax.annotation.Generated;
+
 import com.fasterxml.jackson.annotation.JsonAnyGetter;
 import com.fasterxml.jackson.annotation.JsonAnySetter;
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -13,56 +15,34 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @Generated("org.jsonschema2pojo")
 @JsonPropertyOrder({
-    "card",
-    "table"
+    "filter",
 })
-public class CardTablePanes<T, U> {
+public class FilterPanes<T> {
 
-    @JsonProperty("card")
-    private Card<T> card;
-    @JsonProperty("table")
-    private Table<U> table;
+    @JsonProperty("filter")
+    private FilterPane<T> filter;
+
     @JsonIgnore
     private Map<String, Object> additionalProperties = new HashMap<String, Object>();
 
     /**
      * 
      * @return
-     *     The card
+     *     The meta
      */
-    @JsonProperty("card")
-    public Card<T> getCard() {
-        return card;
+    @JsonProperty("filter")
+    public FilterPane<T> getFilter() {
+        return filter;
     }
 
     /**
      * 
-     * @param card
-     *     The card
+     * @param meta
+     *     The meta
      */
-    @JsonProperty("card")
-    public void setCard(Card<T> card) {
-        this.card = card;
-    }
-
-    /**
-     *
-     * @return
-     *     The table
-     */
-    @JsonProperty("table")
-    public Table<U> getTable() {
-        return table;
-    }
-
-    /**
-     *
-     * @param table
-     *     The table
-     */
-    @JsonProperty("table")
-    public void setTable(Table<U> table) {
-        this.table = table;
+    @JsonProperty("filter")
+    public void setFilter(FilterPane<T> filter) {
+        this.filter = filter;
     }
 
     @JsonAnyGetter

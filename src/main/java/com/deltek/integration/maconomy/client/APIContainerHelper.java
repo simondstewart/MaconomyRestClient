@@ -2,11 +2,11 @@ package com.deltek.integration.maconomy.client;
 
 import javax.ws.rs.core.GenericType;
 
-import com.deltek.integration.maconomy.domain.CardTableContainer;
-import com.deltek.integration.maconomy.domain.Endpoint;
-import com.deltek.integration.maconomy.domain.FilterContainer;
-import com.deltek.integration.maconomy.domain.Record;
 import com.deltek.integration.maconomy.domain.Table;
+import com.deltek.integration.maconomy.domain.internal.CardTableContainer;
+import com.deltek.integration.maconomy.domain.internal.Endpoint;
+import com.deltek.integration.maconomy.domain.internal.FilterContainer;
+import com.deltek.integration.maconomy.domain.internal.Record;
 import com.deltek.integration.maconomy.domain.util.BasicLinksAndConcurrency;
 
 public class APIContainerHelper<CARD_RECORD extends Object, TABLE_RECORD extends Object> {

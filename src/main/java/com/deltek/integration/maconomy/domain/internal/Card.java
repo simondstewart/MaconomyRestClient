@@ -1,4 +1,4 @@
-package com.deltek.integration.maconomy.domain;
+package com.deltek.integration.maconomy.domain.internal;
 
 import com.fasterxml.jackson.annotation.*;
 

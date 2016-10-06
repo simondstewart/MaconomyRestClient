@@ -1,8 +1,10 @@
-package com.deltek.integration.maconomy.domain;
+package com.deltek.integration.maconomy.domain.internal;
 
+import com.deltek.integration.maconomy.domain.HasConcurrencyControl;
 import com.fasterxml.jackson.annotation.*;
 
 import javax.annotation.Generated;
+
 import java.util.HashMap;
 import java.util.Map;
 

@@ -3,7 +3,7 @@ package com.deltek.integration.maconomy.domain.util;
 import com.deltek.integration.maconomy.domain.HasConcurrencyControl;
 import com.deltek.integration.maconomy.domain.HasLinks;
 import com.deltek.integration.maconomy.domain.HasLinksAndConcurrencyHolder;
-import com.deltek.integration.maconomy.domain.Links;
+import com.deltek.integration.maconomy.domain.internal.Links;
 
 public class BasicLinksAndConcurrency implements HasLinksAndConcurrencyHolder {
 

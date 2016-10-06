@@ -4,9 +4,9 @@ import javax.ws.rs.core.GenericType;
 
 import com.deltek.integration.maconomy.client.APIContainerHelper;
 import com.deltek.integration.maconomy.client.MaconomyRestClient;
-import com.deltek.integration.maconomy.domain.CardTableContainer;
-import com.deltek.integration.maconomy.domain.FilterContainer;
-import com.deltek.integration.maconomy.domain.Record;
+import com.deltek.integration.maconomy.domain.internal.CardTableContainer;
+import com.deltek.integration.maconomy.domain.internal.FilterContainer;
+import com.deltek.integration.maconomy.domain.internal.Record;
 import com.deltek.integration.maconomy.psorestclient.domain.EmployeeCard;
 import com.deltek.integration.maconomy.psorestclient.domain.EmployeeTable;
 import com.deltek.integration.maconomy.psorestclient.domain.HoursJournal;
