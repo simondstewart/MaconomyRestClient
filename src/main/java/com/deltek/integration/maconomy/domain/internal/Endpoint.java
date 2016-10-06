@@ -1,10 +1,11 @@
-package com.deltek.integration.maconomy.domain;
+package com.deltek.integration.maconomy.domain.internal;
 
 import java.util.HashMap;
 import java.util.Map;
 
 import javax.annotation.Generated;
 
+import com.deltek.integration.maconomy.domain.HasLinks;
 import com.fasterxml.jackson.annotation.JsonAnyGetter;
 import com.fasterxml.jackson.annotation.JsonAnySetter;
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -21,7 +22,7 @@ public class Endpoint implements HasLinks {
 	private String containerName;
 	
 	@JsonProperty("links")
-    private Links links;
+    private LinksImpl links;
 
     @JsonIgnore
     private Map<String, Object> additionalProperties = new HashMap<String, Object>();
@@ -37,12 +38,12 @@ public class Endpoint implements HasLinks {
 	}
 
 	@JsonProperty("links")
-	public Links getLinks() {
+	public LinksImpl getLinks() {
 		return links;
 	}
 
 	@JsonProperty("links")
-	public void setLinks(Links links) {
+	public void setLinks(LinksImpl links) {
 		this.links = links;
 	}
 

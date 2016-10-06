@@ -1,4 +1,4 @@
-package com.deltek.integration.maconomy.domain;
+package com.deltek.integration.maconomy.domain.internal;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -16,12 +16,12 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
     "panes",
     "links"
 })
-public class FilterContainer<T> {
+public class CardTableContainer<T, U> {
 
     @JsonProperty("panes")
-    private FilterPanes<T> panes;
+    private CardTablePanes<T, U> panes;
     @JsonProperty("links")
-    private Links links;
+    private LinksImpl links;
     @JsonIgnore
     private Map<String, Object> additionalProperties = new HashMap<String, Object>();
 
@@ -31,7 +31,7 @@ public class FilterContainer<T> {
      *     The panes
      */
     @JsonProperty("panes")
-    public FilterPanes<T> getPanes() {
+    public CardTablePanes<T, U> getPanes() {
         return panes;
     }
 
@@ -41,17 +41,17 @@ public class FilterContainer<T> {
      *     The panes
      */
     @JsonProperty("panes")
-    public void setPanes(FilterPanes<T> panes) {
+    public void setPanes(CardTablePanes<T, U> panes) {
         this.panes = panes;
     }
 
     @JsonProperty("links")
-    public Links getLinks() {
+    public LinksImpl getLinks() {
         return links;
     }
 
     @JsonProperty("links")
-    public void setLinks(Links links) {
+    public void setLinks(LinksImpl links) {
         this.links = links;
     }
 

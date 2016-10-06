@@ -1,14 +1,12 @@
-package com.deltek.integration.maconomy.domain;
+package com.deltek.integration.maconomy.domain.internal;
+
+import com.deltek.integration.maconomy.domain.HasConcurrencyControl;
+import com.fasterxml.jackson.annotation.*;
+
+import javax.annotation.Generated;
 
 import java.util.HashMap;
 import java.util.Map;
-import javax.annotation.Generated;
-import com.fasterxml.jackson.annotation.JsonAnyGetter;
-import com.fasterxml.jackson.annotation.JsonAnySetter;
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @Generated("org.jsonschema2pojo")
@@ -18,7 +16,7 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
     "rowCount",
     "rowOffset"
 })
-public class TableMeta implements HasConcurrencyControl {
+public class CardMeta implements HasConcurrencyControl {
 
     @JsonProperty("paneName")
     private String paneName;

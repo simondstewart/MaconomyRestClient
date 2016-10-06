@@ -1,52 +1,22 @@
+/**
+ *
+ */
 package com.deltek.integration.maconomy.domain;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**
- * Created by AlesHavlik on 23/06/2015.
+ * Maconomy link returned from the web service.
  */
+public interface Link {
 
-@JsonInclude(JsonInclude.Include.NON_NULL)
-public class Link {
+  /**
+   * @return the link URL
+   */
+  String getHref();
 
-    @JsonProperty("template")
-    private String template;
+  /**
+   * @return the link relation associated with this link.
+   */
+  String getRel();
 
-    @JsonProperty("href")
-    private String href;
-
-    @JsonProperty("rel")
-    private String rel;
-
-
-    @JsonProperty("template")
-    public String getTemplate() {
-        return template;
-    }
-
-    @JsonProperty("template")
-    public void setTemplate(String template) {
-        this.template = template;
-    }
-
-    @JsonProperty("href")
-    public String getHref() {
-        return href;
-    }
-
-    @JsonProperty("href")
-    public void setHref(String href) {
-        this.href = href;
-    }
-
-    @JsonProperty("rel")
-    public String getRel() {
-        return rel;
-    }
-
-    @JsonProperty("rel")
-    public void setRel(String rel) {
-        this.rel = rel;
-    }
 }

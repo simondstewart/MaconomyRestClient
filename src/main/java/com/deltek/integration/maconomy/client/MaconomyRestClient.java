@@ -2,6 +2,7 @@ package com.deltek.integration.maconomy.client;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
+import java.util.List;
 
 import javax.ws.rs.ProcessingException;
 import javax.ws.rs.client.Client;
@@ -21,133 +22,131 @@ import org.glassfish.jersey.jackson.JacksonFeature;
 import org.glassfish.jersey.logging.LoggingFeature;
 import org.glassfish.jersey.message.GZipEncoder;
 
-import com.deltek.integration.maconomy.domain.CardTableContainer;
-import com.deltek.integration.maconomy.domain.Endpoint;
-import com.deltek.integration.maconomy.domain.Error;
-import com.deltek.integration.maconomy.domain.FilterContainer;
 import com.deltek.integration.maconomy.domain.HasConcurrencyControl;
 import com.deltek.integration.maconomy.domain.HasLinks;
 import com.deltek.integration.maconomy.domain.HasLinksAndConcurrencyHolder;
-import com.deltek.integration.maconomy.domain.Links;
-import com.deltek.integration.maconomy.domain.Record;
-import com.deltek.integration.maconomy.domain.Table;
-import com.deltek.integration.maconomy.psorestclient.domain.EmployeeCard;
-import com.deltek.integration.maconomy.psorestclient.domain.EmployeeTable;
-import com.deltek.integration.maconomy.psorestclient.domain.HoursJournal;
-import com.deltek.integration.maconomy.psorestclient.domain.JobBudget;
-import com.deltek.integration.maconomy.psorestclient.domain.JobBudgetLine;
-import com.deltek.integration.maconomy.psorestclient.domain.Journal;
+import com.deltek.integration.maconomy.domain.Link;
+import com.deltek.integration.maconomy.domain.internal.Endpoint;
+import com.deltek.integration.maconomy.domain.internal.Error;
 
 public class MaconomyRestClient {
 
-	private static final Log LOG = LogFactory.getLog(MaconomyRestClient.class);
+  private static final Log LOG = LogFactory.getLog(MaconomyRestClient.class);
 
-	private final String apiBasePath;
-	private final Client client;
+  private final String apiBasePath;
+  private final Client client;
 
-	public MaconomyRestClient(String maconomyUser, String maconomyPassword, String apiBasePath) {
-		this.apiBasePath = apiBasePath;
-		this.client = buildClientForCurrentUser(maconomyUser, maconomyPassword);
-	}
+  public MaconomyRestClient(final String maconomyUser, final String maconomyPassword, final String apiBasePath) {
+    this.apiBasePath = apiBasePath;
+    this.client = buildClientForCurrentUser(maconomyUser, maconomyPassword);
+  }
 
-	private final Client buildClientForCurrentUser(String maconomyUser, String maconomyPassword) {
+  private final Client buildClientForCurrentUser(final String maconomyUser, final String maconomyPassword) {
 
-		HttpAuthenticationFeature authFeature = HttpAuthenticationFeature.basic(maconomyUser, maconomyPassword);
+    final HttpAuthenticationFeature authFeature = HttpAuthenticationFeature.basic(maconomyUser, maconomyPassword);
 
-		Client client = ClientBuilder.newBuilder().register(JacksonFeature.class).register(authFeature)
-				.register(EncodingFilter.class).register(GZipEncoder.class).register(LoggingFeature.class).build();
-		return client;
-	}
-	
-	public Endpoint getEndpoint(String endpointPath) {
-		WebTarget getTarget = client.target(apiBasePath).path(endpointPath);
-		Invocation.Builder getInvocationBuilder = getTarget.request(MediaType.APPLICATION_JSON);
-		Response getResponse = getInvocationBuilder.get();
+    final Client client = ClientBuilder.newBuilder().register(JacksonFeature.class).register(authFeature)
+        .register(EncodingFilter.class).register(GZipEncoder.class).register(LoggingFeature.class).build();
+    return client;
+  }
 
-		checkThrowApplicationExceptionFromResponse(getResponse);
-		return getResponse.readEntity(new GenericType<Endpoint>() {
-		});
-	}
-	
-	public <RESPONSE extends Object, REQUEST_BODY extends Object> RESPONSE postDataToAction(String action,
-			HasLinksAndConcurrencyHolder metaAndLinks, REQUEST_BODY requestBody, GenericType<RESPONSE> responseType) {
-		String templateJournalLink = metaAndLinks.getLinks().getLinks().get(action).getHref();
-		Invocation.Builder invocationBuilder = client.target(templateJournalLink).request(MediaType.APPLICATION_JSON);
-		invocationBuilder = decorateConcurrencyControl(invocationBuilder, metaAndLinks.getMeta());
-		Response response = invocationBuilder.post(Entity.entity(requestBody, MediaType.APPLICATION_JSON));
-		checkThrowApplicationExceptionFromResponse(response);
-		RESPONSE record = response.readEntity(responseType);
-		return record;
-	}
+  public Endpoint getEndpoint(final String endpointPath) {
+    final WebTarget getTarget = client.target(apiBasePath).path(endpointPath);
+    final Invocation.Builder getInvocationBuilder = getTarget.request(MediaType.APPLICATION_JSON);
+    final Response getResponse = getInvocationBuilder.get();
 
-	public <RESPONSE extends Object> RESPONSE getDataFromAction(String action, HasLinks links,
-			GenericType<RESPONSE> responseType) {
-		String templateJournalLink = links.getLinks().getLinks().get(action).getHref();
-		Invocation.Builder getInvocationBuilder = client.target(templateJournalLink)
-				.request(MediaType.APPLICATION_JSON);
-		Response getResponse = getInvocationBuilder.get();
+    checkThrowApplicationExceptionFromResponse(getResponse);
+    return getResponse.readEntity(new GenericType<Endpoint>() {
+    });
+  }
 
-		checkThrowApplicationExceptionFromResponse(getResponse);
-		return getResponse.readEntity(responseType);
-	}
+  public <RESPONSE extends Object, REQUEST_BODY extends Object> RESPONSE postDataToAction(final String action,
+                                                                                          final HasLinksAndConcurrencyHolder metaAndLinks, final REQUEST_BODY requestBody, final GenericType<RESPONSE> responseType) {
+    final List<Link> templateJournalLinks = metaAndLinks.getLinks().get(action);
+    if (templateJournalLinks.size() == 1) {
+      final String templateJournalLink = templateJournalLinks.get(0).getHref();
+      Invocation.Builder invocationBuilder = client.target(templateJournalLink).request(MediaType.APPLICATION_JSON);
+      invocationBuilder = decorateConcurrencyControl(invocationBuilder, metaAndLinks.getMeta());
+      final Response response = invocationBuilder.post(Entity.entity(requestBody, MediaType.APPLICATION_JSON));
+      checkThrowApplicationExceptionFromResponse(response);
+      final RESPONSE record = response.readEntity(responseType);
+      return record;
+    }
+    return null;
+  }
 
-	public void checkThrowApplicationExceptionFromResponse(Response response) {
+  public <RESPONSE extends Object> RESPONSE getDataFromAction(final String action, final HasLinks links,
+                                                              final GenericType<RESPONSE> responseType) {
+    final List<Link> templateJournalLinks = links.getLinks().get(action);
+    if (templateJournalLinks.size() == 1) {
+      final String templateJournalLink = templateJournalLinks.get(0).getHref();
+      final Invocation.Builder getInvocationBuilder = client.target(templateJournalLink)
+          .request(MediaType.APPLICATION_JSON);
+      final Response getResponse = getInvocationBuilder.get();
 
-		// No error, HTTP Ok.
-		if (response.getStatus() == 200)
-			return;
+      checkThrowApplicationExceptionFromResponse(getResponse);
+      return getResponse.readEntity(responseType);
+    }
+    return null;
+  }
 
-		StringBuilder errorBuilder = new StringBuilder();
-		errorBuilder.append(String.format("Error Performing HTTP Request. Response status: %s %s \n",
-				response.getStatus(), response.getStatusInfo()));
-		// attempt to serialise an Error object from the response for extra
-		// information.
-		errorBuilder = buildErrorMessageFromAppError(response, errorBuilder);
+  public void checkThrowApplicationExceptionFromResponse(final Response response) {
 
-		String errorMessage = errorBuilder.toString();
-		if (LOG.isInfoEnabled()) {
-			LOG.info("HTTP Response contained error: \n" + errorMessage);
-		}
-		throw new MaconomyRestClientException(errorMessage);
+    // No error, HTTP Ok.
+    if (response.getStatus() == 200)
+      return;
 
-	}
+    StringBuilder errorBuilder = new StringBuilder();
+    errorBuilder.append(String.format("Error Performing HTTP Request. Response status: %s %s \n",
+                                      response.getStatus(), response.getStatusInfo()));
+    // attempt to serialise an Error object from the response for extra
+    // information.
+    errorBuilder = buildErrorMessageFromAppError(response, errorBuilder);
 
-	public String getApiBasePath() {
-		return apiBasePath;
-	}
+    final String errorMessage = errorBuilder.toString();
+    if (LOG.isInfoEnabled()) {
+      LOG.info("HTTP Response contained error: \n" + errorMessage);
+    }
+    throw new MaconomyRestClientException(errorMessage);
 
-	private StringBuilder buildErrorMessageFromAppError(Response response, StringBuilder errorStringBuilder) {
-		try {
-			Error restError = response.readEntity(Error.class);
-			String message = restError.getErrorMessage();
-			errorStringBuilder.append(String.format("Message: %s ", message));
-			restError.getAdditionalProperties().keySet().forEach(
-					key -> errorStringBuilder.append("\n" + key + ":" + restError.getAdditionalProperties().get(key)));
-		} catch (ProcessingException pe) {
-			if (LOG.isTraceEnabled()) {
-				LOG.trace(
-						"Cannot Marshal an Error object from the Http response, this may be expected for some HTTP errors",
-						pe);
-			}
-		}
-		return errorStringBuilder;
-	}
-	
-	private Invocation.Builder decorateConcurrencyControl(Invocation.Builder builder, HasConcurrencyControl cc) {
-		if (cc.getConcurrencyControl() == null || cc.getConcurrencyControl().trim().isEmpty())
-			return builder;
+  }
 
-		return builder.header("Maconomy-Concurrency-Control", cc.getConcurrencyControl());
-	}
+  public String getApiBasePath() {
+    return apiBasePath;
+  }
 
-	// TODO - this was in the TrafficLIVE integration client code, may need to
-	// consider for a more generic solution.
-	private String urlSafeEncodedString(String getParameter) {
-		try {
-			return URLEncoder.encode(getParameter, "UTF-8").replaceAll("\\+", "%20");
-		} catch (UnsupportedEncodingException ex) {
-			throw new RuntimeException("Error Encoding url for jobNumber: " + getParameter, ex);
-		}
-	}
+  private StringBuilder buildErrorMessageFromAppError(final Response response, final StringBuilder errorStringBuilder) {
+    try {
+      final Error restError = response.readEntity(Error.class);
+      final String message = restError.getErrorMessage();
+      errorStringBuilder.append(String.format("Message: %s ", message));
+      restError.getAdditionalProperties().keySet().forEach(
+                                                           key -> errorStringBuilder.append("\n" + key + ":" + restError.getAdditionalProperties().get(key)));
+    } catch (final ProcessingException pe) {
+      if (LOG.isTraceEnabled()) {
+        LOG.trace(
+                  "Cannot Marshal an Error object from the Http response, this may be expected for some HTTP errors",
+                  pe);
+      }
+    }
+    return errorStringBuilder;
+  }
+
+  private Invocation.Builder decorateConcurrencyControl(final Invocation.Builder builder, final HasConcurrencyControl cc) {
+    if (cc.getConcurrencyControl() == null || cc.getConcurrencyControl().trim().isEmpty())
+      return builder;
+
+    return builder.header("Maconomy-Concurrency-Control", cc.getConcurrencyControl());
+  }
+
+  // TODO - this was in the TrafficLIVE integration client code, may need to
+  // consider for a more generic solution.
+  private String urlSafeEncodedString(final String getParameter) {
+    try {
+      return URLEncoder.encode(getParameter, "UTF-8").replaceAll("\\+", "%20");
+    } catch (final UnsupportedEncodingException ex) {
+      throw new RuntimeException("Error Encoding url for jobNumber: " + getParameter, ex);
+    }
+  }
 
 }

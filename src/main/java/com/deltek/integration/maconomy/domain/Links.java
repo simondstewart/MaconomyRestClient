@@ -1,30 +1,37 @@
 package com.deltek.integration.maconomy.domain;
 
-import com.fasterxml.jackson.annotation.JsonAnyGetter;
-import com.fasterxml.jackson.annotation.JsonAnySetter;
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonInclude;
-
-import java.util.HashMap;
-import java.util.Map;
+import java.util.List;
 
 /**
- * Created by AlesHavlik on 23/06/2015.
+ * Collection of Maconomy links that allows locating a Maconomy link based on a link relation property.
  */
+public interface Links {
 
-@JsonInclude(JsonInclude.Include.NON_NULL)
-public class Links {
+  /**
+   * @return a list of Maconomy links that are present in this collection.
+   */
+  List<Link> get();
 
-    @JsonIgnore
-    private Map<String, Link> links = new HashMap<String, Link>();
+  /**
+   * @param relation
+   * @return a Maconomy link for {@code relation}, if not present an empty link will be returned.
+   */
+  Link get(final LinkRelation relation);
 
-    @JsonAnyGetter
-    public Map<String, Link> getLinks() {
-        return links;
-    }
+  /**
+   * @param keyword
+   * @return a list of Maconomy links with link relations containing {@code keyword} that are present in this collection.
+   */
+  List<Link> get(final String keyword);
 
-    @JsonAnySetter
-    public void setLinks(String name, Link value) {
-        this.links.put(name, value);
-    }
+  /**
+   * @return a list of Maconomy links that are used to perform an action among the links in this collection.
+   */
+  List<Link> getActions();
+
+  /**
+   * @return a list of Maconomy links that are used for data fetching from the associated resources.
+   */
+  List<Link> getData();
+
 }

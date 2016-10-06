@@ -4,9 +4,9 @@ import javax.ws.rs.core.GenericType;
 
 import com.deltek.integration.maconomy.client.APIContainerHelper;
 import com.deltek.integration.maconomy.client.MaconomyRestClient;
-import com.deltek.integration.maconomy.domain.CardTableContainer;
-import com.deltek.integration.maconomy.domain.FilterContainer;
-import com.deltek.integration.maconomy.domain.Record;
+import com.deltek.integration.maconomy.domain.internal.CardTableContainer;
+import com.deltek.integration.maconomy.domain.internal.FilterContainer;
+import com.deltek.integration.maconomy.domain.internal.RecordImpl;
 import com.deltek.integration.maconomy.psorestclient.domain.EmployeeCard;
 import com.deltek.integration.maconomy.psorestclient.domain.EmployeeTable;
 import com.deltek.integration.maconomy.psorestclient.domain.HoursJournal;
@@ -17,8 +17,8 @@ import com.deltek.integration.maconomy.psorestclient.domain.Journal;
 public class MaconomyPSORestContext {
 
 	private final MaconomyRestClient restClient;
-	
-	public MaconomyPSORestContext(MaconomyRestClient restClient) {
+
+	public MaconomyPSORestContext(final MaconomyRestClient restClient) {
 		super();
 		this.restClient = restClient;
 	}
@@ -26,24 +26,24 @@ public class MaconomyPSORestContext {
 	public APIContainerHelper<Journal, HoursJournal> jobJournal() {
 		return new APIContainerHelper<>(restClient, "jobjournal", new GenericType<CardTableContainer<Journal, HoursJournal>>() {
 		}, new GenericType<FilterContainer<Journal>>() {
-		}, new GenericType<Record<Journal>>() {
-		}, new GenericType<Record<HoursJournal>>() {
+		}, new GenericType<RecordImpl>() {
+		}, new GenericType<RecordImpl>() {
 		});
 	}
 
 	public APIContainerHelper<JobBudget, JobBudgetLine> jobBudget() {
 		return new APIContainerHelper<>(restClient, "jobbudgets", new GenericType<CardTableContainer<JobBudget, JobBudgetLine>>() {
 		}, new GenericType<FilterContainer<JobBudget>>() {
-		}, new GenericType<Record<JobBudget>>() {
-		}, new GenericType<Record<JobBudgetLine>>() {
+		}, new GenericType<RecordImpl>() {
+		}, new GenericType<RecordImpl>() {
 		});
 	}
 
 	public APIContainerHelper<EmployeeCard, EmployeeTable> employee() {
 		return new APIContainerHelper<>(restClient, "employees", new GenericType<CardTableContainer<EmployeeCard, EmployeeTable>>() {
 		}, new GenericType<FilterContainer<EmployeeCard>>() {
-		}, new GenericType<Record<EmployeeCard>>() {
-		}, new GenericType<Record<EmployeeTable>>() {
+		}, new GenericType<RecordImpl>() {
+		}, new GenericType<RecordImpl>() {
 		});
 	}
 }

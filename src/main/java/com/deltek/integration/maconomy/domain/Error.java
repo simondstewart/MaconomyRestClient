@@ -1,42 +1,28 @@
 package com.deltek.integration.maconomy.domain;
 
-import com.fasterxml.jackson.annotation.*;
+/**
+ * Error returned from Maconomy.
+ */
+public interface Error {
 
-import javax.annotation.Generated;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+  /**
+   * @return the error family.
+   */
+  String family();
 
-@JsonInclude(JsonInclude.Include.NON_NULL)
-public class Error {
+  /**
+   * @return the error message.
+   */
+  String message();
 
-    @JsonProperty("errorMessage")
-    private String errorMessage;
+  /**
+   * @return the error severity.
+   */
+  String severity();
 
-    @JsonIgnore
-    private Map<String, Object> additionalProperties = new HashMap<String, Object>();
-
-
-    @JsonProperty("errorMessage")
-    public String getErrorMessage() {
-        return errorMessage;
-    }
-
-    @JsonProperty("template")
-    public void setErrorMessage(String errorMessage) {
-        this.errorMessage = errorMessage;
-    }
-
-    @JsonAnyGetter
-    public Map<String, Object> getAdditionalProperties() {
-        return this.additionalProperties;
-    }
-
-    @JsonAnySetter
-    public void setAdditionalProperty(String name, Object value) {
-        this.additionalProperties.put(name, value);
-    }
-
+  /**
+   * @return the focus field of the error.
+   */
+  Focus focus();
 
 }

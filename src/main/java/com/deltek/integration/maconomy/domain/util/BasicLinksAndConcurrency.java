@@ -10,13 +10,13 @@ public class BasicLinksAndConcurrency implements HasLinksAndConcurrencyHolder {
 	private final HasLinks hasLinks;
 	private final HasConcurrencyControl hasConcurrencyControl;
 
-	public BasicLinksAndConcurrency(HasLinks hasLinks, HasConcurrencyControl hasConcurrencyControl) {
+	public BasicLinksAndConcurrency(final HasLinks hasLinks, final HasConcurrencyControl hasConcurrencyControl) {
 		super();
 		this.hasLinks = hasLinks;
 		this.hasConcurrencyControl = hasConcurrencyControl;
 	}
 
-	public BasicLinksAndConcurrency(HasLinks hasLinks) {
+	public BasicLinksAndConcurrency(final HasLinks hasLinks) {
 		super();
 		this.hasLinks = hasLinks;
 		hasConcurrencyControl = new HasConcurrencyControl() {

@@ -1,10 +1,8 @@
-package com.deltek.integration.maconomy.domain;
+package com.deltek.integration.maconomy.domain.internal;
 
 import java.util.HashMap;
 import java.util.Map;
-
 import javax.annotation.Generated;
-
 import com.fasterxml.jackson.annotation.JsonAnyGetter;
 import com.fasterxml.jackson.annotation.JsonAnySetter;
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -15,34 +13,46 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @Generated("org.jsonschema2pojo")
 @JsonPropertyOrder({
-    "filter",
+    "panes",
+    "links"
 })
-public class FilterPanes<T> {
+public class FilterContainer<T> {
 
-    @JsonProperty("filter")
-    private FilterPane<T> filter;
-
+    @JsonProperty("panes")
+    private FilterPanes<T> panes;
+    @JsonProperty("links")
+    private LinksImpl links;
     @JsonIgnore
     private Map<String, Object> additionalProperties = new HashMap<String, Object>();
 
     /**
      * 
      * @return
-     *     The meta
+     *     The panes
      */
-    @JsonProperty("filter")
-    public FilterPane<T> getFilter() {
-        return filter;
+    @JsonProperty("panes")
+    public FilterPanes<T> getPanes() {
+        return panes;
     }
 
     /**
      * 
-     * @param meta
-     *     The meta
+     * @param panes
+     *     The panes
      */
-    @JsonProperty("filter")
-    public void setFilter(FilterPane<T> filter) {
-        this.filter = filter;
+    @JsonProperty("panes")
+    public void setPanes(FilterPanes<T> panes) {
+        this.panes = panes;
+    }
+
+    @JsonProperty("links")
+    public LinksImpl getLinks() {
+        return links;
+    }
+
+    @JsonProperty("links")
+    public void setLinks(LinksImpl links) {
+        this.links = links;
     }
 
     @JsonAnyGetter
