@@ -21,6 +21,7 @@ import org.glassfish.jersey.jackson.JacksonFeature;
 import org.glassfish.jersey.logging.LoggingFeature;
 import org.glassfish.jersey.message.GZipEncoder;
 
+import com.deltek.integration.maconomy.configuration.MaconomyServerConfiguration;
 import com.deltek.integration.maconomy.domain.CardTableContainer;
 import com.deltek.integration.maconomy.domain.Endpoint;
 import com.deltek.integration.maconomy.domain.Error;
@@ -50,6 +51,12 @@ public class MaconomyRestClient {
 		this.client = buildClientForCurrentUser(maconomyUser, maconomyPassword);
 	}
 
+	public MaconomyRestClient(MaconomyServerConfiguration serverConfiguration) {
+		this.apiBasePath = serverConfiguration.getUrl();
+		this.client = 
+				buildClientForCurrentUser(serverConfiguration.getMaconomyUser(), serverConfiguration.getMaconomyPassword());
+	}
+	
 	private final Client buildClientForCurrentUser(String maconomyUser, String maconomyPassword) {
 
 		HttpAuthenticationFeature authFeature = HttpAuthenticationFeature.basic(maconomyUser, maconomyPassword);

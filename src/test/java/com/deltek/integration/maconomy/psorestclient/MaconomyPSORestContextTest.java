@@ -6,11 +6,14 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import com.deltek.integration.maconomy.client.APIContainerHelper;
 import com.deltek.integration.maconomy.client.MaconomyRestClient;
 import com.deltek.integration.maconomy.client.MaconomyRestClientException;
+import com.deltek.integration.maconomy.configuration.MaconomyServerConfiguration;
 import com.deltek.integration.maconomy.domain.CardTableContainer;
 import com.deltek.integration.maconomy.domain.Endpoint;
 import com.deltek.integration.maconomy.domain.FilterContainer;
@@ -23,9 +26,12 @@ import com.deltek.integration.maconomy.psorestclient.domain.JobBudget;
 import com.deltek.integration.maconomy.psorestclient.domain.Journal;
 
 @RunWith(SpringJUnit4ClassRunner.class)
+@SpringBootTest
 public class MaconomyPSORestContextTest {
 
-	private static final String SERVICE_URL = "http://193.17.206.162:4111/containers/v1/x1demo";
+	@Autowired
+	private MaconomyServerConfiguration serverConfiguration;
+		
 	private MaconomyPSORestContext restClientContext;
 	
 	@Rule
@@ -33,7 +39,7 @@ public class MaconomyPSORestContextTest {
 	
 	@Before
 	public void setup() {
-		 MaconomyRestClient mrc = new MaconomyRestClient("Administrator", "123456", SERVICE_URL);
+		 MaconomyRestClient mrc = new MaconomyRestClient(serverConfiguration);
 		 restClientContext = new MaconomyPSORestContext(mrc);
 	}
 	
