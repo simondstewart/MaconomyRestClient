@@ -1,0 +1,16 @@
+package com.deltek.integration.maconomy.containers.v1;
+
+public interface Constants {
+
+	/**
+	 * Path for version 1 of the containers API.
+	 */
+	public static final String PATH = "/containers/v1";
+
+	public static final String MACONOMY_AUTHENTICATION = "Maconomy-Authentication";
+
+	public static final String MACONOMY_RECONNECT = "Maconomy-Reconnect";
+
+	public static final String X_RECONNECT = "X-Reconnect";
+
+}

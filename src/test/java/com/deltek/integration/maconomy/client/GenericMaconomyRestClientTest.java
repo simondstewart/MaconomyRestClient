@@ -12,7 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
-import com.deltek.integration.maconomy.configuration.MaconomyServerConfiguration;
+import com.deltek.integration.maconomy.configuration.Server;
 import com.deltek.integration.maconomy.domain.CardTableContainer;
 import com.deltek.integration.maconomy.domain.FilterContainer;
 import com.deltek.integration.maconomy.domain.FilterPanes;
@@ -26,7 +26,7 @@ import com.deltek.integration.maconomy.psorestclient.domain.Journal;
 public class GenericMaconomyRestClientTest {
 	
 	@Autowired
-	private MaconomyServerConfiguration serverConfiguration;
+	private Server serverConfiguration;
 	
 	@Rule
 	public ExpectedException expectedEx = ExpectedException.none();
@@ -42,15 +42,26 @@ public class GenericMaconomyRestClientTest {
 	public void notFoundError() {
 		expectedEx.expect(MaconomyRestClientException.class);
 		MaconomyRestClient notFoundMrc = 
-				new MaconomyRestClient("Administrator", "123456", serverConfiguration.getUrl().concat("/INVALID_ENDPOINT"));
+				new MaconomyRestClient("Administrator", "123456", serverConfiguration.getHost().concat("/INVALID_ENDPOINT"));
 		createTestContextHelper(notFoundMrc).init();
 	}
 
 	@Test
 	public void authError() {
 		expectedEx.expect(MaconomyRestClientException.class);
-		MaconomyRestClient badAuthMrc = new MaconomyRestClient("Administrator", "BadPassword", serverConfiguration.getUrl());
+		MaconomyRestClient badAuthMrc = new MaconomyRestClient("Administrator", "BadPassword", serverConfiguration.getHost());
 		createTestContextHelper(badAuthMrc).init();
+	}
+	
+	@Test
+	public void testContainersEndpoint() {
+//		mrc.getEndpoint(endpointPath)
+//		FilterContainer<JobBudget> budgetFilterResponse =
+//				mrc.getDataFromAction("data:filter", 
+//						mrc.getEndpoint("jobbudgets"), 
+//						new GenericType<FilterContainer<JobBudget>>(){});
+//		Assert.assertNotNull(budgetFilterResponse);
+//		Assert.assertTrue(budgetFilterResponse.getPanes() instanceof FilterPanes);
 	}
 	
 	@Test

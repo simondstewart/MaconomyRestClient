@@ -1,17 +1,17 @@
 package com.deltek.integration.maconomy;
 
-import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.junit4.SpringRunner;
+import org.junit.runners.Suite;
+import org.junit.runners.Suite.SuiteClasses;
 
-@RunWith(SpringRunner.class)
-@SpringBootTest
+@RunWith(value=Suite.class)
+@SuiteClasses(value = {
+    com.deltek.integration.maconomy.client.OfflineTests.class,
+	com.deltek.integration.maconomy.client.AuthenticationTest.class,
+	com.deltek.integration.maconomy.client.ContainerOverviewTest.class,
+	com.deltek.integration.maconomy.client.SingletonCardTableTest.class,
+	com.deltek.integration.maconomy.client.FilterTest.class,
+	com.deltek.integration.maconomy.client.CrudTest.class,
+})
 public class MaconomyRestClientApplicationTests {
-
-	@Test
-	public void contextLoads() {
-	}
-
-	
 }

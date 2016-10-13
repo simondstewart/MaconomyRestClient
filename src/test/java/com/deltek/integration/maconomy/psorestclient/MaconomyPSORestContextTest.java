@@ -13,7 +13,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import com.deltek.integration.maconomy.client.APIContainerHelper;
 import com.deltek.integration.maconomy.client.MaconomyRestClient;
 import com.deltek.integration.maconomy.client.MaconomyRestClientException;
-import com.deltek.integration.maconomy.configuration.MaconomyServerConfiguration;
+import com.deltek.integration.maconomy.configuration.Server;
 import com.deltek.integration.maconomy.domain.CardTableContainer;
 import com.deltek.integration.maconomy.domain.Endpoint;
 import com.deltek.integration.maconomy.domain.FilterContainer;
@@ -30,7 +30,7 @@ import com.deltek.integration.maconomy.psorestclient.domain.Journal;
 public class MaconomyPSORestContextTest {
 
 	@Autowired
-	private MaconomyServerConfiguration serverConfiguration;
+	private Server serverConfiguration;
 		
 	private MaconomyPSORestContext restClientContext;
 	
