@@ -17,7 +17,7 @@ public class LinkRelations {
      *
 	 * @return A "self" link relation
 	 */
-	public static <T extends ContextResource> LinkRelation<T> self(final Class<T> contextResource) {
+	public static <T extends ContextResource> LinkRelation<T, Void> self(final Class<T> contextResource) {
 		return new BaseLinkRelation<>("self", HttpMethod.GET, contextResource);
 	}
 
@@ -27,7 +27,7 @@ public class LinkRelations {
      *
 	 * @return A "specification" link relation
 	 */
-	public static LinkRelation<Specification> specification() {
+	public static LinkRelation<Specification, Void> specification() {
 		return new BaseLinkRelation<>("specification", HttpMethod.GET, Specification.class);
 	}
 
@@ -39,7 +39,7 @@ public class LinkRelations {
 	 *
 	 * @return A "data:filter" link relation
 	 */
-	public static LinkRelation<FilterData> dataFilter() {
+	public static LinkRelation<FilterData, Void> dataFilter() {
 		return new BaseLinkRelation<>("data:filter", HttpMethod.GET, FilterData.class);
 	}
 
@@ -54,7 +54,7 @@ public class LinkRelations {
      *
 	 * @return A "data:any-key" link relation
 	 */
-	public static LinkRelation<CardTableData> dataAnyKey() {
+	public static LinkRelation<CardTableData, Void> dataAnyKey() {
 		return new BaseLinkRelation<>("data:any-key", HttpMethod.GET, CardTableData.class);
 	}
 
@@ -69,8 +69,20 @@ public class LinkRelations {
      *
 	 * @return A "action:insert" link relation
 	 */
-	public static LinkRelation<CardTableRecord> insert() {
+	public static LinkRelation<CardTableRecord, Void> insert() {
 		return new BaseLinkRelation<>("action:insert", HttpMethod.POST, CardTableRecord.class);
+	}
+
+	/**
+     * Indicates a link that is used to perform the initialize state transition in the
+     * add variant. This works like the insert variant described previously, but in a table
+     * pane the new record is added at the end of the table. Client programs must use
+     * the POST method with no request entity to perform this state transition.
+     *
+	 * @return A "action:add" link relation
+	 */
+	public static LinkRelation<CardTableRecord, Void> add() {
+		return new BaseLinkRelation<>("action:add", HttpMethod.POST, CardTableRecord.class);
 	}
 
 	/**
@@ -82,7 +94,17 @@ public class LinkRelations {
      *
 	 * @return A "action:create" link relation
 	 */
-	public static LinkRelation<CardTableData> create() {
+	public static LinkRelation<CardTableData, CardTableRecord> create() {
 		return new BaseLinkRelation<>("action:create", HttpMethod.POST, CardTableData.class);
+	}
+
+	/**
+	 * Convenience link relation to represent simple HTPP GET requests
+	 *
+	 * @param targetType The type of the representation to GET
+	 * @return A convenience link relation
+	 */
+	public static <TargetType> LinkRelation<TargetType, Void> get(final Class<TargetType> targetType) {
+		return new BaseLinkRelation<>("get", HttpMethod.GET, targetType);
 	}
 }

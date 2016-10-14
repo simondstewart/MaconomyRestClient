@@ -1,6 +1,8 @@
 package com.deltek.integration.maconomy.client;
 
 import static com.deltek.integration.maconomy.client.ServerException.serverException;
+import static com.deltek.integration.maconomy.containers.v1.Constants.MACONOMY_CONCURRENCY_CONTROL;
+import static com.deltek.integration.maconomy.relations.LinkRelations.get;
 import static javax.ws.rs.client.Entity.json;
 
 import java.net.URI;
@@ -23,12 +25,13 @@ import org.glassfish.jersey.logging.LoggingFeature;
 import org.glassfish.jersey.message.GZipEncoder;
 import org.springframework.util.Base64Utils;
 
+import com.deltek.integration.maconomy.containers.v1.ConcurrencyControl;
 import com.deltek.integration.maconomy.containers.v1.Constants;
 import com.deltek.integration.maconomy.containers.v1.Container;
 import com.deltek.integration.maconomy.containers.v1.Containers;
 import com.deltek.integration.maconomy.containers.v1.Link;
+import com.deltek.integration.maconomy.containers.v1.Meta;
 import com.deltek.integration.maconomy.relations.ContextResource;
-import com.deltek.integration.maconomy.relations.HttpMethod;
 import com.deltek.integration.maconomy.relations.LinkRelation;
 
 /**
@@ -62,7 +65,8 @@ public final class MaconomyClient {
 	 * @return The Containers endpoint.
 	 */
 	public Containers containers() {
-		return executeRequest(baseWebTarget(), HttpMethod.GET, Containers.class, null);
+		final Invocation.Builder request = baseWebTarget().request(MediaType.APPLICATION_JSON);
+		return executeRequest(request, get(Containers.class), null);
 	}
 
 	/**
@@ -72,8 +76,9 @@ public final class MaconomyClient {
 	 * @return A representation of the container overview
 	 */
 	public Container container(final String containerName) {
-		final WebTarget webTarget = baseWebTarget().path(containerName);
-		return executeRequest(webTarget, HttpMethod.GET, Container.class, null);
+		final Invocation.Builder request = baseWebTarget().path(containerName)
+				                                          .request(MediaType.APPLICATION_JSON);
+		return executeRequest(request, get(Container.class), null);
 	}
 
 	/**
@@ -88,35 +93,42 @@ public final class MaconomyClient {
 	}
 
 	public <TargetResource> TargetResource transition(final ContextResource contextResource,
-			                                          final LinkRelation<TargetResource> linkRelation) {
-		return transition(contextResource, linkRelation, null);
+			                                          final LinkRelation<TargetResource, Void> linkRelation) {
+		final Invocation.Builder request = invocationBuilder(contextResource, linkRelation);
+		return executeRequest(request, linkRelation, null);
 	}
 
-	public <TargetResource, RequestEntity> TargetResource transition(final ContextResource contextResource,
-				                                                     final LinkRelation<TargetResource> linkRelation,
-                                                                     final RequestEntity requestEntity) {
+	public <TargetResource, EntityType> TargetResource transition(final Meta<? extends ConcurrencyControl> contextResource,
+			                                          final LinkRelation<TargetResource, EntityType> linkRelation,
+			                                          final EntityType requestEntity) {
+		final Invocation.Builder request = invocationBuilder(contextResource, linkRelation);
+		final String concurrencyControl = contextResource.getMeta().getConcurrencyControl();
+		if (concurrencyControl != null && !concurrencyControl.isEmpty()) {
+			request.header(MACONOMY_CONCURRENCY_CONTROL, concurrencyControl);
+		}
+		return executeRequest(request, linkRelation, requestEntity);
+	}
+
+	private Invocation.Builder invocationBuilder(final ContextResource contextResource,
+                                                 final LinkRelation<?, ?> linkRelation) {
 		final Link link = contextResource.getLinks()
                                          .get(linkRelation)
                                          .orElseThrow(() -> new ClientException(linkRelation.getName()));
-		final WebTarget webTarget = client.target(link.getHref());
-		final HttpMethod httpMethod = linkRelation.getMethod();
-		final Class<TargetResource> targetResource = linkRelation.getTargetResource();
-		return executeRequest(webTarget, httpMethod, targetResource, requestEntity);
+        final WebTarget webTarget = client.target(link.getHref());
+		return webTarget.request(MediaType.APPLICATION_JSON);
 	}
 
 	// TODO: (ANH) clean up this stuff
-	private <EntityType, RequestEntity> EntityType executeRequest(final WebTarget webTarget,
-			                                                      final HttpMethod method,
-									 	                          final Class<EntityType> clazz,
-									 	                    	  final RequestEntity requestEntity) {
-		final Invocation.Builder request = webTarget.request(MediaType.APPLICATION_JSON);
+	private <TargetResource, EntityType> TargetResource executeRequest(final Invocation.Builder request,
+			                                       final LinkRelation<TargetResource, EntityType> linkRelation,
+									 	           final EntityType requestEntity) {
 		addAuthenticationHeaders(request);
 
 		final Response response;
 		if (requestEntity == null) {
-			response = request.method(method.name());
+			response = request.method(linkRelation.getMethod().name());
 		} else {
-			response = request.method(method.name(), json(requestEntity));
+			response = request.method(linkRelation.getMethod().name(), json(requestEntity));
 		}
 
 		check(response);
@@ -125,6 +137,7 @@ public final class MaconomyClient {
 		reconnectToken = response.getHeaderString(Constants.MACONOMY_RECONNECT);
 
 		LOG.info(response);
+		final Class<TargetResource> clazz = linkRelation.getTargetResource();
 		return response.readEntity(clazz);
 	}
 

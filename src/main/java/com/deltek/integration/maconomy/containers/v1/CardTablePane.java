@@ -3,11 +3,12 @@ package com.deltek.integration.maconomy.containers.v1;
 import java.util.List;
 
 
-public class CardTablePane extends Pane {
+public class CardTablePane extends Pane implements Meta<CardTablePane.Meta> {
 
 	private CardTablePane.Meta meta;
 	private List<CardTableRecord> records;
 
+	@Override
 	public CardTablePane.Meta getMeta() {
 		return meta;
 	}
@@ -67,7 +68,7 @@ public class CardTablePane extends Pane {
 		return "CardTablePane [meta=" + meta + ", records=" + records + "]";
 	}
 
-	public static final class Meta {
+	public static final class Meta implements ConcurrencyControl {
 
 		private String paneName;
 		private String concurrencyControl;
@@ -82,6 +83,7 @@ public class CardTablePane extends Pane {
 			this.paneName = paneName;
 		}
 
+		@Override
 		public String getConcurrencyControl() {
 			return concurrencyControl;
 		}

@@ -1,6 +1,7 @@
 package com.deltek.integration.maconomy.client;
 
 import static com.deltek.integration.maconomy.Constants.NOTES;
+import static com.deltek.integration.maconomy.relations.LinkRelations.add;
 import static com.deltek.integration.maconomy.relations.LinkRelations.create;
 import static com.deltek.integration.maconomy.relations.LinkRelations.dataAnyKey;
 import static com.deltek.integration.maconomy.relations.LinkRelations.dataFilter;
@@ -9,6 +10,7 @@ import static com.deltek.integration.maconomy.relations.LinkRelations.self;
 import static java.time.Instant.now;
 import static org.hamcrest.Matchers.startsWith;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
@@ -37,8 +39,7 @@ public class CrudTest {
 	@Autowired
 	private Server conf;
 	private MaconomyClient maconomyClient;
-	private FilterData notesFilter;
-	private CardTableData notesCardTable;
+	private Container notesContainer;
 
 	@Before
 	public void setup() {
@@ -47,14 +48,14 @@ public class CrudTest {
 			                  .username(conf.getUsername())
 			                  .password(conf.getPassword())
 			                  .build();
-		final Container notesContainer = maconomyClient.container(NOTES);
-		notesFilter = maconomyClient.transition(notesContainer, dataFilter());
-		notesCardTable = maconomyClient.transition(notesContainer, dataAnyKey());
+		notesContainer = maconomyClient.container(NOTES);
 	}
 
 	@Test
-	public void testInsertCreateOnCard() {
+	public void testInsertAndCreateOnCard() {
 		// load filter to store before-state
+		final FilterData notesFilter = maconomyClient.transition(notesContainer, dataFilter());
+		final CardTableData notesCardTable = maconomyClient.transition(notesContainer, dataAnyKey());
 		final int rowCountBefore = notesFilter.getPanes().getFilter().getMeta().getRowCount();
 
 		final CardTablePane card = notesCardTable.getPanes().getCard();
@@ -71,6 +72,27 @@ public class CrudTest {
 		// load filter to store see after-stats
 		final FilterData updatedFilter = maconomyClient.transition(notesFilter, self(FilterData.class));
 		final int rowCountAfter = updatedFilter.getPanes().getFilter().getMeta().getRowCount();
+		assertEquals(rowCountBefore + 1, rowCountAfter);
+	}
+
+	@Test
+	public void testAddAndCreateOnTable() {
+		// load filter to store before-state
+		final CardTableData notesCardTable = maconomyClient.transition(notesContainer, dataAnyKey());
+		final int rowCountBefore = notesCardTable.getPanes().getTable().getMeta().getRowCount();
+
+		final CardTablePane table = notesCardTable.getPanes().getTable();
+		// run action:add to receive initialization data, TODO: (ANH) it would be nice to avoid the null-arg here
+		final CardTableRecord initData = maconomyClient.transition(table, add(), null);
+		assertTrue(initData.getLinks().get(create()).isPresent());
+		final int originalLineNumber = Integer.parseInt(initData.getData().get("linenumber").toString());
+		assertSame(originalLineNumber, 0);
+
+		// run action:create to receive initialization data
+		final CardTableData created = maconomyClient.transition(initData, create(), initData);
+
+		// load filter to store see after-stats
+		final int rowCountAfter = created.getPanes().getTable().getMeta().getRowCount();
 		assertEquals(rowCountBefore + 1, rowCountAfter);
 	}
 

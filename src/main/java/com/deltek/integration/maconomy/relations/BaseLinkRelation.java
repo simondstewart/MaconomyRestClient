@@ -1,6 +1,6 @@
 package com.deltek.integration.maconomy.relations;
 
-final class BaseLinkRelation<TargetResource> implements LinkRelation<TargetResource> {
+final class BaseLinkRelation<TargetResource, EntityType> implements LinkRelation<TargetResource, EntityType> {
 
 	private final String name;
 	private final HttpMethod method;

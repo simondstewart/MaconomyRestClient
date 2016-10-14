@@ -3,10 +3,11 @@ package com.deltek.integration.maconomy.containers.v1;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 @JsonPropertyOrder({ "meta", "data", "links" })
-public class CardTableRecord extends Record {
+public class CardTableRecord extends Record implements Meta<CardTableRecord.Meta> {
 
 	private CardTableRecord.Meta meta;
 
+	@Override
 	public CardTableRecord.Meta getMeta() {
 		return meta;
 	}
@@ -15,7 +16,7 @@ public class CardTableRecord extends Record {
 		this.meta = meta;
 	}
 
-	public static final class Meta {
+	public static final class Meta implements ConcurrencyControl {
 
 		private int rowNumber;
 		private String concurrencyControl;
@@ -28,6 +29,7 @@ public class CardTableRecord extends Record {
 			this.rowNumber = rowNumber;
 		}
 
+		@Override
 		public String getConcurrencyControl() {
 			return concurrencyControl;
 		}

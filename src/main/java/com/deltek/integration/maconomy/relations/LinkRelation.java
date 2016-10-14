@@ -4,8 +4,9 @@ package com.deltek.integration.maconomy.relations;
  * Representation of a transition between a context resource and a target resource.
  *
  * @param <TargetResource> A type corresponding to a REST API response.
+ * @param <EntityType> A type representing the entity or payload type..
  */
-public interface LinkRelation<TargetResource> {
+public interface LinkRelation<TargetResource, EntityType> {
 
 	/**
 	 * The name used to identify the link relation.
