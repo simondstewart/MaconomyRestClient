@@ -17,8 +17,8 @@ public class LinkRelations {
      *
 	 * @return A "self" link relation
 	 */
-	public static <T extends ContextResource> LinkRelation<T, Void> self(final Class<T> contextResource) {
-		return new BaseLinkRelation<>("self", HttpMethod.GET, contextResource);
+	public static <T extends ContextResource> BasicLinkRelation<T> self(final Class<T> contextResource) {
+		return new BaseLinkRelation.BasicLinkRelationImpl<>("self", HttpMethod.GET, contextResource);
 	}
 
 	/**
@@ -27,8 +27,8 @@ public class LinkRelations {
      *
 	 * @return A "specification" link relation
 	 */
-	public static LinkRelation<Specification, Void> specification() {
-		return new BaseLinkRelation<>("specification", HttpMethod.GET, Specification.class);
+	public static BasicLinkRelation<Specification> specification() {
+		return new BaseLinkRelation.BasicLinkRelationImpl<>("specification", HttpMethod.GET, Specification.class);
 	}
 
 	/**
@@ -39,8 +39,8 @@ public class LinkRelations {
 	 *
 	 * @return A "data:filter" link relation
 	 */
-	public static LinkRelation<FilterData, Void> dataFilter() {
-		return new BaseLinkRelation<>("data:filter", HttpMethod.GET, FilterData.class);
+	public static BasicLinkRelation<FilterData> dataFilter() {
+		return new BaseLinkRelation.BasicLinkRelationImpl<>("data:filter", HttpMethod.GET, FilterData.class);
 	}
 
 	/**
@@ -54,8 +54,8 @@ public class LinkRelations {
      *
 	 * @return A "data:any-key" link relation
 	 */
-	public static LinkRelation<CardTableData, Void> dataAnyKey() {
-		return new BaseLinkRelation<>("data:any-key", HttpMethod.GET, CardTableData.class);
+	public static BasicLinkRelation<CardTableData> dataAnyKey() {
+		return new BaseLinkRelation.BasicLinkRelationImpl<>("data:any-key", HttpMethod.GET, CardTableData.class);
 	}
 
 	/**
@@ -69,8 +69,8 @@ public class LinkRelations {
      *
 	 * @return A "action:insert" link relation
 	 */
-	public static LinkRelation<CardTableRecord, Void> insert() {
-		return new BaseLinkRelation<>("action:insert", HttpMethod.POST, CardTableRecord.class);
+	public static BasicLinkRelation<CardTableRecord> insert() {
+		return new BaseLinkRelation.BasicLinkRelationImpl<>("action:insert", HttpMethod.POST, CardTableRecord.class);
 	}
 
 	/**
@@ -81,8 +81,10 @@ public class LinkRelations {
      *
 	 * @return A "action:add" link relation
 	 */
-	public static LinkRelation<CardTableRecord, Void> add() {
-		return new BaseLinkRelation<>("action:add", HttpMethod.POST, CardTableRecord.class);
+	public static EntityLinkRelation<Void, CardTableRecord> add() {
+		return new BaseLinkRelation.EntityLinkRelationImpl<Void, CardTableRecord>("action:add",
+				                                                                  HttpMethod.POST,
+				                                                                  CardTableRecord.class);
 	}
 
 	/**
@@ -94,17 +96,34 @@ public class LinkRelations {
      *
 	 * @return A "action:create" link relation
 	 */
-	public static LinkRelation<CardTableData, CardTableRecord> create() {
-		return new BaseLinkRelation<>("action:create", HttpMethod.POST, CardTableData.class);
+	public static EntityLinkRelation<CardTableRecord, CardTableData> create() {
+		return new BaseLinkRelation.EntityLinkRelationImpl<CardTableRecord, CardTableData>("action:create",
+				                                                                   HttpMethod.POST,
+				                                                                   CardTableData.class);
 	}
 
 	/**
-	 * Convenience link relation to represent simple HTPP GET requests
+     * Indicates a link that is used to perform the update state transition. This
+     * state transition changes the values of one or more fields in a record. Client programs
+     * must use the POST method with a record structure as the request entity
+     *
+	 * @return A "action:update" link relation
+	 */
+	public static EntityLinkRelation<CardTableRecord, CardTableData> update() {
+		return new BaseLinkRelation.EntityLinkRelationImpl<CardTableRecord, CardTableData>("action:update",
+				                                                                   HttpMethod.POST,
+				                                                                   CardTableData.class);
+	}
+
+	/**
+	 * Indicates a link that is used to perform the read state transition. This
+     * obtains a fresh copy of the current resource state. This maps naturally to the
+     * HTTP GET method.
 	 *
 	 * @param targetType The type of the representation to GET
-	 * @return A convenience link relation
+	 * @return A "action:read" link relation
 	 */
-	public static <TargetType> LinkRelation<TargetType, Void> get(final Class<TargetType> targetType) {
-		return new BaseLinkRelation<>("get", HttpMethod.GET, targetType);
+	public static <TargetType> BasicLinkRelation<TargetType> read(final Class<TargetType> targetType) {
+		return new BaseLinkRelation.BasicLinkRelationImpl<>("action:read", HttpMethod.GET, targetType);
 	}
 }

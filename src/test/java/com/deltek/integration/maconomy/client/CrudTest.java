@@ -7,12 +7,15 @@ import static com.deltek.integration.maconomy.relations.LinkRelations.dataAnyKey
 import static com.deltek.integration.maconomy.relations.LinkRelations.dataFilter;
 import static com.deltek.integration.maconomy.relations.LinkRelations.insert;
 import static com.deltek.integration.maconomy.relations.LinkRelations.self;
+import static com.deltek.integration.maconomy.relations.LinkRelations.update;
 import static java.time.Instant.now;
 import static org.hamcrest.Matchers.startsWith;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
+
+import java.util.List;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -96,4 +99,14 @@ public class CrudTest {
 		assertEquals(rowCountBefore + 1, rowCountAfter);
 	}
 
+	@Test
+	public void testUpdateOnCard() {
+		final CardTableData notesCardTable = maconomyClient.transition(notesContainer, dataAnyKey());
+		final List<CardTableRecord> records = notesCardTable.getPanes().getCard().getRecords();
+		assertEquals(1, records.size());
+		final CardTableRecord cardRecord = records.get(0);
+		final String oldDescription = cardRecord.getData().get("description").toString();
+		cardRecord.getData().put("description", oldDescription + "-rev");
+		maconomyClient.transition(cardRecord, update(), cardRecord);
+	}
 }

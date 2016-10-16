@@ -2,7 +2,7 @@ package com.deltek.integration.maconomy.client;
 
 import static com.deltek.integration.maconomy.client.ServerException.serverException;
 import static com.deltek.integration.maconomy.containers.v1.Constants.MACONOMY_CONCURRENCY_CONTROL;
-import static com.deltek.integration.maconomy.relations.LinkRelations.get;
+import static com.deltek.integration.maconomy.relations.LinkRelations.read;
 import static javax.ws.rs.client.Entity.json;
 
 import java.net.URI;
@@ -31,7 +31,9 @@ import com.deltek.integration.maconomy.containers.v1.Container;
 import com.deltek.integration.maconomy.containers.v1.Containers;
 import com.deltek.integration.maconomy.containers.v1.Link;
 import com.deltek.integration.maconomy.containers.v1.Meta;
+import com.deltek.integration.maconomy.relations.BasicLinkRelation;
 import com.deltek.integration.maconomy.relations.ContextResource;
+import com.deltek.integration.maconomy.relations.EntityLinkRelation;
 import com.deltek.integration.maconomy.relations.LinkRelation;
 
 /**
@@ -66,7 +68,7 @@ public final class MaconomyClient {
 	 */
 	public Containers containers() {
 		final Invocation.Builder request = baseWebTarget().request(MediaType.APPLICATION_JSON);
-		return executeRequest(request, get(Containers.class), null);
+		return executeRequest(request, read(Containers.class), null);
 	}
 
 	/**
@@ -78,7 +80,7 @@ public final class MaconomyClient {
 	public Container container(final String containerName) {
 		final Invocation.Builder request = baseWebTarget().path(containerName)
 				                                          .request(MediaType.APPLICATION_JSON);
-		return executeRequest(request, get(Container.class), null);
+		return executeRequest(request, read(Container.class), null);
 	}
 
 	/**
@@ -92,15 +94,30 @@ public final class MaconomyClient {
 		return container(namespace + ":" + containerName);
 	}
 
+	/**
+	 * Invokes a transition without supplying an entity.
+	 *
+	 * @param contextResource
+	 * @param linkRelation
+	 * @return
+	 */
 	public <TargetResource> TargetResource transition(final ContextResource contextResource,
-			                                          final LinkRelation<TargetResource, Void> linkRelation) {
+			                                          final BasicLinkRelation<TargetResource> linkRelation) {
 		final Invocation.Builder request = invocationBuilder(contextResource, linkRelation);
 		return executeRequest(request, linkRelation, null);
 	}
 
-	public <TargetResource, EntityType> TargetResource transition(final Meta<? extends ConcurrencyControl> contextResource,
-			                                          final LinkRelation<TargetResource, EntityType> linkRelation,
-			                                          final EntityType requestEntity) {
+	/**
+	 * Invokes a transition that requires an entity.
+	 *
+	 * @param contextResource
+	 * @param linkRelation
+	 * @param requestEntity
+	 * @return
+	 */
+	public <EntityType, TargetResource> TargetResource transition(final Meta<? extends ConcurrencyControl> contextResource,
+			                                                      final EntityLinkRelation<EntityType, TargetResource> linkRelation,
+			                                                      final EntityType requestEntity) {
 		final Invocation.Builder request = invocationBuilder(contextResource, linkRelation);
 		final String concurrencyControl = contextResource.getMeta().getConcurrencyControl();
 		if (concurrencyControl != null && !concurrencyControl.isEmpty()) {
@@ -110,7 +127,7 @@ public final class MaconomyClient {
 	}
 
 	private Invocation.Builder invocationBuilder(final ContextResource contextResource,
-                                                 final LinkRelation<?, ?> linkRelation) {
+                                                 final LinkRelation<?> linkRelation) {
 		final Link link = contextResource.getLinks()
                                          .get(linkRelation)
                                          .orElseThrow(() -> new ClientException(linkRelation.getName()));
@@ -120,7 +137,7 @@ public final class MaconomyClient {
 
 	// TODO: (ANH) clean up this stuff
 	private <TargetResource, EntityType> TargetResource executeRequest(final Invocation.Builder request,
-			                                       final LinkRelation<TargetResource, EntityType> linkRelation,
+			                                       final LinkRelation<TargetResource> linkRelation,
 									 	           final EntityType requestEntity) {
 		addAuthenticationHeaders(request);
 

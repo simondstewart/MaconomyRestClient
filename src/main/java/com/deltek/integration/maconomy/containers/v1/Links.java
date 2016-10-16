@@ -21,7 +21,7 @@ public class Links {
      * @param linkRelation The link relation to lookup
      * @return Either a link or {@code Optional#empty()}
      */
-    public Optional<Link> get(final LinkRelation<?,?> linkRelation) {
+    public Optional<Link> get(final LinkRelation<?> linkRelation) {
     	final String name = linkRelation.getName();
     	if (links.containsKey(name)) {
         	return Optional.of(links.get(name));
