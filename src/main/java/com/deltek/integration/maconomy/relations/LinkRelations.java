@@ -22,6 +22,18 @@ public class LinkRelations {
 	}
 
 	/**
+	 * Indicates a link that is used to perform the read state transition. This
+	 * obtains a fresh copy of the current resource state. This maps naturally to the
+	 * HTTP GET method.
+	 *
+	 * @param targetType The type of the representation to GET
+	 * @return A "action:read" link relation
+	 */
+	public static <TargetType> BasicLinkRelation<TargetType> read(final Class<TargetType> targetType) {
+		return new BaseLinkRelation.BasicLinkRelationImpl<>("action:read", HttpMethod.GET, targetType);
+	}
+
+	/**
 	 * Indicates a reference to the specification resource for the context resource
      * (a container).
      *
@@ -116,14 +128,17 @@ public class LinkRelations {
 	}
 
 	/**
-	 * Indicates a link that is used to perform the read state transition. This
-     * obtains a fresh copy of the current resource state. This maps naturally to the
-     * HTTP GET method.
-	 *
-	 * @param targetType The type of the representation to GET
-	 * @return A "action:read" link relation
+     * Indicates a link that is used to perform the delete state transition. This
+     * state transition deletes a record. In a card pane, for example, in the ExpenseSheets
+     * container, this deletes the expense sheet including any expense sheet lines. In a
+     * table pane this deletes a row in the table, such as an expense sheet line. Client
+     * programs must use the HTTP DELETE method.
+     *
+	 * @return A "action:delete" link relation
 	 */
-	public static <TargetType> BasicLinkRelation<TargetType> read(final Class<TargetType> targetType) {
-		return new BaseLinkRelation.BasicLinkRelationImpl<>("action:read", HttpMethod.GET, targetType);
+	public static EntityLinkRelation<Void, CardTableData> delete() {
+		return new BaseLinkRelation.EntityLinkRelationImpl<Void, CardTableData>("action:delete",
+				                                                                HttpMethod.DELETE,
+				                                                                CardTableData.class);
 	}
 }

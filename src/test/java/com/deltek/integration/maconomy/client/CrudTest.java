@@ -5,6 +5,7 @@ import static com.deltek.integration.maconomy.relations.LinkRelations.add;
 import static com.deltek.integration.maconomy.relations.LinkRelations.create;
 import static com.deltek.integration.maconomy.relations.LinkRelations.dataAnyKey;
 import static com.deltek.integration.maconomy.relations.LinkRelations.dataFilter;
+import static com.deltek.integration.maconomy.relations.LinkRelations.delete;
 import static com.deltek.integration.maconomy.relations.LinkRelations.insert;
 import static com.deltek.integration.maconomy.relations.LinkRelations.self;
 import static com.deltek.integration.maconomy.relations.LinkRelations.update;
@@ -55,7 +56,7 @@ public class CrudTest {
 	}
 
 	@Test
-	public void testInsertAndCreateOnCard() {
+	public void testInsertAndCreateCardRecord() {
 		// load filter to store before-state
 		final FilterData notesFilter = maconomyClient.transition(notesContainer, dataFilter());
 		final CardTableData notesCardTable = maconomyClient.transition(notesContainer, dataAnyKey());
@@ -79,10 +80,10 @@ public class CrudTest {
 	}
 
 	@Test
-	public void testAddAndCreateOnTable() {
+	public void testAddAndCreateAndDeleteTableRecord() {
 		// load filter to store before-state
 		final CardTableData notesCardTable = maconomyClient.transition(notesContainer, dataAnyKey());
-		final int rowCountBefore = notesCardTable.getPanes().getTable().getMeta().getRowCount();
+		final int rowCountBeforeCreate = notesCardTable.getPanes().getTable().getMeta().getRowCount();
 
 		final CardTablePane table = notesCardTable.getPanes().getTable();
 		// run action:add to receive initialization data, TODO: (ANH) it would be nice to avoid the null-arg here
@@ -92,11 +93,19 @@ public class CrudTest {
 		assertSame(originalLineNumber, 0);
 
 		// run action:create to receive initialization data
-		final CardTableData created = maconomyClient.transition(initData, create(), initData);
+		final CardTableData afterCreate = maconomyClient.transition(initData, create(), initData);
 
 		// load filter to store see after-stats
-		final int rowCountAfter = created.getPanes().getTable().getMeta().getRowCount();
-		assertEquals(rowCountBefore + 1, rowCountAfter);
+		final int rowCountAfterCreate = afterCreate.getPanes().getTable().getMeta().getRowCount();
+		assertEquals(rowCountBeforeCreate + 1, rowCountAfterCreate);
+
+		final List<CardTableRecord> records = afterCreate.getPanes().getTable().getRecords();
+		final CardTableRecord cardTableRecord = records.get(records.size() - 1);
+		final CardTableData afterDelete = maconomyClient.transition(cardTableRecord, delete(), null);
+
+		// load filter to store see after-stats
+		final int rowCountAfterDelete = afterDelete.getPanes().getTable().getMeta().getRowCount();
+		assertEquals(rowCountBeforeCreate, rowCountAfterDelete);
 	}
 
 	@Test
