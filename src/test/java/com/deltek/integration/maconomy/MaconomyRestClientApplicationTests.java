@@ -12,6 +12,7 @@ import org.junit.runners.Suite.SuiteClasses;
 	com.deltek.integration.maconomy.client.SingletonCardTableTest.class,
 	com.deltek.integration.maconomy.client.FilterTest.class,
 	com.deltek.integration.maconomy.client.CrudTest.class,
+	com.deltek.integration.maconomy.custom.CustomTest.class,
 })
 public class MaconomyRestClientApplicationTests {
 }

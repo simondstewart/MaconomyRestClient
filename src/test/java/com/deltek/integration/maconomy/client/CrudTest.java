@@ -118,4 +118,5 @@ public class CrudTest {
 		cardRecord.getData().put("description", oldDescription + "-rev");
 		maconomyClient.transition(cardRecord, update(cardRecord));
 	}
+
 }
