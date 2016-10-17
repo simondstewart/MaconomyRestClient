@@ -32,8 +32,19 @@ abstract class BaseLinkRelation<TargetResource> implements LinkRelation<TargetRe
 	public static final class EntityLinkRelationImpl<EntityType, TargetResource> extends BaseLinkRelation<TargetResource>
 	                                                                             implements EntityLinkRelation<EntityType, TargetResource> {
 
-		EntityLinkRelationImpl(final String name, final HttpMethod method, final Class<TargetResource> targetResource) {
+		private final EntityType entity;
+
+		EntityLinkRelationImpl(final String name,
+				               final HttpMethod method,
+				               final Class<TargetResource> targetResource,
+				               final EntityType entity) {
 			super(name, method, targetResource);
+			this.entity = entity;
+		}
+
+		@Override
+		public EntityType getEntity() {
+			return entity;
 		}
 
 	}

@@ -31,10 +31,10 @@ import com.deltek.integration.maconomy.containers.v1.Container;
 import com.deltek.integration.maconomy.containers.v1.Containers;
 import com.deltek.integration.maconomy.containers.v1.Link;
 import com.deltek.integration.maconomy.containers.v1.Meta;
-import com.deltek.integration.maconomy.relations.SafeLinkRelation;
 import com.deltek.integration.maconomy.relations.ContextResource;
 import com.deltek.integration.maconomy.relations.EntityLinkRelation;
 import com.deltek.integration.maconomy.relations.LinkRelation;
+import com.deltek.integration.maconomy.relations.SafeLinkRelation;
 
 /**
  * Primary entry point for the Maconomy REST API
@@ -116,14 +116,13 @@ public final class MaconomyClient {
 	 * @return
 	 */
 	public <EntityType, TargetResource> TargetResource transition(final Meta<? extends ConcurrencyControl> contextResource,
-			                                                      final EntityLinkRelation<EntityType, TargetResource> linkRelation,
-			                                                      final EntityType requestEntity) {
+			                                                      final EntityLinkRelation<EntityType, TargetResource> linkRelation) {
 		final Invocation.Builder request = invocationBuilder(contextResource, linkRelation);
 		final String concurrencyControl = contextResource.getMeta().getConcurrencyControl();
 		if (concurrencyControl != null && !concurrencyControl.isEmpty()) {
 			request.header(MACONOMY_CONCURRENCY_CONTROL, concurrencyControl);
 		}
-		return executeRequest(request, linkRelation, requestEntity);
+		return executeRequest(request, linkRelation, linkRelation.getEntity());
 	}
 
 	private Invocation.Builder invocationBuilder(final ContextResource contextResource,

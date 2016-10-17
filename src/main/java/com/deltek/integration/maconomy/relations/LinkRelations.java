@@ -96,7 +96,8 @@ public class LinkRelations {
 	public static EntityLinkRelation<Void, CardTableRecord> add() {
 		return new BaseLinkRelation.EntityLinkRelationImpl<Void, CardTableRecord>("action:add",
 				                                                                  HttpMethod.POST,
-				                                                                  CardTableRecord.class);
+				                                                                  CardTableRecord.class,
+				                                                                  null);
 	}
 
 	/**
@@ -108,10 +109,11 @@ public class LinkRelations {
      *
 	 * @return A "action:create" link relation
 	 */
-	public static EntityLinkRelation<CardTableRecord, CardTableData> create() {
+	public static EntityLinkRelation<CardTableRecord, CardTableData> create(final CardTableRecord cardTableRecord) {
 		return new BaseLinkRelation.EntityLinkRelationImpl<CardTableRecord, CardTableData>("action:create",
 				                                                                   HttpMethod.POST,
-				                                                                   CardTableData.class);
+				                                                                   CardTableData.class,
+				                                                                   cardTableRecord);
 	}
 
 	/**
@@ -121,10 +123,11 @@ public class LinkRelations {
      *
 	 * @return A "action:update" link relation
 	 */
-	public static EntityLinkRelation<CardTableRecord, CardTableData> update() {
+	public static EntityLinkRelation<CardTableRecord, CardTableData> update(final CardTableRecord cardTableRecord) {
 		return new BaseLinkRelation.EntityLinkRelationImpl<CardTableRecord, CardTableData>("action:update",
 				                                                                   HttpMethod.POST,
-				                                                                   CardTableData.class);
+				                                                                   CardTableData.class,
+				                                                                   cardTableRecord);
 	}
 
 	/**
@@ -139,6 +142,7 @@ public class LinkRelations {
 	public static EntityLinkRelation<Void, CardTableData> delete() {
 		return new BaseLinkRelation.EntityLinkRelationImpl<Void, CardTableData>("action:delete",
 				                                                                HttpMethod.DELETE,
-				                                                                CardTableData.class);
+				                                                                CardTableData.class,
+				                                                                null);
 	}
 }

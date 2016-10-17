@@ -65,13 +65,13 @@ public class CrudTest {
 		final CardTablePane card = notesCardTable.getPanes().getCard();
 		// run action:insert to receive initialization data
 		final CardTableRecord initData = maconomyClient.transition(card, insert());
-		assertTrue(initData.getLinks().get(create()).isPresent());
+		assertTrue(initData.getLinks().get(create(initData)).isPresent());
 		assertThat(initData.getData().get("instancekey").toString(), startsWith("NoteHeader"));
 
 		// run action:create to receive initialization data
 		final String noteNumber = "Note_" + now().getEpochSecond();
 		initData.getData().put("notenumber", noteNumber);
-		/*final CardTableData created = */ maconomyClient.transition(initData, create(), initData);
+		/*final CardTableData created = */ maconomyClient.transition(initData, create(initData));
 
 		// load filter to store see after-stats
 		final FilterData updatedFilter = maconomyClient.transition(notesFilter, self(FilterData.class));
@@ -87,13 +87,13 @@ public class CrudTest {
 
 		final CardTablePane table = notesCardTable.getPanes().getTable();
 		// run action:add to receive initialization data, TODO: (ANH) it would be nice to avoid the null-arg here
-		final CardTableRecord initData = maconomyClient.transition(table, add(), null);
-		assertTrue(initData.getLinks().get(create()).isPresent());
+		final CardTableRecord initData = maconomyClient.transition(table, add());
+		assertTrue(initData.getLinks().get(create(initData)).isPresent());
 		final int originalLineNumber = Integer.parseInt(initData.getData().get("linenumber").toString());
 		assertSame(originalLineNumber, 0);
 
 		// run action:create to receive initialization data
-		final CardTableData afterCreate = maconomyClient.transition(initData, create(), initData);
+		final CardTableData afterCreate = maconomyClient.transition(initData, create(initData));
 
 		// load filter to store see after-stats
 		final int rowCountAfterCreate = afterCreate.getPanes().getTable().getMeta().getRowCount();
@@ -101,7 +101,7 @@ public class CrudTest {
 
 		final List<CardTableRecord> records = afterCreate.getPanes().getTable().getRecords();
 		final CardTableRecord cardTableRecord = records.get(records.size() - 1);
-		final CardTableData afterDelete = maconomyClient.transition(cardTableRecord, delete(), null);
+		final CardTableData afterDelete = maconomyClient.transition(cardTableRecord, delete());
 
 		// load filter to store see after-stats
 		final int rowCountAfterDelete = afterDelete.getPanes().getTable().getMeta().getRowCount();
@@ -116,6 +116,6 @@ public class CrudTest {
 		final CardTableRecord cardRecord = records.get(0);
 		final String oldDescription = cardRecord.getData().get("description").toString();
 		cardRecord.getData().put("description", oldDescription + "-rev");
-		maconomyClient.transition(cardRecord, update(), cardRecord);
+		maconomyClient.transition(cardRecord, update(cardRecord));
 	}
 }

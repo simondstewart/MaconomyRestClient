@@ -60,13 +60,13 @@ public class CustomTest {
 		final CardTablePane card = notesCardTable.getPanes().getCard();
 		// run action:insert to receive initialization data
 		final CardTableRecord initData = maconomyClient.transition(card, insert());
-		assertTrue(initData.getLinks().get(create()).isPresent());
+		assertTrue(initData.getLinks().get(create(initData)).isPresent());
 		assertThat(initData.getData().get("instancekey").toString(), startsWith("NoteHeader"));
 
 		// run action:create to receive initialization data
 		final String noteNumber = "Note_" + now().getEpochSecond();
 		initData.getData().put("notenumber", noteNumber);
-		/*final CardTableData created = */ maconomyClient.transition(initData, create(), initData);
+		/*final CardTableData created = */ maconomyClient.transition(initData, create(initData));
 
 		// load filter to store see after-stats
 		final FilterData updatedFilter = maconomyClient.transition(notesFilter, self(FilterData.class));
