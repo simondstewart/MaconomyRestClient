@@ -38,10 +38,10 @@ abstract class BaseLinkRelation<TargetResource> implements LinkRelation<TargetRe
 
 	}
 
-	public static final class BasicLinkRelationImpl<TargetResource> extends BaseLinkRelation<TargetResource>
-	                                                                implements BasicLinkRelation<TargetResource> {
+	public static final class SafeLinkRelationImpl<TargetResource> extends BaseLinkRelation<TargetResource>
+	                                                               implements SafeLinkRelation<TargetResource> {
 
-		BasicLinkRelationImpl(final String name, final HttpMethod method, final Class<TargetResource> targetResource) {
+		SafeLinkRelationImpl(final String name, final HttpMethod method, final Class<TargetResource> targetResource) {
 			super(name, method, targetResource);
 		}
 

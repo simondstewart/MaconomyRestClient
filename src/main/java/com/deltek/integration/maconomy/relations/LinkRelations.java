@@ -17,8 +17,8 @@ public class LinkRelations {
      *
 	 * @return A "self" link relation
 	 */
-	public static <T extends ContextResource> BasicLinkRelation<T> self(final Class<T> contextResource) {
-		return new BaseLinkRelation.BasicLinkRelationImpl<>("self", HttpMethod.GET, contextResource);
+	public static <T extends ContextResource> SafeLinkRelation<T> self(final Class<T> contextResource) {
+		return new BaseLinkRelation.SafeLinkRelationImpl<>("self", HttpMethod.GET, contextResource);
 	}
 
 	/**
@@ -29,8 +29,8 @@ public class LinkRelations {
 	 * @param targetType The type of the representation to GET
 	 * @return A "action:read" link relation
 	 */
-	public static <TargetType> BasicLinkRelation<TargetType> read(final Class<TargetType> targetType) {
-		return new BaseLinkRelation.BasicLinkRelationImpl<>("action:read", HttpMethod.GET, targetType);
+	public static <TargetType> SafeLinkRelation<TargetType> read(final Class<TargetType> targetType) {
+		return new BaseLinkRelation.SafeLinkRelationImpl<>("action:read", HttpMethod.GET, targetType);
 	}
 
 	/**
@@ -39,8 +39,8 @@ public class LinkRelations {
      *
 	 * @return A "specification" link relation
 	 */
-	public static BasicLinkRelation<Specification> specification() {
-		return new BaseLinkRelation.BasicLinkRelationImpl<>("specification", HttpMethod.GET, Specification.class);
+	public static SafeLinkRelation<Specification> specification() {
+		return new BaseLinkRelation.SafeLinkRelationImpl<>("specification", HttpMethod.GET, Specification.class);
 	}
 
 	/**
@@ -51,8 +51,8 @@ public class LinkRelations {
 	 *
 	 * @return A "data:filter" link relation
 	 */
-	public static BasicLinkRelation<FilterData> dataFilter() {
-		return new BaseLinkRelation.BasicLinkRelationImpl<>("data:filter", HttpMethod.GET, FilterData.class);
+	public static SafeLinkRelation<FilterData> dataFilter() {
+		return new BaseLinkRelation.SafeLinkRelationImpl<>("data:filter", HttpMethod.GET, FilterData.class);
 	}
 
 	/**
@@ -66,8 +66,8 @@ public class LinkRelations {
      *
 	 * @return A "data:any-key" link relation
 	 */
-	public static BasicLinkRelation<CardTableData> dataAnyKey() {
-		return new BaseLinkRelation.BasicLinkRelationImpl<>("data:any-key", HttpMethod.GET, CardTableData.class);
+	public static SafeLinkRelation<CardTableData> dataAnyKey() {
+		return new BaseLinkRelation.SafeLinkRelationImpl<>("data:any-key", HttpMethod.GET, CardTableData.class);
 	}
 
 	/**
@@ -81,8 +81,8 @@ public class LinkRelations {
      *
 	 * @return A "action:insert" link relation
 	 */
-	public static BasicLinkRelation<CardTableRecord> insert() {
-		return new BaseLinkRelation.BasicLinkRelationImpl<>("action:insert", HttpMethod.POST, CardTableRecord.class);
+	public static SafeLinkRelation<CardTableRecord> insert() {
+		return new BaseLinkRelation.SafeLinkRelationImpl<>("action:insert", HttpMethod.POST, CardTableRecord.class);
 	}
 
 	/**

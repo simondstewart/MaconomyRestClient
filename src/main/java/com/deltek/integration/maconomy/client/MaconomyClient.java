@@ -31,7 +31,7 @@ import com.deltek.integration.maconomy.containers.v1.Container;
 import com.deltek.integration.maconomy.containers.v1.Containers;
 import com.deltek.integration.maconomy.containers.v1.Link;
 import com.deltek.integration.maconomy.containers.v1.Meta;
-import com.deltek.integration.maconomy.relations.BasicLinkRelation;
+import com.deltek.integration.maconomy.relations.SafeLinkRelation;
 import com.deltek.integration.maconomy.relations.ContextResource;
 import com.deltek.integration.maconomy.relations.EntityLinkRelation;
 import com.deltek.integration.maconomy.relations.LinkRelation;
@@ -102,7 +102,7 @@ public final class MaconomyClient {
 	 * @return
 	 */
 	public <TargetResource> TargetResource transition(final ContextResource contextResource,
-			                                          final BasicLinkRelation<TargetResource> linkRelation) {
+			                                          final SafeLinkRelation<TargetResource> linkRelation) {
 		final Invocation.Builder request = invocationBuilder(contextResource, linkRelation);
 		return executeRequest(request, linkRelation, null);
 	}
