@@ -66,7 +66,7 @@ public class FilterPane extends Pane {
 		return "FilterPane [meta=" + meta + ", records=" + records + "]";
 	}
 
-	public static final class Meta {
+	public static class Meta {
 
 		private String paneName;
 		private int rowCount;

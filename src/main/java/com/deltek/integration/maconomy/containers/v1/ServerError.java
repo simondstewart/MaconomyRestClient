@@ -119,7 +119,7 @@ public class ServerError {
 				+ errorSeverity + ", focus=" + focus + ", data=" + data + "]";
 	}
 
-	public static final class Focus {
+	public static class Focus {
 
 		private int rowNumber;
 		private String fieldName;

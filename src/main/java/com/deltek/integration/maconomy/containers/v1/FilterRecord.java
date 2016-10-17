@@ -50,7 +50,7 @@ public class FilterRecord extends Record {
 		return "FilterRecord [meta=" + meta + "]";
 	}
 
-	public static final class Meta {
+	public static class Meta {
 
 		private int rowNumber;
 

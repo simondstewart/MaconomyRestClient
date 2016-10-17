@@ -67,7 +67,7 @@ public abstract class Data implements ContextResource {
 		return "Data [meta=" + meta + ", links=" + links + "]";
 	}
 
-	public static final class Meta {
+	public static class Meta {
 
 		private String containerName;
 

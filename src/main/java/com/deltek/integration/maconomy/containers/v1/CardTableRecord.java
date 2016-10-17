@@ -16,7 +16,7 @@ public class CardTableRecord extends Record implements Meta<CardTableRecord.Meta
 		this.meta = meta;
 	}
 
-	public static final class Meta implements ConcurrencyControl {
+	public static class Meta implements ConcurrencyControl {
 
 		private int rowNumber;
 		private String concurrencyControl;

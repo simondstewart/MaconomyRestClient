@@ -68,7 +68,7 @@ public class CardTablePane extends Pane implements Meta<CardTablePane.Meta> {
 		return "CardTablePane [meta=" + meta + ", records=" + records + "]";
 	}
 
-	public static final class Meta implements ConcurrencyControl {
+	public static class Meta implements ConcurrencyControl {
 
 		private String paneName;
 		private String concurrencyControl;

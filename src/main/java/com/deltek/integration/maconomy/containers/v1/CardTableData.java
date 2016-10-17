@@ -47,7 +47,7 @@ public class CardTableData extends Data {
 		return "CardTableData [panes=" + panes + "]";
 	}
 
-	public static final class Panes {
+	public static class Panes {
 
 		private CardTablePane card, table;
 

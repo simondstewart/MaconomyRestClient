@@ -47,7 +47,7 @@ public class FilterData extends Data {
 		return "FilterData [panes=" + panes + "]";
 	}
 
-	public static final class Panes {
+	public static class Panes {
 
 		private FilterPane filter;
 
