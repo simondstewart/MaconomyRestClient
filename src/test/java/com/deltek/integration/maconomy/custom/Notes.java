@@ -104,8 +104,8 @@ public class Notes implements IContainer, IHasFilter<Notes.Filter>, IHasCard<Not
 				this.record = cardTableRecord;
 			}
 
-			RStringField noteNumber() {
-				return new RStringField(this.record.getData(), "notenumber");
+			RWStringField noteNumber() {
+				return new RWStringField(this.record.getData(), "notenumber");
 			}
 
 		}
