@@ -34,7 +34,7 @@ public class Notes implements IContainer, IHasFilter<Notes.Filter>, IHasCard<Not
 		return new Notes.Filter(filterData);
 	}
 
-	public static class Filter implements IFilter<Notes.Filter.Create, Notes.Filter.Update>  {
+	public static class Filter implements IFilter<Notes.Filter.InitRecord, Notes.Filter.Record>  {
 
 		private final FilterData filterData;
 
@@ -43,22 +43,22 @@ public class Notes implements IContainer, IHasFilter<Notes.Filter>, IHasCard<Not
 		}
 
 		@Override
-		public List<Notes.Filter.Update> records() {
-			final List<Notes.Filter.Update> records = new ArrayList<>();
+		public List<Notes.Filter.Record> records() {
+			final List<Notes.Filter.Record> records = new ArrayList<>();
 			for(final FilterRecord record : filterData.getPanes().getFilter().getRecords()) {
-				records.add(new Notes.Filter.Update(record));
+				records.add(new Notes.Filter.Record(record));
 			}
 			return records;
 		}
 
-		public static class Create {
+		public static class InitRecord {
 		}
 
-		public static class Update {
+		public static class Record {
 
 			private final FilterRecord filterRecord;
 
-			Update(final FilterRecord filterRecord) {
+			Record(final FilterRecord filterRecord) {
 				this.filterRecord = filterRecord;
 			}
 
@@ -76,7 +76,7 @@ public class Notes implements IContainer, IHasFilter<Notes.Filter>, IHasCard<Not
 		return new Notes.Card(cardTableData);
 	}
 
-	public static class Card implements ICard<Notes.Card.Create, Notes.Card.Update>  {
+	public static class Card implements ICard<Notes.Card.InitRecord, Notes.Card.Record>  {
 
 		private final CardTableData cardTableData;
 
@@ -85,22 +85,22 @@ public class Notes implements IContainer, IHasFilter<Notes.Filter>, IHasCard<Not
 		}
 
 		@Override
-		public List<Notes.Card.Update> records() {
-			final List<Notes.Card.Update> records = new ArrayList<>();
+		public List<Notes.Card.Record> records() {
+			final List<Notes.Card.Record> records = new ArrayList<>();
 			for(final CardTableRecord record : cardTableData.getPanes().getCard().getRecords()) {
-				records.add(new Notes.Card.Update(record));
+				records.add(new Notes.Card.Record(record));
 			}
 			return records;
 		}
 
-		public static class Create {
+		public static class InitRecord {
 		}
 
-		public static class Update {
+		public static class Record {
 
 			private final CardTableRecord record;
 
-			Update(final CardTableRecord cardTableRecord) {
+			Record(final CardTableRecord cardTableRecord) {
 				this.record = cardTableRecord;
 			}
 

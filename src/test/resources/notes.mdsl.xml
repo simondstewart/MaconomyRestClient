@@ -1,0 +1,305 @@
+<?xml version='1.0' encoding='utf-8'?>
+<MDSL version="0.20" xmlns="http://www.deltek.com/ns/mdsl">
+  <Container name="Notes">
+    <Filter entity="NoteHeader" title="List of Notes" entityTitle="Note" gender="Gender{Note}">
+      <Actions>
+        <Read/>
+      </Actions>
+
+      <Fields>
+        <Field name="NoteNumber" type="string" maxLength="255" title="Note No." key="true"/>
+        <Field name="Description" type="string" maxLength="255" title="Description{0}"/>
+        <Field name="NoteType" type="string" maxLength="255" title="Note Type" references="NoteType_NoteType"/>
+        <Field name="AccessLevelName" type="string" maxLength="255" title="Access Level" references="AccessLevelName_AccessLevelHeader"/>
+        <Field name="CompanyNumber" type="string" maxLength="255" title="Company No." references="CompanyNumber_CompanyInformation"/>
+        <Field name="CreatedBy" type="string" maxLength="255" title="Created by"/>
+        <Field name="CreatedDate" type="date" title="Created on{Creation Date}"/>
+        <Field name="ChangedBy" type="string" maxLength="255" title="Changed by"/>
+        <Field name="ChangedDate" type="date" title="Changed on"/>
+        <Field name="VersionNumber" type="integer" title="Version{No.}"/>
+        <Field name="OptionListNumber1" type="string" maxLength="255" title="Option List 1" references="OptionListNumber1_OptionList; TheOption_1"/>
+        <Field name="SelectedOption1" type="string" maxLength="255" title="Selected Value 1" references="TheOption_1"/>
+        <Field name="OptionListNumber2" type="string" maxLength="255" title="Option List 2" references="OptionListNumber2_OptionList; TheOption_2"/>
+        <Field name="SelectedOption2" type="string" maxLength="255" title="Selected Value 2" references="TheOption_2"/>
+        <Field name="OptionListNumber3" type="string" maxLength="255" title="Option List 3" references="OptionListNumber3_OptionList; TheOption_3"/>
+        <Field name="SelectedOption3" type="string" maxLength="255" title="Selected Value 3" references="TheOption_3"/>
+        <Field name="OptionListNumber4" type="string" maxLength="255" title="Option List 4" references="OptionListNumber4_OptionList; TheOption_4"/>
+        <Field name="SelectedOption4" type="string" maxLength="255" title="Selected Value 4" references="TheOption_4"/>
+        <Field name="OptionListNumber5" type="string" maxLength="255" title="Option List 5" references="OptionListNumber5_OptionList; TheOption_5"/>
+        <Field name="SelectedOption5" type="string" maxLength="255" title="Selected Value 5" references="TheOption_5"/>
+        <Field name="Remark1" type="string" maxLength="255" title="Remarks 1"/>
+        <Field name="Remark2" type="string" maxLength="255" title="Remarks 2"/>
+        <Field name="Remark3" type="string" maxLength="255" title="Remarks 3"/>
+        <Field name="Remark4" type="string" maxLength="255" title="Remarks 4"/>
+        <Field name="Remark5" type="string" maxLength="255" title="Remarks 5"/>
+        <Field name="DocumentArchiveNumber" type="string" maxLength="255" title="Document Archive No." references="DocumentArchiveNumber_DocumentArchiveHeader"/>
+        <Field name="InstanceKey" type="string" maxLength="255" title="Instance Key" hidden="true"/>
+        <Field name="InternalRelationName" type="string" maxLength="255" title="Database Relation" references="InternalRelationName_DatabaseRelation"/>
+        <Field name="ObjectInstanceKey" type="string" maxLength="255" title="Object Instance Key{1}"/>
+        <Field name="SystemNote" type="boolean" title="System Note"/>
+        <Field name="Closed" type="boolean" title="Closed{Finish}"/>
+        <Field name="TransactionTimestamp" type="string" subType="autotimestamp" maxLength="255" title="Transaction Timestamp" hidden="true" unfilterable="true"/>
+        <Field name="EffectiveFromDate" type="date" title="Effective From, Date" hidden="true"/>
+        <Field name="EffectiveFromTime" type="time" title="Effective From, Time" hidden="true"/>
+      </Fields>
+
+      <ForeignKeys>
+        <ForeignKey name="OptionListNumber1_OptionList" source="Find_OptionList" title="Option List">
+          <Field  ref="OptionListNumber1" foreignKeyField="OptionListNumber"/>
+        </ForeignKey>
+        <ForeignKey name="OptionListNumber2_OptionList" source="Find_OptionList" title="Option List">
+          <Field  ref="OptionListNumber2" foreignKeyField="OptionListNumber"/>
+        </ForeignKey>
+        <ForeignKey name="OptionListNumber3_OptionList" source="Find_OptionList" title="Option List">
+          <Field  ref="OptionListNumber3" foreignKeyField="OptionListNumber"/>
+        </ForeignKey>
+        <ForeignKey name="OptionListNumber4_OptionList" source="Find_OptionList" title="Option List">
+          <Field  ref="OptionListNumber4" foreignKeyField="OptionListNumber"/>
+        </ForeignKey>
+        <ForeignKey name="OptionListNumber5_OptionList" source="Find_OptionList" title="Option List">
+          <Field  ref="OptionListNumber5" foreignKeyField="OptionListNumber"/>
+        </ForeignKey>
+        <ForeignKey name="TheOption_1" source="Find_TheOption" title="Option">
+          <Field  ref="SelectedOption1" foreignKeyField="Name"/>
+          <Field  ref="OptionListNumber1" foreignKeyField="OptionListNumber"/>
+        </ForeignKey>
+        <ForeignKey name="TheOption_2" source="Find_TheOption" title="Option">
+          <Field  ref="SelectedOption2" foreignKeyField="Name"/>
+          <Field  ref="OptionListNumber2" foreignKeyField="OptionListNumber"/>
+        </ForeignKey>
+        <ForeignKey name="TheOption_3" source="Find_TheOption" title="Option">
+          <Field  ref="SelectedOption3" foreignKeyField="Name"/>
+          <Field  ref="OptionListNumber3" foreignKeyField="OptionListNumber"/>
+        </ForeignKey>
+        <ForeignKey name="TheOption_4" source="Find_TheOption" title="Option">
+          <Field  ref="SelectedOption4" foreignKeyField="Name"/>
+          <Field  ref="OptionListNumber4" foreignKeyField="OptionListNumber"/>
+        </ForeignKey>
+        <ForeignKey name="TheOption_5" source="Find_TheOption" title="Option">
+          <Field  ref="SelectedOption5" foreignKeyField="Name"/>
+          <Field  ref="OptionListNumber5" foreignKeyField="OptionListNumber"/>
+        </ForeignKey>
+        <ForeignKey name="NoteType_NoteType" source="Find_NoteType" title="Note Type">
+          <Field  ref="NoteType" foreignKeyField="NoteType"/>
+        </ForeignKey>
+        <ForeignKey name="AccessLevelName_AccessLevelHeader" source="Find_AccessLevelHeader" title="Access Level">
+          <Field  ref="AccessLevelName" foreignKeyField="AccessLevelName"/>
+        </ForeignKey>
+        <ForeignKey name="CompanyNumber_CompanyInformation" source="Find_CompanyInformation" title="Company">
+          <Field  ref="CompanyNumber" foreignKeyField="CompanyNumber"/>
+        </ForeignKey>
+        <ForeignKey name="DocumentArchiveNumber_DocumentArchiveHeader" source="Find_DocumentArchiveHeader" title="Document Archive">
+          <Field  ref="DocumentArchiveNumber" foreignKeyField="DocumentArchiveNumber"/>
+        </ForeignKey>
+        <ForeignKey name="InternalRelationName_DatabaseRelation" source="Find_DatabaseRelation" title="Database Relation">
+          <Field  ref="InternalRelationName" foreignKeyField="InternalRelationName"/>
+        </ForeignKey>
+      </ForeignKeys>
+    </Filter>
+
+    <Card entity="NoteHeader" title="Notes" entityTitle="Note" gender="Gender{Note}" highLevelLock="true">
+      <Actions>
+        <Create title="Save Note">
+          <Insert title="New Note"/>
+        </Create>
+        <Read/>
+        <Update title="Save Note"/>
+        <Delete title="Delete Note"/>
+        <PrintThis title="Print Note"/>
+        <Print title="Print" source="P_Note" layout="P_Note"/>
+        <Action name="CloseNote" title="Close Note" icon="Close"/>
+        <Action name="ReopenNote" title="Reopen Note" icon="Reopen"/>
+        <Action name="WrapLines" title="Wrap lines"/>
+        <Action name="AttachDocument" title="Attach Document" icon="Attach"/>
+        <Action name="ChangeNoteType" title="Change Note Type"/>
+      </Actions>
+
+      <Fields>
+        <Field name="NoteNumber" type="string" maxLength="255" title="Note No." key="true" create="true"/>
+        <Field name="Description" type="string" maxLength="255" title="Description{0}" create="true" update="true"/>
+        <Field name="NoteType" type="string" maxLength="255" title="Note Type" create="true" references="NoteType_NoteType"/>
+        <Field name="AccessLevelName" type="string" maxLength="255" title="Access Level" create="true" update="true" references="AccessLevelName_AccessLevelHeader"/>
+        <Field name="CompanyNumber" type="string" maxLength="255" title="Company No." create="true" references="CompanyNumber_CompanyInformation"/>
+        <Field name="CreatedBy" type="string" maxLength="255" title="Created by"/>
+        <Field name="CreatedDate" type="date" title="Created on{Creation Date}"/>
+        <Field name="ChangedBy" type="string" maxLength="255" title="Changed by"/>
+        <Field name="ChangedDate" type="date" title="Changed on"/>
+        <Field name="VersionNumber" type="integer" title="Version{No.}"/>
+        <Field name="OptionListNumber1" type="string" maxLength="255" title="Option List 1" create="true" update="true" references="OptionListNumber1_OptionList; TheOption_1"/>
+        <Field name="SelectedOption1" type="string" maxLength="255" title="Selected Value 1" create="true" update="true" references="TheOption_1"/>
+        <Field name="OptionListNumber2" type="string" maxLength="255" title="Option List 2" create="true" update="true" references="OptionListNumber2_OptionList; TheOption_2"/>
+        <Field name="SelectedOption2" type="string" maxLength="255" title="Selected Value 2" create="true" update="true" references="TheOption_2"/>
+        <Field name="OptionListNumber3" type="string" maxLength="255" title="Option List 3" create="true" update="true" references="OptionListNumber3_OptionList; TheOption_3"/>
+        <Field name="SelectedOption3" type="string" maxLength="255" title="Selected Value 3" create="true" update="true" references="TheOption_3"/>
+        <Field name="OptionListNumber4" type="string" maxLength="255" title="Option List 4" create="true" update="true" references="OptionListNumber4_OptionList; TheOption_4"/>
+        <Field name="SelectedOption4" type="string" maxLength="255" title="Selected Value 4" create="true" update="true" references="TheOption_4"/>
+        <Field name="OptionListNumber5" type="string" maxLength="255" title="Option List 5" create="true" update="true" references="OptionListNumber5_OptionList; TheOption_5"/>
+        <Field name="SelectedOption5" type="string" maxLength="255" title="Selected Value 5" create="true" update="true" references="TheOption_5"/>
+        <Field name="Remark1" type="string" maxLength="255" title="Remarks 1" create="true" update="true"/>
+        <Field name="Remark2" type="string" maxLength="255" title="Remarks 2" create="true" update="true"/>
+        <Field name="Remark3" type="string" maxLength="255" title="Remarks 3" create="true" update="true"/>
+        <Field name="Remark4" type="string" maxLength="255" title="Remarks 4" create="true" update="true"/>
+        <Field name="Remark5" type="string" maxLength="255" title="Remarks 5" create="true" update="true"/>
+        <Field name="DocumentArchiveNumber" type="string" maxLength="255" title="Document Archive No." create="true" update="true" references="DocumentArchiveNumber_DocumentArchiveHeader"/>
+        <Field name="InstanceKey" type="string" maxLength="255" title="Instance Key"/>
+        <Field name="InternalRelationName" type="string" maxLength="255" title="Database Relation" create="true" update="true" references="InternalRelationName_DatabaseRelation"/>
+        <Field name="ObjectInstanceKey" type="string" maxLength="255" title="Object Instance Key{1}" create="true" update="true"/>
+        <Field name="SystemNote" type="boolean" title="System Note" create="true"/>
+        <Field name="Closed" type="boolean" title="Closed{Finish}"/>
+        <Field name="TransactionTimestamp" type="string" subType="autotimestamp" maxLength="255" title="Transaction Timestamp" unfilterable="true"/>
+        <Field name="EffectiveFromDate" type="date" title="Effective From, Date" create="true" update="true"/>
+        <Field name="EffectiveFromTime" type="time" title="Effective From, Time" create="true" update="true"/>
+        <Field name="CompanyNameVar" type="string" maxLength="255" title="Company Name" persist="false" references="CompanyNumber_CompanyInformation"/>
+        <Field name="LevelDescriptionVar" type="string" maxLength="255" title="Access Level Description" persist="false" references="AccessLevelName_AccessLevelHeader"/>
+        <Field name="DocumentArchiveDescriptionVar" type="string" maxLength="255" title="Document Archive Description" persist="false" references="DocumentArchiveNumber_DocumentArchiveHeader"/>
+        <Field name="Key1Var" type="string" maxLength="255" create="true" update="true" persist="false"/>
+        <Field name="Key2Var" type="string" maxLength="255" create="true" update="true" persist="false"/>
+        <Field name="Key3Var" type="string" maxLength="255" create="true" update="true" persist="false"/>
+        <Field name="Key4Var" type="string" maxLength="255" create="true" update="true" persist="false"/>
+        <Field name="KeyField1Var" type="string" maxLength="255" persist="false"/>
+        <Field name="KeyField2Var" type="string" maxLength="255" persist="false"/>
+        <Field name="KeyField3Var" type="string" maxLength="255" persist="false"/>
+        <Field name="KeyField4Var" type="string" maxLength="255" persist="false"/>
+        <Field name="DoNotWrapTextVar" type="boolean" create="true" update="true" persist="false"/>
+        <Field name="CopyFromNoteNumberVar" type="string" maxLength="255" title="Copy from Note No." create="true" persist="false" references="Card_CopyFromNoteNumberVar_NoteHeader"/>
+        <Field name="ChangetypeFromNoteNumberVar" type="string" maxLength="255" title="Copy from Note No." update="true" persist="false" references="Card_ChangetypeFromNoteNumberVar_NoteHeader"/>
+        <Field name="NewNoteTypeVar" type="string" maxLength="255" title="New Note Type" update="true" persist="false" references="Card_NewNoteTypeVar_NoteType"/>
+      </Fields>
+
+      <ForeignKeys>
+        <ForeignKey name="CompanyNumber_CompanyInformation" source="Find_CompanyInformation" title="Company">
+          <Field  ref="CompanyNumber" foreignKeyField="CompanyNumber"/>
+          <SupplementField  ref="CompanyNameVar" foreignField="Name1"/>
+        </ForeignKey>
+        <ForeignKey name="DocumentArchiveNumber_DocumentArchiveHeader" source="Find_DocumentArchiveHeader" title="Document Archive">
+          <Field  ref="DocumentArchiveNumber" foreignKeyField="DocumentArchiveNumber"/>
+          <SupplementField  ref="DocumentArchiveDescriptionVar" foreignField="Description"/>
+        </ForeignKey>
+        <ForeignKey name="AccessLevelName_AccessLevelHeader" source="Find_AccessLevelHeader" title="Access Level">
+          <Field  ref="AccessLevelName" foreignKeyField="AccessLevelName"/>
+          <SupplementField  ref="LevelDescriptionVar" foreignField="Description"/>
+        </ForeignKey>
+        <ForeignKey name="Card_CopyFromNoteNumberVar_NoteHeader" source="Find_NoteHeader" title="Note">
+          <Field  ref="CopyFromNoteNumberVar" foreignKeyField="NoteNumber"/>
+        </ForeignKey>
+        <ForeignKey name="Card_ChangetypeFromNoteNumberVar_NoteHeader" source="Find_NoteHeader" title="Note">
+          <Field  ref="ChangetypeFromNoteNumberVar" foreignKeyField="NoteNumber"/>
+        </ForeignKey>
+        <ForeignKey name="Card_NewNoteTypeVar_NoteType" source="Find_NoteType" title="Note Type">
+          <Field  ref="NewNoteTypeVar" foreignKeyField="NoteType"/>
+        </ForeignKey>
+        <ForeignKey name="OptionListNumber1_OptionList" source="Find_OptionList" title="Option List">
+          <Field  ref="OptionListNumber1" foreignKeyField="OptionListNumber"/>
+        </ForeignKey>
+        <ForeignKey name="OptionListNumber2_OptionList" source="Find_OptionList" title="Option List">
+          <Field  ref="OptionListNumber2" foreignKeyField="OptionListNumber"/>
+        </ForeignKey>
+        <ForeignKey name="OptionListNumber3_OptionList" source="Find_OptionList" title="Option List">
+          <Field  ref="OptionListNumber3" foreignKeyField="OptionListNumber"/>
+        </ForeignKey>
+        <ForeignKey name="OptionListNumber4_OptionList" source="Find_OptionList" title="Option List">
+          <Field  ref="OptionListNumber4" foreignKeyField="OptionListNumber"/>
+        </ForeignKey>
+        <ForeignKey name="OptionListNumber5_OptionList" source="Find_OptionList" title="Option List">
+          <Field  ref="OptionListNumber5" foreignKeyField="OptionListNumber"/>
+        </ForeignKey>
+        <ForeignKey name="TheOption_1" source="Find_TheOption" title="Option">
+          <Field  ref="SelectedOption1" foreignKeyField="Name"/>
+          <Field  ref="OptionListNumber1" foreignKeyField="OptionListNumber"/>
+        </ForeignKey>
+        <ForeignKey name="TheOption_2" source="Find_TheOption" title="Option">
+          <Field  ref="SelectedOption2" foreignKeyField="Name"/>
+          <Field  ref="OptionListNumber2" foreignKeyField="OptionListNumber"/>
+        </ForeignKey>
+        <ForeignKey name="TheOption_3" source="Find_TheOption" title="Option">
+          <Field  ref="SelectedOption3" foreignKeyField="Name"/>
+          <Field  ref="OptionListNumber3" foreignKeyField="OptionListNumber"/>
+        </ForeignKey>
+        <ForeignKey name="TheOption_4" source="Find_TheOption" title="Option">
+          <Field  ref="SelectedOption4" foreignKeyField="Name"/>
+          <Field  ref="OptionListNumber4" foreignKeyField="OptionListNumber"/>
+        </ForeignKey>
+        <ForeignKey name="TheOption_5" source="Find_TheOption" title="Option">
+          <Field  ref="SelectedOption5" foreignKeyField="Name"/>
+          <Field  ref="OptionListNumber5" foreignKeyField="OptionListNumber"/>
+        </ForeignKey>
+        <ForeignKey name="NoteType_NoteType" source="Find_NoteType" title="Note Type">
+          <Field  ref="NoteType" foreignKeyField="NoteType"/>
+        </ForeignKey>
+        <ForeignKey name="InternalRelationName_DatabaseRelation" source="Find_DatabaseRelation" title="Database Relation">
+          <Field  ref="InternalRelationName" foreignKeyField="InternalRelationName"/>
+        </ForeignKey>
+      </ForeignKeys>
+    </Card>
+
+    <Table entity="NoteLine" title="Note Lines" entityTitle="Note Line" gender="Gender{Note Line}" highLevelLock="true" autoPositionField="LineNumber">
+      <Actions>
+        <Create title="Save Note Line">
+          <Insert title="Insert Note Line"/>
+          <Add title="Add Note Line"/>
+        </Create>
+        <Read/>
+        <Update title="Save Note Line"/>
+        <Delete title="Delete Note Line"/>
+        <PrintThis title="Print Note Line"/>
+        <Print title="Print" source="P_Note" layout="P_Note"/>
+        <Action name="ImportText" title="Import Text"/>
+        <Action name="ExportText" title="Export Text" icon="Export"/>
+      </Actions>
+
+      <Fields>
+        <Field name="NoteNumber" type="string" maxLength="255" title="Note No." key="true" references="NoteNumber_NoteHeader"/>
+        <Field name="LineNumber" type="integer" title="Line No." key="true"/>
+        <Field name="NoteType" type="string" maxLength="255" title="Note Type" references="NoteTypeSpecification_1; NoteTypeSpecification_2; NoteType_NoteType"/>
+        <Field name="Heading" type="string" maxLength="255" title="Heading" references="NoteTypeSpecification_2"/>
+        <Field name="EnteringOfHeading" type="string" maxLength="255" title="Heading Entry" create="true" update="true" references="NoteTypeSpecification_1"/>
+        <Field name="Text" type="string" maxLength="255" title="Description{Text}" create="true" update="true"/>
+        <Field name="InstanceKey" type="string" maxLength="255" title="Instance Key"/>
+        <Field name="Format" type="enum" subType="FormatType" title="Format"/>
+        <Field name="Boolean1" type="boolean" title="Boolean Constant{type-dependent fixed text}" create="true" update="true"/>
+        <Field name="Integer1" type="integer" title="Integer{type-dependent fixed text}" create="true" update="true"/>
+        <Field name="Real1" type="real" title="Decimal Figure{type-dependent fixed text}" create="true" update="true"/>
+        <Field name="Amount1" type="amount" title="Amount{type-dependent fixed text}" create="true" update="true"/>
+        <Field name="String1" type="string" maxLength="255" title="Text String" create="true" update="true" references="TheOption"/>
+        <Field name="Date1" type="date" title="Date{type-dependent fixed text}" create="true" update="true"/>
+        <Field name="Hour1" type="time" title="Time{type dependant fixed text}" create="true" update="true"/>
+        <Field name="OptionListNumber" type="string" maxLength="255" title="Option List" create="true" update="true" references="Table_TheOption; OptionListNumber_OptionList; TheOption"/>
+        <Field name="TransactionTimestamp" type="string" subType="autotimestamp" maxLength="255" title="Transaction Timestamp" unfilterable="true"/>
+        <Field name="EnteredValueVar" type="string" maxLength="255" title="Entered Value" create="true" update="true" persist="false" references="Table_TheOption"/>
+      </Fields>
+
+      <ForeignKeys>
+        <ForeignKeySwitch field="Format">
+          <Case value="FormatType'\StringValue\">
+            <ForeignKey name="Table_TheOption" source="Find_TheOption" title="Option">
+              <Field  ref="EnteredValueVar" foreignKeyField="Name"/>
+              <Field  ref="OptionListNumber" foreignKeyField="OptionListNumber"/>
+            </ForeignKey>
+          </Case>
+        </ForeignKeySwitch>
+        <ForeignKey name="NoteNumber_NoteHeader" source="Find_NoteHeader" title="Note">
+          <Field  ref="NoteNumber" foreignKeyField="NoteNumber"/>
+        </ForeignKey>
+        <ForeignKey name="NoteTypeSpecification_1" source="Find_NoteTypeSpecification" title="Note Type Specification">
+          <Field  ref="EnteringOfHeading" foreignKeyField="Name"/>
+          <Field  ref="NoteType" foreignKeyField="NoteType"/>
+        </ForeignKey>
+        <ForeignKey name="NoteTypeSpecification_2" source="Find_NoteTypeSpecification" title="Note Type Specification">
+          <Field  ref="Heading" foreignKeyField="Name"/>
+          <Field  ref="NoteType" foreignKeyField="NoteType"/>
+        </ForeignKey>
+        <ForeignKey name="OptionListNumber_OptionList" source="Find_OptionList" title="Option List">
+          <Field  ref="OptionListNumber" foreignKeyField="OptionListNumber"/>
+        </ForeignKey>
+        <ForeignKey name="TheOption" source="Find_TheOption" title="Option">
+          <Field  ref="String1" foreignKeyField="Name"/>
+          <Field  ref="OptionListNumber" foreignKeyField="OptionListNumber"/>
+        </ForeignKey>
+        <ForeignKey name="NoteType_NoteType" source="Find_NoteType" title="Note Type">
+          <Field  ref="NoteType" foreignKeyField="NoteType"/>
+        </ForeignKey>
+      </ForeignKeys>
+    </Table>
+
+  </Container>
+</MDSL>

@@ -38,11 +38,11 @@ public class CustomTest {
 	public void testApi() {
 		final Notes notesContainer = new Notes(maconomyClient);
 		final Notes.Filter filter = notesContainer.filter();
-		final List<Notes.Filter.Update> records = filter.records();
+		final List<Notes.Filter.Record> records = filter.records();
 		final String description = records.get(0).noteNumber().get();
 		System.out.println("description: " + description);
 
-		final Notes.Card.Update record = notesContainer.card().records().get(0);
+		final Notes.Card.Record record = notesContainer.card().records().get(0);
 		final String noteNumber = record.noteNumber().get();
 		System.out.println("noteNumber: " + noteNumber);
 
