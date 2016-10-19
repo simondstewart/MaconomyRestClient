@@ -1,7 +1,4 @@
 package com.deltek.integration.maconomy.custom;
 
-import java.util.List;
-
-public interface IFilter<CreateRecordType, UpdateRecordType> {
-	List<UpdateRecordType> records();
+public interface IFilter<CreateRecordType, UpdateRecordType> extends IPane<CreateRecordType, UpdateRecordType> {
 }

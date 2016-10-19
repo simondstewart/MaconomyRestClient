@@ -1,7 +1,4 @@
 package com.deltek.integration.maconomy.custom;
 
-import java.util.List;
-
-public interface ICard<CreateRecordType, UpdateRecordType> {
-	List<UpdateRecordType> records();
+public interface ICard<CreateRecordType, UpdateRecordType> extends IPane<CreateRecordType, UpdateRecordType> {
 }

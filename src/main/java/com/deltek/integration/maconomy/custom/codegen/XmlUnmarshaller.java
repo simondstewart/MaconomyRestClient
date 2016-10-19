@@ -1,6 +1,7 @@
 package com.deltek.integration.maconomy.custom.codegen;
 
 import java.io.File;
+import java.net.URL;
 import java.util.ArrayList;
 
 import javax.xml.bind.JAXBContext;
@@ -22,6 +23,14 @@ class XmlUnmarshaller {
 					Pane.class,
 					Field.class);
 			unmarshaller = context.createUnmarshaller();
+		} catch (final JAXBException e) {
+			throw new RuntimeException(e);
+		}
+	}
+
+	XmlUnmarshaller.Mdsl unmarshall(final URL url) {
+		try {
+			return (XmlUnmarshaller.Mdsl) unmarshaller.unmarshal(url);
 		} catch (final JAXBException e) {
 			throw new RuntimeException(e);
 		}

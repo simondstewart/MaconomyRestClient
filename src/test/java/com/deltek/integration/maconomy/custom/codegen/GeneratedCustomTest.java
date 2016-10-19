@@ -1,7 +1,5 @@
 package com.deltek.integration.maconomy.custom.codegen;
 
-import java.util.List;
-
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -38,18 +36,17 @@ public class GeneratedCustomTest {
 	// TODO: (ANH) tie this test to generated rather than hand-written code
 	@Test
 	public void testApi() {
-		final com.deltek.integration.maconomy.custom.Notes notesContainer = new com.deltek.integration.maconomy.custom.Notes(maconomyClient);
-		final com.deltek.integration.maconomy.custom.Notes.Filter filter = notesContainer.filter();
-		final List<com.deltek.integration.maconomy.custom.Notes.Filter.Record> records = filter.records();
-		final String description = records.get(0).noteNumber().get();
-		System.out.println("description: " + description);
-
-		final com.deltek.integration.maconomy.custom.Notes.Card.Record record = notesContainer.card().records().get(0);
-		final String noteNumber = record.noteNumber().get();
-		System.out.println("noteNumber: " + noteNumber);
-
-		// it is possible to set this field when the Card is in Update state.
-		record.noteNumber().set("some new value");
+//		final Notes notesContainer = new Notes(maconomyClient);
+//		final Notes.Filter filter = notesContainer.filter();
+//		final List<Notes.Filter.Record> records = filter.records();
+//		final String description = records.get(0).noteNumber().get();
+//		System.out.println("description: " + description);
+//
+//		final Notes.Card.Record record = notesContainer.card().records().get(0);
+//		final String noteNumber = record.noteNumber().get();
+//		System.out.println("noteNumber: " + noteNumber);
+//
+//		record.description().set("some new value");
 	}
 
 
