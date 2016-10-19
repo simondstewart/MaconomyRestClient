@@ -62,7 +62,7 @@ public class Notes implements IContainer, IHasFilter<Notes.Filter>, IHasCard<Not
 				this.filterRecord = filterRecord;
 			}
 
-			RStringField noteNumber() {
+			public RStringField noteNumber() {
 				return new RStringField(filterRecord.getData(), "notenumber");
 			}
 
@@ -104,7 +104,7 @@ public class Notes implements IContainer, IHasFilter<Notes.Filter>, IHasCard<Not
 				this.record = cardTableRecord;
 			}
 
-			RWStringField noteNumber() {
+			public RWStringField noteNumber() {
 				return new RWStringField(this.record.getData(), "notenumber");
 			}
 
