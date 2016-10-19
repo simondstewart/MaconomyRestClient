@@ -36,6 +36,9 @@ public class GeneratedCustomTest {
 	// TODO: (ANH) tie this test to generated rather than hand-written code
 	@Test
 	public void testApi() {
+
+		// Comment in this method body and run the test after generating the custom "notes" container in CodeGeneratorTest.
+
 //		final Notes notesContainer = new Notes(maconomyClient);
 //		final Notes.Filter filter = notesContainer.filter();
 //		final List<Notes.Filter.Record> records = filter.records();
