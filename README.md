@@ -4,6 +4,8 @@ TODO: (in no particular order)
 
 * Handle template-links
 * Support different Maconomy data types: String, Boolean, Integer, Real, Popup, Time, Data, TimeDuration, Amount
+* Set format header appropriately. Necessary for prints and certain other actions
+* Set language header appropriately
 * Move authentication to request/response filter
 * Support login with domain credentials
 * Implement navigation strategy for singleton containers
