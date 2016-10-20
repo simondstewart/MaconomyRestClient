@@ -37,7 +37,8 @@ public class GeneratedCustomTest {
 	@Test
 	public void testApi() {
 
-		// Comment in this method body and run the test after generating the custom "notes" container in CodeGeneratorTest.
+		// Rmove comments in this method body and run the test after generating the custom "notes" container in CodeGeneratorTest.
+		// Used as a functional test of the generated code
 
 //		final Notes notesContainer = new Notes(maconomyClient);
 //		final Notes.Filter filter = notesContainer.filter();

@@ -26,6 +26,8 @@ import com.deltek.integration.maconomy.configuration.Server;
 @SpringBootTest
 public class CodeGeneratorTest {
 
+	private static final boolean SYSOUT = false;
+
 	@Autowired
 	private Server conf;
 	private final File outputDir = new File(Constants.GENERATED);
@@ -61,10 +63,13 @@ public class CodeGeneratorTest {
 		final CodeGenerator codeGenerator = new CodeGenerator(outputDir);
 		codeGenerator.generate(Constants.CUSTOM_PACKAGE, file);
 
-		System.out.println("#########################################################################");
-		final File output = new File(outputDir.getAbsolutePath() + "\\com\\deltek\\integration\\maconomy\\custom\\codegen\\Notes.java");
-		FileUtils.readLines(output, "UTF-8").forEach(System.out::println);
-		System.out.println("#########################################################################");
+		if (SYSOUT) {
+			System.out.println("#########################################################################");
+			final File output = new File(
+					outputDir.getAbsolutePath() + "\\com\\deltek\\integration\\maconomy\\custom\\codegen\\Notes.java");
+			FileUtils.readLines(output, "UTF-8").forEach(System.out::println);
+			System.out.println("#########################################################################");
+		}
 
 	}
 
@@ -74,10 +79,13 @@ public class CodeGeneratorTest {
 		final String specificationWebServiceUrl = conf.getHost() + ":" + conf.getPort() + "/specifications/v1/mdsl/";
 		codeGenerator.generate(Constants.CUSTOM_PACKAGE, new URL(specificationWebServiceUrl + "notes"));
 
-		System.out.println("#########################################################################");
-		final File output = new File(outputDir.getAbsolutePath() + "\\com\\deltek\\integration\\maconomy\\custom\\codegen\\Notes.java");
-		FileUtils.readLines(output, "UTF-8").forEach(System.out::println);
-		System.out.println("#########################################################################");
+		if (SYSOUT) {
+			System.out.println("#########################################################################");
+			final File output = new File(
+					outputDir.getAbsolutePath() + "\\com\\deltek\\integration\\maconomy\\custom\\codegen\\Notes.java");
+			FileUtils.readLines(output, "UTF-8").forEach(System.out::println);
+			System.out.println("#########################################################################");
+		}
 
 	}
 

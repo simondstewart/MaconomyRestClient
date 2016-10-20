@@ -12,10 +12,12 @@ import static com.deltek.integration.maconomy.relations.LinkRelations.update;
 import static java.time.Instant.now;
 import static org.hamcrest.Matchers.startsWith;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 import org.junit.Before;
@@ -114,9 +116,14 @@ public class CrudTest {
 		final List<CardTableRecord> records = notesCardTable.getPanes().getCard().getRecords();
 		assertEquals(1, records.size());
 		final CardTableRecord cardRecord = records.get(0);
-		final String oldDescription = cardRecord.getData().get("description").toString();
-		cardRecord.getData().put("description", oldDescription + "-rev");
-		maconomyClient.transition(cardRecord, update(cardRecord));
+		final String description = "description";
+		final String oldDescription = cardRecord.getData().get(description).toString();
+		final String timestamp = LocalDateTime.now().toString();
+		cardRecord.getData().put(description, timestamp);
+		final CardTableData updated = maconomyClient.transition(cardRecord, update(cardRecord));
+		final CardTableRecord updatedRecord = updated.getPanes().getCard().getRecords().get(0);
+		assertNotEquals(oldDescription, updatedRecord.getData().get(description));
+		assertEquals(timestamp, updatedRecord.getData().get(description));
 	}
 
 }
