@@ -63,6 +63,7 @@ public class CrudTest {
 		final FilterData notesFilter = maconomyClient.transition(notesContainer, dataFilter());
 		final CardTableData notesCardTable = maconomyClient.transition(notesContainer, dataAnyKey());
 		final int rowCountBefore = notesFilter.getPanes().getFilter().getMeta().getRowCount();
+		assertTrue("Too many records in the filter to run the assertions below. Clean up the db", rowCountBefore < 25);
 
 		final CardTablePane card = notesCardTable.getPanes().getCard();
 		// run action:insert to receive initialization data

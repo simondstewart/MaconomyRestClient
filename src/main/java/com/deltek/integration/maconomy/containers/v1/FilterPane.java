@@ -1,11 +1,8 @@
 package com.deltek.integration.maconomy.containers.v1;
 
-import java.util.List;
-
-public class FilterPane extends Pane {
+public class FilterPane extends Pane<FilterRecord> {
 
 	private FilterPane.Meta meta;
-	private List<FilterRecord> records;
 
 	public FilterPane.Meta getMeta() {
 		return meta;
@@ -15,20 +12,11 @@ public class FilterPane extends Pane {
 		this.meta = meta;
 	}
 
-	public List<FilterRecord> getRecords() {
-		return records;
-	}
-
-	public void setRecords(final List<FilterRecord> records) {
-		this.records = records;
-	}
-
 	@Override
 	public int hashCode() {
 		final int prime = 31;
 		int result = super.hashCode();
 		result = prime * result + ((meta == null) ? 0 : meta.hashCode());
-		result = prime * result + ((records == null) ? 0 : records.hashCode());
 		return result;
 	}
 
@@ -51,19 +39,12 @@ public class FilterPane extends Pane {
 		} else if (!meta.equals(other.meta)) {
 			return false;
 		}
-		if (records == null) {
-			if (other.records != null) {
-				return false;
-			}
-		} else if (!records.equals(other.records)) {
-			return false;
-		}
 		return true;
 	}
 
 	@Override
 	public String toString() {
-		return "FilterPane [meta=" + meta + ", records=" + records + "]";
+		return "FilterPane [meta=" + meta + ", records=]";
 	}
 
 	public static class Meta {

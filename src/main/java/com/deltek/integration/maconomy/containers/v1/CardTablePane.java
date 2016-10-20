@@ -1,12 +1,8 @@
 package com.deltek.integration.maconomy.containers.v1;
 
-import java.util.List;
-
-
-public class CardTablePane extends Pane implements Meta<CardTablePane.Meta> {
+public class CardTablePane extends Pane<CardTableRecord> implements Meta<CardTablePane.Meta> {
 
 	private CardTablePane.Meta meta;
-	private List<CardTableRecord> records;
 
 	@Override
 	public CardTablePane.Meta getMeta() {
@@ -17,20 +13,11 @@ public class CardTablePane extends Pane implements Meta<CardTablePane.Meta> {
 		this.meta = meta;
 	}
 
-	public List<CardTableRecord> getRecords() {
-		return records;
-	}
-
-	public void setRecords(final List<CardTableRecord> records) {
-		this.records = records;
-	}
-
 	@Override
 	public int hashCode() {
 		final int prime = 31;
 		int result = super.hashCode();
 		result = prime * result + ((meta == null) ? 0 : meta.hashCode());
-		result = prime * result + ((records == null) ? 0 : records.hashCode());
 		return result;
 	}
 
@@ -53,19 +40,12 @@ public class CardTablePane extends Pane implements Meta<CardTablePane.Meta> {
 		} else if (!meta.equals(other.meta)) {
 			return false;
 		}
-		if (records == null) {
-			if (other.records != null) {
-				return false;
-			}
-		} else if (!records.equals(other.records)) {
-			return false;
-		}
 		return true;
 	}
 
 	@Override
 	public String toString() {
-		return "CardTablePane [meta=" + meta + ", records=" + records + "]";
+		return "CardTablePane [meta=" + meta + ", records=]";
 	}
 
 	public static class Meta implements ConcurrencyControl {

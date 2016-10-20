@@ -75,24 +75,22 @@ public class Notes implements ICustomContainer, IHasFilter<Notes.Filter>, IHasCa
 		return new Notes.Card(cardTableData);
 	}
 
-	public static class Card implements ICard<Notes.Card.InitRecord, Notes.Card.Record>  {
-
-		private final CardTableData cardTableData;
+	public static class Card extends BaseCardPane<Notes.Card.InitRecord, Notes.Card.Record>  {
 
 		private Card(final CardTableData cardTableData) {
-			this.cardTableData = cardTableData;
-		}
-
-		@Override
-		public List<Notes.Card.Record> records() {
-			final List<Notes.Card.Record> records = new ArrayList<>();
-			for(final CardTableRecord record : cardTableData.getPanes().getCard().getRecords()) {
-				records.add(new Notes.Card.Record(record));
-			}
-			return records;
+			super(cardTableData,
+				  record -> new Notes.Card.InitRecord(record),
+				  record -> new Notes.Card.Record(record));
 		}
 
 		public static class InitRecord {
+
+			private final CardTableRecord record;
+
+			private InitRecord(final CardTableRecord cardTableRecord) {
+				this.record = cardTableRecord;
+			}
+
 		}
 
 		public static class Record {

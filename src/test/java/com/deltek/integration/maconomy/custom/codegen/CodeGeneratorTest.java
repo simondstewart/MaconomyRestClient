@@ -26,7 +26,7 @@ import com.deltek.integration.maconomy.configuration.Server;
 @SpringBootTest
 public class CodeGeneratorTest {
 
-	private static final boolean SYSOUT = false;
+	private static final boolean SYSOUT = true;
 
 	@Autowired
 	private Server conf;
@@ -54,7 +54,6 @@ public class CodeGeneratorTest {
 //		}
 	}
 
-	@Ignore
 	@Test
 	public void testCodeGenerationFromXmlFile() throws Exception {
 		final File file = new ClassPathResource("notes.mdsl.xml").getFile();
@@ -73,6 +72,7 @@ public class CodeGeneratorTest {
 
 	}
 
+	@Ignore
 	@Test
 	public void testCodeGenerationFromSpecificationWebservice() throws Exception {
 		final CodeGenerator codeGenerator = new CodeGenerator(outputDir);

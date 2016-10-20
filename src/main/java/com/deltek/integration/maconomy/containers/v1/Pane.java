@@ -1,10 +1,21 @@
 package com.deltek.integration.maconomy.containers.v1;
 
+import java.util.List;
+
 import com.deltek.integration.maconomy.relations.ContextResource;
 
-public abstract class Pane implements ContextResource {
+public abstract class Pane<RecordType> implements ContextResource {
 
 	private Links links;
+
+	private List<RecordType> records;
+	public List<RecordType> getRecords() {
+		return records;
+	}
+
+	public void setRecords(final List<RecordType> records) {
+		this.records = records;
+	}
 
 	@Override
 	public Links getLinks() {

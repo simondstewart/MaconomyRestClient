@@ -14,7 +14,7 @@ public class Constants {
 	/** Default package for custom generated code: com.deltek.integration.maconomy.custom.codegen */
 	public static final String CUSTOM_PACKAGE = "com.deltek.integration.maconomy.custom.codegen";
 
-	/** Path to output directory for generated code */
+	/** Path to output directory for generated code which should not be under version control */
 	public static final String GENERATED = "generated/src/test/java/";
 
 }

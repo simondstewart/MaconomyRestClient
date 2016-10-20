@@ -1,5 +1,15 @@
 package com.deltek.integration.maconomy.psorestclient;
 
+import static org.apache.commons.io.FileUtils.cleanDirectory;
+import static org.junit.Assert.fail;
+import static org.testng.Assert.assertTrue;
+
+import java.io.File;
+import java.io.IOException;
+import java.net.URL;
+
+import org.apache.commons.io.FileUtils;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -9,7 +19,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
+import com.deltek.integration.maconomy.Constants;
 import com.deltek.integration.maconomy.configuration.Server;
+import com.deltek.integration.maconomy.custom.codegen.CodeGenerator;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringBootTest
@@ -20,16 +32,47 @@ public class MaconomyPSORestContextTest {
 
 	@Autowired
 	private Server conf;
+	private final File outputDir = new File(Constants.GENERATED);
+
+	@Before
+	public void setUp() {
+		if (!outputDir.exists()) {
+			assertTrue(outputDir.mkdir(), "Unable to create " + outputDir.getAbsolutePath());
+		} else {
+			try {
+				cleanDirectory(outputDir);
+			} catch (final IOException e) {
+				fail("Unable to clean " + outputDir.getAbsolutePath());
+			}
+		}
+	}
+
+	@After
+	public void cleanUp() { // Comment out the body of this method to inspect the generated code in "generated/src/test/java/
+//		try {
+//			cleanDirectory(outputDir);
+//		} catch (final IOException e) {
+//			fail("Unable to clean " + outputDir.getAbsolutePath());
+//		}
+	}
 
 	@Rule
 	public ExpectedException expectedEx = ExpectedException.none();
 
-	@Before
-	public void setup() {
-	}
-
 	@Test
-	public void missingMandatoryEmployeeError() {
+	public void missingMandatoryEmployeeError() throws IOException {
+		final CodeGenerator codeGenerator = new CodeGenerator(outputDir);
+		final String specificationWebServiceUrl = conf.getHost() + ":" + conf.getPort() + "/specifications/v1/mdsl/";
+		codeGenerator.generate(Constants.CUSTOM_PACKAGE, new URL(specificationWebServiceUrl + "employees"));
+
+		System.out.println("#########################################################################");
+		final File output = new File(
+				outputDir.getAbsolutePath() + "\\com\\deltek\\integration\\maconomy\\custom\\codegen\\Employees.java");
+		FileUtils.readLines(output, "UTF-8").forEach(System.out::println);
+		System.out.println("#########################################################################");
+
+
+
 //		expectedEx.expect(MaconomyRestClientException.class);
 //		final Record<EmployeeCard> templateEmployee = restClientContext.employee().init();
 //		Assert.assertNotNull(templateEmployee);
