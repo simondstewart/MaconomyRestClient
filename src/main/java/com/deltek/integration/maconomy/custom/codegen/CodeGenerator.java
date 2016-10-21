@@ -5,22 +5,23 @@ import static java.lang.Character.toLowerCase;
 import java.io.File;
 import java.net.URL;
 import java.time.LocalDateTime;
+import java.util.function.Function;
 
 import com.deltek.integration.maconomy.client.MaconomyClient;
 import com.deltek.integration.maconomy.containers.v1.CardTableData;
 import com.deltek.integration.maconomy.containers.v1.CardTableRecord;
-import com.deltek.integration.maconomy.containers.v1.Container;
 import com.deltek.integration.maconomy.containers.v1.FilterData;
 import com.deltek.integration.maconomy.containers.v1.FilterRecord;
 import com.deltek.integration.maconomy.custom.BaseCardPane;
+import com.deltek.integration.maconomy.custom.BaseContainer;
 import com.deltek.integration.maconomy.custom.BaseFilterPane;
-import com.deltek.integration.maconomy.custom.ICustomContainer;
+import com.deltek.integration.maconomy.custom.BaseTablePane;
 import com.deltek.integration.maconomy.custom.IHasCard;
 import com.deltek.integration.maconomy.custom.IHasFilter;
+import com.deltek.integration.maconomy.custom.IHasTable;
 import com.deltek.integration.maconomy.custom.RStringField;
 import com.deltek.integration.maconomy.custom.RWStringField;
 import com.deltek.integration.maconomy.custom.codegen.XmlUnmarshaller.Field;
-import com.deltek.integration.maconomy.relations.LinkRelations;
 import com.helger.jcodemodel.AbstractJClass;
 import com.helger.jcodemodel.JClassAlreadyExistsException;
 import com.helger.jcodemodel.JCodeModel;
@@ -36,6 +37,8 @@ import com.helger.jcodemodel.JVar;
 
 
 public class CodeGenerator {
+
+	private static final String SUPER = "super";
 
 	private final File outputDir;
 
@@ -59,32 +62,24 @@ public class CodeGenerator {
 			final String containerName = mdsl.container.name;
 			final JDefinedClass containerClass = codeModel._class(packageName + "." + containerName);
 			containerClass.javadoc().append("AUTO-GENERATED IMPLEMENTATION OF THE \"" + containerName.toUpperCase() + "\" CONTAINER. (" + LocalDateTime.now() + ")");
-			containerClass._implements(ICustomContainer.class);
+			containerClass._extends(BaseContainer.class);
 
-			// ctor with "client" field in custom container class
-			final String CLIENT_FIELD = "maconomyClient";
-			final JMethod ctor = ctor1(JMod.PUBLIC, containerClass, MaconomyClient.class);
-
-			// initialize "container" field in custom container class's constructor
-			final String CONTAINER_FIELD = "container";
-			final JFieldVar containerField = containerClass.field(JMod.PRIVATE + JMod.FINAL, Container.class, CONTAINER_FIELD);
-			ctor.body().assign(JExpr.refthis(CONTAINER_FIELD), JExpr.ref(CLIENT_FIELD).invoke("container").arg(containerName.toLowerCase()));
-
-			final AbstractJClass linkRelationsClass = codeModel.ref(LinkRelations.class);
+			// container class ctor
+			final JMethod ctor = containerClass.constructor(JMod.PUBLIC);
+			final String clientId = classAsIdentifier(MaconomyClient.class);
+			final JVar clientArg = ctor.param(codeModel.ref(MaconomyClient.class), clientId);
+			ctor.body().invoke(SUPER).arg(clientArg).arg(containerName);
 
 			if (mdsl.container.filter != null) {
 				// filter class
 				final JDefinedClass filterClass = paneClass(codeModel, containerClass, "Filter", mdsl.container.filter, BaseFilterPane.class);
 				containerClass._implements(codeModel.ref(IHasFilter.class).narrow(filterClass));
 
-				// no-args filter method, TODO: (ANH) implement filtering API here
-				final JMethod filterMethod = containerClass.method(JMod.PUBLIC, filterClass, "filter");
-				filterMethod.annotate(Override.class);
-				final JInvocation invokeDataFilter = linkRelationsClass.staticInvoke("dataFilter");
-				final JInvocation invokeTransition = JExpr.ref(CLIENT_FIELD).invoke("transition").arg(containerField).arg(invokeDataFilter);
-				final AbstractJClass filterDataClass = codeModel.ref(FilterData.class);
-				final JVar filterDataVar = filterMethod.body().decl(JMod.FINAL, filterDataClass, "data", invokeTransition);
-				filterMethod.body()._return(JExpr._new(filterClass).arg(filterDataVar));
+				// ctor fn
+				final AbstractJClass filterFuncType = codeModel.ref(Function.class).narrow(codeModel.ref(FilterData.class), filterClass);
+				final JMethod getFilterCtorFn = containerClass.method(JMod.PUBLIC, filterFuncType, "getFilterCtorFn");
+				getFilterCtorFn.annotate(Override.class);
+				getFilterCtorFn.body()._return(ctor1fn(filterClass, classAsIdentifier(FilterData.class)));
 			}
 
 			if (mdsl.container.card != null) {
@@ -92,14 +87,23 @@ public class CodeGenerator {
 				final JDefinedClass cardClass = paneClass(codeModel, containerClass, "Card", mdsl.container.card, BaseCardPane.class);
 				containerClass._implements(codeModel.ref(IHasCard.class).narrow(cardClass));
 
-				// no-args card method (data:any-key)
-				final JMethod cardMethod = containerClass.method(JMod.PUBLIC, cardClass, "card");
-				cardMethod.annotate(Override.class);
-				final JInvocation invokeDataAnyKey = linkRelationsClass.staticInvoke("dataAnyKey");
-				final JInvocation invokeTransition = JExpr.ref(CLIENT_FIELD).invoke("transition").arg(containerField).arg(invokeDataAnyKey);
-				final AbstractJClass cardDataClass = codeModel.ref(CardTableData.class);
-				final JVar cardDataVar = cardMethod.body().decl(JMod.FINAL, cardDataClass, "data", invokeTransition);
-				cardMethod.body()._return(JExpr._new(cardClass).arg(cardDataVar));
+				// ctor fn
+				final AbstractJClass cardFuncType = codeModel.ref(Function.class).narrow(codeModel.ref(CardTableData.class), cardClass);
+				final JMethod getCardCtorFn = containerClass.method(JMod.PUBLIC, cardFuncType, "getCardCtorFn");
+				getCardCtorFn.annotate(Override.class);
+				getCardCtorFn.body()._return(ctor1fn(cardClass, classAsIdentifier(CardTableData.class)));
+			}
+
+			if (mdsl.container.table != null) {
+				// table class
+				final JDefinedClass tableClass = paneClass(codeModel, containerClass, "Table", mdsl.container.table, BaseTablePane.class);
+				containerClass._implements(codeModel.ref(IHasTable.class).narrow(tableClass));
+
+				// ctor fn
+				final AbstractJClass tableFuncType = codeModel.ref(Function.class).narrow(codeModel.ref(CardTableData.class), tableClass);
+				final JMethod getTableCtorFn = containerClass.method(JMod.PUBLIC, tableFuncType, "getTableCtorFn");
+				getTableCtorFn.annotate(Override.class);
+				getTableCtorFn.body()._return(ctor1fn(tableClass, classAsIdentifier(CardTableData.class)));
 			}
 
 			codeModel.build(outputDir);
@@ -137,8 +141,8 @@ public class CodeGenerator {
 		final JVar param1 = paneClassCtor.param(dataType, param1name);
 		paneClassCtor.body().invoke("super")
 		                    .arg(param1)
-		                    .arg(ctor1fn(initRecordClass))
-		                    .arg(ctor1fn(recordClass));
+		                    .arg(ctor1fn(initRecordClass, "initRecord"))
+		                    .arg(ctor1fn(recordClass, "record"));
 
 		ctor1(JMod.PRIVATE, initRecordClass, recordType);
 		ctor1(JMod.PRIVATE, recordClass, recordType);
@@ -181,9 +185,9 @@ public class CodeGenerator {
 	}
 
 	/** Returns a 1-args constructor function reference of the given type. */
-	private JLambda ctor1fn(final JDefinedClass clazz) {
+	private JLambda ctor1fn(final JDefinedClass clazz, final String argumentName) {
 		final JLambda jLambda = new JLambda();
-		final JLambdaParam parameter = jLambda.addParam("record");
+		final JLambdaParam parameter = jLambda.addParam(argumentName);
 		jLambda.body()._return(JExpr._new(clazz).arg(parameter));
 		return jLambda;
 	}
