@@ -1,17 +1,22 @@
 package com.deltek.integration.maconomy.relations;
 
+import java.util.Collections;
+
 abstract class BaseLinkRelation<TargetResource> implements LinkRelation<TargetResource>{
 
 	private final String name;
 	private final HttpMethod method;
 	private final Class<TargetResource> targetResource;
+	private final Iterable<QueryPart> query;
 
 	BaseLinkRelation(final String name,
 			         final HttpMethod method,
-			         final Class<TargetResource> targetResource) {
+			         final Class<TargetResource> targetResource,
+			         final Iterable<QueryPart> query) {
 		this.name = name;
 		this.method = method;
 		this.targetResource = targetResource;
+		this.query = query;
 	}
 
 	@Override
@@ -29,6 +34,11 @@ abstract class BaseLinkRelation<TargetResource> implements LinkRelation<TargetRe
 		return targetResource;
 	}
 
+	@Override
+	public Iterable<QueryPart> getQuery() {
+		return query;
+	}
+
 	public static final class EntityLinkRelationImpl<EntityType, TargetResource> extends BaseLinkRelation<TargetResource>
 	                                                                             implements EntityLinkRelation<EntityType, TargetResource> {
 
@@ -38,7 +48,7 @@ abstract class BaseLinkRelation<TargetResource> implements LinkRelation<TargetRe
 				               final HttpMethod method,
 				               final Class<TargetResource> targetResource,
 				               final EntityType entity) {
-			super(name, method, targetResource);
+			super(name, method, targetResource, Collections.<QueryPart>emptyList());
 			this.entity = entity;
 		}
 
@@ -52,8 +62,12 @@ abstract class BaseLinkRelation<TargetResource> implements LinkRelation<TargetRe
 	public static final class SafeLinkRelationImpl<TargetResource> extends BaseLinkRelation<TargetResource>
 	                                                               implements SafeLinkRelation<TargetResource> {
 
+		SafeLinkRelationImpl(final String name, final HttpMethod method, final Class<TargetResource> targetResource, final Iterable<QueryPart> query) {
+			super(name, method, targetResource, query);
+		}
+
 		SafeLinkRelationImpl(final String name, final HttpMethod method, final Class<TargetResource> targetResource) {
-			super(name, method, targetResource);
+			this(name, method, targetResource, Collections.<QueryPart>emptyList());
 		}
 
 	}

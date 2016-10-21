@@ -16,6 +16,7 @@ import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import javax.ws.rs.core.UriBuilder;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -34,6 +35,7 @@ import com.deltek.integration.maconomy.containers.v1.Meta;
 import com.deltek.integration.maconomy.relations.ContextResource;
 import com.deltek.integration.maconomy.relations.EntityLinkRelation;
 import com.deltek.integration.maconomy.relations.LinkRelation;
+import com.deltek.integration.maconomy.relations.QueryPart;
 import com.deltek.integration.maconomy.relations.SafeLinkRelation;
 
 /**
@@ -130,8 +132,11 @@ public final class MaconomyClient {
 		final Link link = contextResource.getLinks()
                                          .get(linkRelation)
                                          .orElseThrow(() -> new ClientException(linkRelation.getName()));
-        final WebTarget webTarget = client.target(link.getHref());
-		return webTarget.request(MediaType.APPLICATION_JSON);
+		final UriBuilder uriBuilder = client.target(link.getHref()).getUriBuilder();
+        for(final QueryPart queryPart : linkRelation.getQuery()) {
+        	uriBuilder.queryParam(queryPart.getName(), queryPart.getValues());
+        }
+        return client.target(uriBuilder).request(MediaType.APPLICATION_JSON);
 	}
 
 	// TODO: (ANH) clean up this stuff

@@ -2,6 +2,7 @@ package com.deltek.integration.maconomy.client;
 
 import static com.deltek.integration.maconomy.Constants.JOBS;
 import static com.deltek.integration.maconomy.Constants.TIMEREGISTRATION;
+import static com.deltek.integration.maconomy.relations.FilterRestriction.none;
 import static com.deltek.integration.maconomy.relations.LinkRelations.dataAnyKey;
 import static com.deltek.integration.maconomy.relations.LinkRelations.dataFilter;
 import static com.deltek.integration.maconomy.relations.LinkRelations.specification;
@@ -55,7 +56,7 @@ public class ContainerOverviewTest {
 		// Check presence of transitions from container overview
 		final Links links = jobsContainer.getLinks();
 		assertTrue(links.get(specification()).isPresent());
-		assertTrue(links.get(dataFilter()).isPresent());
+		assertTrue(links.get(dataFilter(none())).isPresent());
 		assertTrue(links.get(dataAnyKey()).isPresent());
 	}
 
@@ -63,7 +64,7 @@ public class ContainerOverviewTest {
 	public void testThatFilterIsMissingOnSingletonContainers() {
 		final Links links = maconomyClient.container(TIMEREGISTRATION).getLinks();
 		assertTrue(links.get(specification()).isPresent());
-		assertFalse(links.get(dataFilter()).isPresent()); // <---- missing
+		assertFalse(links.get(dataFilter(none())).isPresent()); // <---- missing
 		assertTrue(links.get(dataAnyKey()).isPresent());
 	}
 
@@ -71,7 +72,7 @@ public class ContainerOverviewTest {
 	public void testThatTransitionsFailOnUnknownLinkRelations() {
 		expectedEx.expect(ClientException.class);
 		final Container container = maconomyClient.container(TIMEREGISTRATION);
-		maconomyClient.transition(container, dataFilter());
+		maconomyClient.transition(container, dataFilter(none()));
 	}
 
 	@Test
@@ -84,7 +85,7 @@ public class ContainerOverviewTest {
 	@Test
 	public void testDataFilterTransition() {
 		final Container jobsContainer = maconomyClient.container(JOBS);
-		final FilterData jobsFilter = maconomyClient.transition(jobsContainer, dataFilter());
+		final FilterData jobsFilter = maconomyClient.transition(jobsContainer, dataFilter(none()));
 		assertEquals(JOBS, jobsFilter.getMeta().getContainerName());
 	}
 

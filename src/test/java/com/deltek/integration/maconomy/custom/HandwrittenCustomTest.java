@@ -11,6 +11,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import com.deltek.integration.maconomy.client.MaconomyClient;
 import com.deltek.integration.maconomy.configuration.Server;
+import com.deltek.integration.maconomy.relations.FilterRestriction;
 
 /**
  * TEST HAND-WRITTEN CUSTOM CONTAINER, SEE {@code com.deltek.integration.maconomy.custom.codegen.GeneratedCustomTest}
@@ -39,7 +40,7 @@ public class HandwrittenCustomTest {
 	@Test
 	public void testApi() {
 		final Notes notesContainer = new Notes(maconomyClient);
-		final Notes.Filter filter = notesContainer.filter();
+		final Notes.Filter filter = notesContainer.filter(FilterRestriction.none());
 		final List<Notes.Filter.Record> records = filter.records();
 		final String description = records.get(0).noteNumber().get();
 		System.out.println("description: " + description);

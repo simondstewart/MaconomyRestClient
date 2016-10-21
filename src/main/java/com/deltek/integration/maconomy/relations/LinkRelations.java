@@ -51,8 +51,8 @@ public class LinkRelations {
 	 *
 	 * @return A "data:filter" link relation
 	 */
-	public static SafeLinkRelation<FilterData> dataFilter() {
-		return new BaseLinkRelation.SafeLinkRelationImpl<>("data:filter", HttpMethod.GET, FilterData.class);
+	public static SafeLinkRelation<FilterData> dataFilter(final FilterRestriction filterRestriction) {
+		return new BaseLinkRelation.SafeLinkRelationImpl<>("data:filter", HttpMethod.GET, FilterData.class, filterRestriction);
 	}
 
 	/**

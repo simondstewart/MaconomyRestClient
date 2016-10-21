@@ -1,6 +1,7 @@
 package com.deltek.integration.maconomy.client;
 
 import static com.deltek.integration.maconomy.Constants.NOTES;
+import static com.deltek.integration.maconomy.relations.FilterRestriction.none;
 import static com.deltek.integration.maconomy.relations.LinkRelations.add;
 import static com.deltek.integration.maconomy.relations.LinkRelations.create;
 import static com.deltek.integration.maconomy.relations.LinkRelations.dataAnyKey;
@@ -60,7 +61,7 @@ public class CrudTest {
 	@Test
 	public void testInsertAndCreateCardRecord() {
 		// load filter to store before-state
-		final FilterData notesFilter = maconomyClient.transition(notesContainer, dataFilter());
+		final FilterData notesFilter = maconomyClient.transition(notesContainer, dataFilter(none()));
 		final CardTableData notesCardTable = maconomyClient.transition(notesContainer, dataAnyKey());
 		final int rowCountBefore = notesFilter.getPanes().getFilter().getMeta().getRowCount();
 		assertTrue("Too many records in the filter to run the assertions below. Clean up the db", rowCountBefore < 25);

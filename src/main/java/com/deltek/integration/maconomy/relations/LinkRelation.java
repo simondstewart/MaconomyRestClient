@@ -28,4 +28,11 @@ public interface LinkRelation<TargetResource> {
 	 */
 	Class<TargetResource> getTargetResource();
 
+	/**
+	 * Some link relations may define special query part such as restrictions on read.
+	 *
+	 * @return The query as an iterable of parts.
+	 */
+	Iterable<QueryPart> getQuery();
+
 }
