@@ -3,6 +3,7 @@ package com.deltek.integration.maconomy.client;
 import static com.deltek.integration.maconomy.Constants.NOTES;
 import static com.deltek.integration.maconomy.relations.FilterRestriction.none;
 import static com.deltek.integration.maconomy.relations.LinkRelations.dataFilter;
+import static com.deltek.integration.maconomy.relations.LinkRelations.dataSameKey;
 import static java.util.Collections.emptyList;
 import static java.util.Collections.singletonList;
 import static org.junit.Assert.assertEquals;
@@ -19,6 +20,8 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import com.deltek.integration.maconomy.configuration.Server;
+import com.deltek.integration.maconomy.containers.v1.CardTableData;
+import com.deltek.integration.maconomy.containers.v1.CardTableRecord;
 import com.deltek.integration.maconomy.containers.v1.Container;
 import com.deltek.integration.maconomy.containers.v1.FilterData;
 import com.deltek.integration.maconomy.containers.v1.FilterRecord;
@@ -59,6 +62,15 @@ public class FilterTest {
 		final FilterData notes = maconomyClient.transition(notesContainer, dataFilter(none()));
 		final FilterData self = maconomyClient.transition(notes, LinkRelations.self(FilterData.class));
 		assertEquals(notes, self);
+	}
+
+	@Test
+	public void testSameKeyTransitionForFilterData() {
+		final FilterData notes = maconomyClient.transition(notesContainer, dataFilter(none()));
+		final FilterRecord firstRecord = notes.getPanes().getFilter().getRecords().get(0);
+		final CardTableData cardTableData = maconomyClient.transition(firstRecord, dataSameKey());
+		final CardTableRecord cardTableRecord = cardTableData.getPanes().getCard().getRecords().get(0);
+		assertEquals(firstRecord.getData().get("notenumber"), cardTableRecord.getData().get("notenumber"));
 	}
 
 	@Test

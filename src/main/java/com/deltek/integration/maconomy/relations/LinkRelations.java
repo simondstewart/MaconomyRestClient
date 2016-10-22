@@ -71,6 +71,19 @@ public class LinkRelations {
 	}
 
 	/**
+     * Indicates a reference to a container resource state that is identified by
+     * the same key as the context resource. This kind of link occurs when a record in a
+     * filter contains a link to the full resource state for that particular resource. A record
+     * in the filter pane of the ExpenseSheets container links to the full resource state of
+     * that particular expense sheet.
+     *
+	 * @return A "data:same-key" link relation
+	 */
+	public static SafeLinkRelation<CardTableData> dataSameKey() {
+		return new BaseLinkRelation.SafeLinkRelationImpl<>("data:same-key", HttpMethod.GET, CardTableData.class);
+	}
+
+	/**
      * Indicates a link that is used to perform the initialize state transition in
 	 * the insert variant. This resource computes a template to be used when creating
 	 * a record. The template record is pre-filled with the default value for each field in
