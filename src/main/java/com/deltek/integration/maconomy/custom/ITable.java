@@ -5,5 +5,6 @@ import com.deltek.integration.maconomy.containers.v1.CardTableData;
 public interface ITable<InitRecordType extends IInitRecord, RecordType extends IRecord>
 extends IPane<InitRecordType, RecordType>,
         IHasContext<CardTableData>,
-        IInsertAction<CardTableData, InitRecordType> {
+        IInsertAction<CardTableData, InitRecordType>,
+        IAddAction<CardTableData, InitRecordType> {
 }

@@ -20,8 +20,11 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import com.deltek.integration.maconomy.Constants;
+import com.deltek.integration.maconomy.client.MaconomyClient;
+import com.deltek.integration.maconomy.client.ServerException;
 import com.deltek.integration.maconomy.configuration.Server;
 import com.deltek.integration.maconomy.custom.codegen.CodeGenerator;
+import com.deltek.integration.maconomy.psorestclient.Employees.Card.InitRecord;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringBootTest
@@ -32,10 +35,19 @@ public class MaconomyPSORestContextTest {
 
 	@Autowired
 	private Server conf;
+	private MaconomyClient maconomyClient;
 	private final File outputDir = new File(Constants.GENERATED);
 
 	@Before
 	public void setUp() throws IOException {
+		// functional test setup
+		maconomyClient =
+				new MaconomyClient.Builder(conf.getHost(), conf.getPort(), conf.getShortname())
+				                  .username(conf.getUsername())
+				                  .password(conf.getPassword())
+				                  .build();
+
+		// code generation (optional)
 		if (!outputDir.exists()) {
 			assertTrue(outputDir.mkdir(), "Unable to create " + outputDir.getAbsolutePath());
 		} else {
@@ -47,7 +59,7 @@ public class MaconomyPSORestContextTest {
 		}
 
 		// remove comments here and run once to regenerate the custom containers used in this test class
-		regenerateTestCode(new String[]{"employees"});
+		//regenerateTestCode(new String[]{"employees"});
 	}
 
 	private void regenerateTestCode(final String... containers) throws IOException {
@@ -78,7 +90,14 @@ public class MaconomyPSORestContextTest {
 
 	@Test
 	public void missingMandatoryEmployeeError() throws IOException {
-
+		expectedEx.expect(ServerException.class);
+		expectedEx.expectMessage("Missing mandatory field");
+		final Employees employees = new Employees(maconomyClient);
+		final InitRecord templateEmployee = employees.insert();
+		templateEmployee.employeeNumber().set("10101011");
+		templateEmployee.name1().set(""); //missing field
+		//templateEmployee.country().set("invalid country"); // TODO: (ANH) Implement popup support
+		templateEmployee.create();
 
 //		expectedEx.expect(MaconomyRestClientException.class);
 //		final Record<EmployeeCard> templateEmployee = restClientContext.employee().init();

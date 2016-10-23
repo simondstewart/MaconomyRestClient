@@ -2,7 +2,7 @@ package com.deltek.integration.maconomy.client;
 
 import static com.deltek.integration.maconomy.Constants.NOTES;
 import static com.deltek.integration.maconomy.relations.FilterRestriction.none;
-import static com.deltek.integration.maconomy.relations.LinkRelations.add;
+import static com.deltek.integration.maconomy.relations.LinkRelations.addTable;
 import static com.deltek.integration.maconomy.relations.LinkRelations.create;
 import static com.deltek.integration.maconomy.relations.LinkRelations.dataAnyKey;
 import static com.deltek.integration.maconomy.relations.LinkRelations.dataFilter;
@@ -91,7 +91,7 @@ public class CrudTest {
 
 		final CardTablePane table = notesCardTable.getPanes().getTable();
 		// run action:add to receive initialization data, TODO: (ANH) it would be nice to avoid the null-arg here
-		final CardTableRecord initData = maconomyClient.transition(table, add());
+		final CardTableRecord initData = maconomyClient.transition(table, addTable());
 		assertTrue(initData.getLinks().get(create(initData)).isPresent());
 		final int originalLineNumber = Integer.parseInt(initData.getData().get("linenumber").toString());
 		assertSame(originalLineNumber, 0);

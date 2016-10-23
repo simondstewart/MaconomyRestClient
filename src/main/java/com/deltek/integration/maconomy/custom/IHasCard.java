@@ -1,14 +1,11 @@
 package com.deltek.integration.maconomy.custom;
 
-import java.util.function.Function;
-
 import com.deltek.integration.maconomy.containers.v1.CardTableData;
 import com.deltek.integration.maconomy.containers.v1.Container;
 import com.deltek.integration.maconomy.relations.LinkRelations;
 
-public interface IHasCard<CardType> extends IHasClient, IHasContext<Container> {
-
-	public Function<CardTableData, CardType> getCardCtorFn();
+public interface IHasCard<CardType extends ICard<?, ?>>
+extends IHasClient, IHasContext<Container>, IHasCardCtor<CardType> {
 
 	default public CardType card() {
         final CardTableData data = getClient().transition(getContext(), LinkRelations.dataAnyKey());

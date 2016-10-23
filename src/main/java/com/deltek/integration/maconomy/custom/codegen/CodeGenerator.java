@@ -10,6 +10,7 @@ import java.util.function.Function;
 import com.deltek.integration.maconomy.client.MaconomyClient;
 import com.deltek.integration.maconomy.containers.v1.CardTableData;
 import com.deltek.integration.maconomy.containers.v1.CardTableRecord;
+import com.deltek.integration.maconomy.containers.v1.Container;
 import com.deltek.integration.maconomy.containers.v1.FilterData;
 import com.deltek.integration.maconomy.containers.v1.FilterRecord;
 import com.deltek.integration.maconomy.custom.BaseCardPane;
@@ -18,11 +19,13 @@ import com.deltek.integration.maconomy.custom.BaseContainer;
 import com.deltek.integration.maconomy.custom.BaseFilterPane;
 import com.deltek.integration.maconomy.custom.BaseRecord;
 import com.deltek.integration.maconomy.custom.BaseTablePane;
-import com.deltek.integration.maconomy.custom.IHasClient;
+import com.deltek.integration.maconomy.custom.ICreateAction;
 import com.deltek.integration.maconomy.custom.IHasCard;
+import com.deltek.integration.maconomy.custom.IHasClient;
 import com.deltek.integration.maconomy.custom.IHasFilter;
 import com.deltek.integration.maconomy.custom.IHasTable;
 import com.deltek.integration.maconomy.custom.IInitRecord;
+import com.deltek.integration.maconomy.custom.IInsertAction;
 import com.deltek.integration.maconomy.custom.IRecord;
 import com.deltek.integration.maconomy.custom.RStringField;
 import com.deltek.integration.maconomy.custom.RWStringField;
@@ -138,25 +141,33 @@ public class CodeGenerator {
 		final Class<?> baseRecordType = paneType.equals("Filter") ? BaseRecord.class : BaseCardTableRecord.class;
 		final String record = classAsIdentifier(recordType);
 
+		final AbstractJClass cardClass = codeModel.ref(containerClass.fullName() + ".Card");
+		final AbstractJClass _superType;
+		if (paneType.equals("Filter")) {
+			_superType = codeModel.ref(baseRecordType).narrow(recordType);
+		} else {
+			_superType = codeModel.ref(baseRecordType).narrow(cardClass);
+		}
+
+
 		final JDefinedClass initRecordClass = paneClass._class(JMod.PUBLIC + JMod.STATIC, "InitRecord")
-				                                       ._extends(codeModel.ref(baseRecordType).narrow(recordType))
+				                                       ._extends(_superType)
 				                                       ._implements(IInitRecord.class);
 		final JDefinedClass recordClass = paneClass._class(JMod.PUBLIC + JMod.STATIC, "Record")
-				                                   ._extends(codeModel.ref(baseRecordType).narrow(recordType))
+				                                   ._extends(_superType)
 				                                   ._implements(IRecord.class);
 
 		paneClass._extends(codeModel.ref(basePaneClass).narrow(initRecordClass, recordClass));
 
-		final AbstractJClass paneFuncType = codeModel.ref(Function.class).narrow(codeModel.ref(CardTableRecord.class), initRecordClass);
-		final JMethod getFilterCtorFn = containerClass.method(JMod.PUBLIC, paneFuncType, "getInitRecordCtorFn");
-		getFilterCtorFn.annotate(Override.class);
-		getFilterCtorFn.body()._return(ctor2fn(initRecordClass, JExpr._this(), classAsIdentifier(recordType)));
-		/*
-		@Override
-	    public Function<CardTableRecord, Notes.Card.InitRecord> getInitRecordCtorFn() {
-	        return data -> new Notes.Card.InitRecord(this, data);
-	    }*/
+		if (paneType.equals("Card")) {
+			final AbstractJClass paneFuncType = codeModel.ref(Function.class).narrow(codeModel.ref(CardTableRecord.class), initRecordClass);
+			final JMethod getInitRecordCtorFn = containerClass.method(JMod.PUBLIC, paneFuncType, "getInitRecordCtorFn");
+			getInitRecordCtorFn.annotate(Override.class);
+			getInitRecordCtorFn.body()._return(ctor2fn(initRecordClass, JExpr._this(), classAsIdentifier(recordType)));
 
+			final AbstractJClass implementsInsert = codeModel.ref(IInsertAction.class).narrow(codeModel.ref(Container.class), initRecordClass);
+			containerClass._implements(implementsInsert);
+		}
 
 		final AbstractJClass clientProvider = codeModel.ref(IHasClient.class);
 		final String clientProviderName = lowerCaseFirstLetter(IHasClient.class.getSimpleName());
@@ -175,12 +186,24 @@ public class CodeGenerator {
 		final JMethod initRecordCtor = initRecordClass.constructor(JMod.PRIVATE);
 		final JVar initRecordCtorParam1 = initRecordCtor.param(clientProvider, clientProviderName);
 		final JVar initRecordCtorParam2 = initRecordCtor.param(recordType, record);
-		initRecordCtor.body().invoke(SUPER).arg(initRecordCtorParam1).arg(initRecordCtorParam2);
+		if (paneType.equals("Filter")) {
+			initRecordCtor.body().invoke(SUPER).arg(initRecordCtorParam1).arg(initRecordCtorParam2);
+		} else {
+			initRecordClass._implements(codeModel.ref(ICreateAction.class).narrow(cardClass));
+
+			final JLambda cardCtor = ctor2fn(cardClass, initRecordCtorParam1, classAsIdentifier(CardTableData.class));
+			initRecordCtor.body().invoke(SUPER).arg(initRecordCtorParam1).arg(initRecordCtorParam2).arg(cardCtor);
+		}
 
 		final JMethod recordCtor = recordClass.constructor(JMod.PRIVATE);
 		final JVar recordCtorParam1 = recordCtor.param(clientProvider, clientProviderName);
 		final JVar recordCtorParam2 = recordCtor.param(recordType, record);
-		recordCtor.body().invoke(SUPER).arg(recordCtorParam1).arg(recordCtorParam2);
+		if (paneType.equals("Filter")) {
+			recordCtor.body().invoke(SUPER).arg(recordCtorParam1).arg(recordCtorParam2);
+		} else {
+			final JLambda cardCtor = ctor2fn(cardClass, recordCtorParam1, classAsIdentifier(CardTableData.class));
+			recordCtor.body().invoke(SUPER).arg(recordCtorParam1).arg(recordCtorParam2).arg(cardCtor);
+		}
 
 		// build field wrappers
 		for(final Field xField: xPane.fields.fields) {
@@ -207,7 +230,7 @@ public class CodeGenerator {
 	}
 
 	/** Returns a 2-args constructor function reference of the given type. */
-	private JLambda ctor2fn(final JDefinedClass clazz, final IJExpression arg, final String lambdaArg) {
+	private JLambda ctor2fn(final AbstractJClass clazz, final IJExpression arg, final String lambdaArg) {
 		final JLambda jLambda = new JLambda();
 		final JLambdaParam parameter = jLambda.addParam(lambdaArg);
 		jLambda.body()._return(JExpr._new(clazz).arg(arg).arg(parameter));

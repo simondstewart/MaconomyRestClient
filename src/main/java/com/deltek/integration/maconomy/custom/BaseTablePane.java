@@ -26,6 +26,16 @@ implements ITable<InitRecordType, RecordType> {
 	}
 
 	@Override
+    public Function<CardTableRecord, InitRecordType> getInitRecordCtorFn() {
+        return initRecordCtorFn;
+    }
+
+	@Override
+	public CardTableData getContext() {
+		return cardTableData;
+	}
+
+	@Override
 	public List<RecordType> records() {
 		final List<RecordType> records = new ArrayList<>();
 		for(final CardTableRecord record : cardTableData.getPanes().getTable().getRecords()) {

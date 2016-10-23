@@ -108,10 +108,25 @@ public class LinkRelations {
      *
 	 * @return A "action:add" link relation
 	 */
-	public static SafeLinkRelation<CardTableRecord> add() {
+	public static SafeLinkRelation<CardTableRecord> addCard() {
 		return new BaseLinkRelation.SafeLinkRelationImpl<>("action:add",
 				                                           HttpMethod.POST,
 				                                           CardTableRecord.class);
+	}
+
+	/**
+     * Indicates a link that is used to perform the initialize state transition in the
+     * add variant. This works like the insert variant described previously, but in a table
+     * pane the new record is added at the end of the table. Client programs must use
+     * the POST method with no request entity to perform this state transition.
+     *
+	 * @return A "action:add" link relation
+	 */
+	public static EntityLinkRelation<Void, CardTableRecord> addTable() {
+		return new BaseLinkRelation.EntityLinkRelationImpl<Void, CardTableRecord>("action:add",
+				                                                                  HttpMethod.POST,
+				                                                                  CardTableRecord.class,
+				                                                                  null);
 	}
 
 	/**

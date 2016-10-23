@@ -1,6 +1,7 @@
 package com.deltek.integration.maconomy.custom;
 
-import static org.junit.Assert.assertNotNull;
+import static java.time.Instant.now;
+import static org.junit.Assert.assertEquals;
 
 import java.util.List;
 
@@ -44,8 +45,10 @@ public class HandwrittenCustomTest {
 	public void testApi() {
 		final Notes notesContainer = new Notes(maconomyClient);
 		final Notes.Card.InitRecord initRecord = notesContainer.insert();
-		assertNotNull(initRecord);
-
+		final String noteNumber = "Note_" + now().getNano();
+		initRecord.noteNumber().set(noteNumber);
+		final Notes.Card created = initRecord.create();
+		assertEquals(noteNumber, created.records().get(0).noteNumber().get());
 
 		final Notes.Filter filter = notesContainer.filter(FilterRestriction.none());
 		final List<Notes.Filter.Record> records = filter.records();
@@ -53,12 +56,9 @@ public class HandwrittenCustomTest {
 		final String oldNoteNumber = secondRecord.noteNumber().get();
 
 
-		final Notes.Card.Record record = notesContainer.card().records().get(0);
-		final String noteNumber = record.noteNumber().get();
-		System.out.println("noteNumber: " + noteNumber);
 
 		// it is possible to set this field when the Card is in Update state.
-		record.noteNumber().set("some new value");
+//		record.noteNumber().set("some new value");
 	}
 
 
