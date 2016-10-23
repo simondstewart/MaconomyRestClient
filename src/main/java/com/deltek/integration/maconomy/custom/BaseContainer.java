@@ -3,7 +3,8 @@ package com.deltek.integration.maconomy.custom;
 import com.deltek.integration.maconomy.client.MaconomyClient;
 import com.deltek.integration.maconomy.containers.v1.Container;
 
-public abstract class BaseContainer implements ICustomContainer {
+public abstract class BaseContainer
+implements ICustomContainer, IHasClient, IHasContext<Container> {
 
 	private final MaconomyClient maconomyClient;
 	private final Container container;
@@ -20,7 +21,7 @@ public abstract class BaseContainer implements ICustomContainer {
     }
 
     @Override
-    public Container getContainer() {
+    public Container getContext() {
     	return container;
     }
 

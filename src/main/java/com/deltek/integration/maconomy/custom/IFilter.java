@@ -1,4 +1,7 @@
 package com.deltek.integration.maconomy.custom;
 
-public interface IFilter<InitRecordType, RecordType> extends IPane<InitRecordType, RecordType> {
+import com.deltek.integration.maconomy.containers.v1.FilterData;
+
+public interface IFilter<InitRecordType extends IInitRecord, RecordType extends IRecord>
+extends IPane<InitRecordType, RecordType>, IHasContext<FilterData> {
 }

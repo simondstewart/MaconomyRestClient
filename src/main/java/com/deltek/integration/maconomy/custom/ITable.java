@@ -1,4 +1,9 @@
 package com.deltek.integration.maconomy.custom;
 
-public interface ITable<InitRecordType, RecordType> extends IPane<InitRecordType, RecordType> {
+import com.deltek.integration.maconomy.containers.v1.CardTableData;
+
+public interface ITable<InitRecordType extends IInitRecord, RecordType extends IRecord>
+extends IPane<InitRecordType, RecordType>,
+        IHasContext<CardTableData>,
+        IInsertAction<CardTableData, InitRecordType> {
 }

@@ -35,7 +35,7 @@ public class MaconomyPSORestContextTest {
 	private final File outputDir = new File(Constants.GENERATED);
 
 	@Before
-	public void setUp() {
+	public void setUp() throws IOException {
 		if (!outputDir.exists()) {
 			assertTrue(outputDir.mkdir(), "Unable to create " + outputDir.getAbsolutePath());
 		} else {
@@ -44,6 +44,23 @@ public class MaconomyPSORestContextTest {
 			} catch (final IOException e) {
 				fail("Unable to clean " + outputDir.getAbsolutePath());
 			}
+		}
+
+		// remove comments here and run once to regenerate the custom containers used in this test class
+		regenerateTestCode(new String[]{"employees"});
+	}
+
+	private void regenerateTestCode(final String... containers) throws IOException {
+		for (final String container : containers) {
+			final CodeGenerator codeGenerator = new CodeGenerator(outputDir);
+			final String specificationWebServiceUrl = conf.getHost() + ":" + conf.getPort() + "/specifications/v1/mdsl/";
+			codeGenerator.generate("com.deltek.integration.maconomy.psorestclient", new URL(specificationWebServiceUrl + container.toLowerCase()));
+
+			System.out.println("#########################################################################");
+			final File output = new File(
+					outputDir.getAbsolutePath() + "\\com\\deltek\\integration\\maconomy\\psorestclient\\Employees.java");
+			FileUtils.readLines(output, "UTF-8").forEach(System.out::println);
+			System.out.println("#########################################################################");
 		}
 	}
 
@@ -61,16 +78,6 @@ public class MaconomyPSORestContextTest {
 
 	@Test
 	public void missingMandatoryEmployeeError() throws IOException {
-		final CodeGenerator codeGenerator = new CodeGenerator(outputDir);
-		final String specificationWebServiceUrl = conf.getHost() + ":" + conf.getPort() + "/specifications/v1/mdsl/";
-		codeGenerator.generate(Constants.CUSTOM_PACKAGE, new URL(specificationWebServiceUrl + "employees"));
-
-		System.out.println("#########################################################################");
-		final File output = new File(
-				outputDir.getAbsolutePath() + "\\com\\deltek\\integration\\maconomy\\custom\\codegen\\Employees.java");
-		FileUtils.readLines(output, "UTF-8").forEach(System.out::println);
-		System.out.println("#########################################################################");
-
 
 
 //		expectedEx.expect(MaconomyRestClientException.class);
@@ -149,7 +156,5 @@ public class MaconomyPSORestContextTest {
 //		final Record<EmployeeTable> employeeTableRecord = restClientContext.employee().initTable(createdEmployee.getPanes().getTable());
 //		Assert.assertTrue(employeeTableRecord.getData() instanceof EmployeeTable);
 	}
-
-
 
 }

@@ -95,7 +95,9 @@ public class LinkRelations {
 	 * @return A "action:insert" link relation
 	 */
 	public static SafeLinkRelation<CardTableRecord> insert() {
-		return new BaseLinkRelation.SafeLinkRelationImpl<>("action:insert", HttpMethod.POST, CardTableRecord.class);
+		return new BaseLinkRelation.SafeLinkRelationImpl<>("action:insert",
+				                                           HttpMethod.POST,
+				                                           CardTableRecord.class);
 	}
 
 	/**
@@ -106,11 +108,10 @@ public class LinkRelations {
      *
 	 * @return A "action:add" link relation
 	 */
-	public static EntityLinkRelation<Void, CardTableRecord> add() {
-		return new BaseLinkRelation.EntityLinkRelationImpl<Void, CardTableRecord>("action:add",
-				                                                                  HttpMethod.POST,
-				                                                                  CardTableRecord.class,
-				                                                                  null);
+	public static SafeLinkRelation<CardTableRecord> add() {
+		return new BaseLinkRelation.SafeLinkRelationImpl<>("action:add",
+				                                           HttpMethod.POST,
+				                                           CardTableRecord.class);
 	}
 
 	/**

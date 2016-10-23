@@ -7,7 +7,7 @@ import java.util.function.Function;
 import com.deltek.integration.maconomy.containers.v1.CardTableData;
 import com.deltek.integration.maconomy.containers.v1.CardTableRecord;
 
-public abstract class BaseTablePane<InitRecordType, RecordType>
+public abstract class BaseTablePane<InitRecordType extends IInitRecord, RecordType extends IRecord>
 extends BasePane<InitRecordType, RecordType>
 implements ITable<InitRecordType, RecordType> {
 
@@ -15,9 +15,11 @@ implements ITable<InitRecordType, RecordType> {
 	private final Function<CardTableRecord, InitRecordType> initRecordCtorFn;
 	private final Function<CardTableRecord, RecordType> recordCtorFn;
 
-	protected BaseTablePane(final CardTableData cardTableData,
-			               final Function<CardTableRecord, InitRecordType> initRecordCtorFn,
-			               final Function<CardTableRecord, RecordType> recordCtorFn) {
+	protected BaseTablePane(final IHasClient clientProvider,
+		                    final CardTableData cardTableData,
+			                final Function<CardTableRecord, InitRecordType> initRecordCtorFn,
+			                final Function<CardTableRecord, RecordType> recordCtorFn) {
+		super(clientProvider);
 		this.cardTableData = cardTableData;
 		this.initRecordCtorFn = initRecordCtorFn;
 		this.recordCtorFn = recordCtorFn;

@@ -13,21 +13,26 @@ import com.deltek.integration.maconomy.containers.v1.CardTableRecord;
 import com.deltek.integration.maconomy.containers.v1.FilterData;
 import com.deltek.integration.maconomy.containers.v1.FilterRecord;
 import com.deltek.integration.maconomy.custom.BaseCardPane;
+import com.deltek.integration.maconomy.custom.BaseCardTableRecord;
 import com.deltek.integration.maconomy.custom.BaseContainer;
 import com.deltek.integration.maconomy.custom.BaseFilterPane;
+import com.deltek.integration.maconomy.custom.BaseRecord;
 import com.deltek.integration.maconomy.custom.BaseTablePane;
+import com.deltek.integration.maconomy.custom.IHasClient;
 import com.deltek.integration.maconomy.custom.IHasCard;
 import com.deltek.integration.maconomy.custom.IHasFilter;
 import com.deltek.integration.maconomy.custom.IHasTable;
+import com.deltek.integration.maconomy.custom.IInitRecord;
+import com.deltek.integration.maconomy.custom.IRecord;
 import com.deltek.integration.maconomy.custom.RStringField;
 import com.deltek.integration.maconomy.custom.RWStringField;
 import com.deltek.integration.maconomy.custom.codegen.XmlUnmarshaller.Field;
 import com.helger.jcodemodel.AbstractJClass;
+import com.helger.jcodemodel.IJExpression;
 import com.helger.jcodemodel.JClassAlreadyExistsException;
 import com.helger.jcodemodel.JCodeModel;
 import com.helger.jcodemodel.JDefinedClass;
 import com.helger.jcodemodel.JExpr;
-import com.helger.jcodemodel.JFieldVar;
 import com.helger.jcodemodel.JInvocation;
 import com.helger.jcodemodel.JLambda;
 import com.helger.jcodemodel.JLambdaParam;
@@ -79,7 +84,7 @@ public class CodeGenerator {
 				final AbstractJClass filterFuncType = codeModel.ref(Function.class).narrow(codeModel.ref(FilterData.class), filterClass);
 				final JMethod getFilterCtorFn = containerClass.method(JMod.PUBLIC, filterFuncType, "getFilterCtorFn");
 				getFilterCtorFn.annotate(Override.class);
-				getFilterCtorFn.body()._return(ctor1fn(filterClass, classAsIdentifier(FilterData.class)));
+				getFilterCtorFn.body()._return(ctor2fn(filterClass, JExpr._this(), classAsIdentifier(FilterData.class)));
 			}
 
 			if (mdsl.container.card != null) {
@@ -91,7 +96,7 @@ public class CodeGenerator {
 				final AbstractJClass cardFuncType = codeModel.ref(Function.class).narrow(codeModel.ref(CardTableData.class), cardClass);
 				final JMethod getCardCtorFn = containerClass.method(JMod.PUBLIC, cardFuncType, "getCardCtorFn");
 				getCardCtorFn.annotate(Override.class);
-				getCardCtorFn.body()._return(ctor1fn(cardClass, classAsIdentifier(CardTableData.class)));
+				getCardCtorFn.body()._return(ctor2fn(cardClass, JExpr._this(), classAsIdentifier(CardTableData.class)));
 			}
 
 			if (mdsl.container.table != null) {
@@ -103,7 +108,7 @@ public class CodeGenerator {
 				final AbstractJClass tableFuncType = codeModel.ref(Function.class).narrow(codeModel.ref(CardTableData.class), tableClass);
 				final JMethod getTableCtorFn = containerClass.method(JMod.PUBLIC, tableFuncType, "getTableCtorFn");
 				getTableCtorFn.annotate(Override.class);
-				getTableCtorFn.body()._return(ctor1fn(tableClass, classAsIdentifier(CardTableData.class)));
+				getTableCtorFn.body()._return(ctor2fn(tableClass, JExpr._this(), classAsIdentifier(CardTableData.class)));
 			}
 
 			codeModel.build(outputDir);
@@ -128,34 +133,62 @@ public class CodeGenerator {
 			                        final Class<?> basePaneClass) throws JClassAlreadyExistsException {
 		final JDefinedClass paneClass = containerClass._class(JMod.PUBLIC + JMod.STATIC, paneType);
 
-		final JDefinedClass initRecordClass = paneClass._class(JMod.PUBLIC + JMod.STATIC, "InitRecord");
-		final JDefinedClass recordClass = paneClass._class(JMod.PUBLIC + JMod.STATIC, "Record");
-		paneClass._extends(codeModel.ref(basePaneClass).narrow(initRecordClass, recordClass));
-
 		final Class<?> dataType = paneType.equals("Filter") ? FilterData.class : CardTableData.class;
 		final Class<?> recordType = paneType.equals("Filter") ? FilterRecord.class : CardTableRecord.class;
+		final Class<?> baseRecordType = paneType.equals("Filter") ? BaseRecord.class : BaseCardTableRecord.class;
+		final String record = classAsIdentifier(recordType);
+
+		final JDefinedClass initRecordClass = paneClass._class(JMod.PUBLIC + JMod.STATIC, "InitRecord")
+				                                       ._extends(codeModel.ref(baseRecordType).narrow(recordType))
+				                                       ._implements(IInitRecord.class);
+		final JDefinedClass recordClass = paneClass._class(JMod.PUBLIC + JMod.STATIC, "Record")
+				                                   ._extends(codeModel.ref(baseRecordType).narrow(recordType))
+				                                   ._implements(IRecord.class);
+
+		paneClass._extends(codeModel.ref(basePaneClass).narrow(initRecordClass, recordClass));
+
+		final AbstractJClass paneFuncType = codeModel.ref(Function.class).narrow(codeModel.ref(CardTableRecord.class), initRecordClass);
+		final JMethod getFilterCtorFn = containerClass.method(JMod.PUBLIC, paneFuncType, "getInitRecordCtorFn");
+		getFilterCtorFn.annotate(Override.class);
+		getFilterCtorFn.body()._return(ctor2fn(initRecordClass, JExpr._this(), classAsIdentifier(recordType)));
+		/*
+		@Override
+	    public Function<CardTableRecord, Notes.Card.InitRecord> getInitRecordCtorFn() {
+	        return data -> new Notes.Card.InitRecord(this, data);
+	    }*/
+
+
+		final AbstractJClass clientProvider = codeModel.ref(IHasClient.class);
+		final String clientProviderName = lowerCaseFirstLetter(IHasClient.class.getSimpleName());
 
 		// ctor
 		final JMethod paneClassCtor = paneClass.constructor(JMod.PRIVATE);
-		final String param1name = lowerCaseFirstLetter(dataType.getSimpleName());
-		final JVar param1 = paneClassCtor.param(dataType, param1name);
+		final JVar param1 = paneClassCtor.param(clientProvider, clientProviderName);
+		final String param2name = lowerCaseFirstLetter(dataType.getSimpleName());
+		final JVar param2 = paneClassCtor.param(dataType, param2name);
 		paneClassCtor.body().invoke("super")
 		                    .arg(param1)
-		                    .arg(ctor1fn(initRecordClass, "initRecord"))
-		                    .arg(ctor1fn(recordClass, "record"));
+		                    .arg(param2)
+		                    .arg(ctor2fn(initRecordClass, param1, "initRecord"))
+		                    .arg(ctor2fn(recordClass, param1, "record"));
 
-		ctor1(JMod.PRIVATE, initRecordClass, recordType);
-		ctor1(JMod.PRIVATE, recordClass, recordType);
+		final JMethod initRecordCtor = initRecordClass.constructor(JMod.PRIVATE);
+		final JVar initRecordCtorParam1 = initRecordCtor.param(clientProvider, clientProviderName);
+		final JVar initRecordCtorParam2 = initRecordCtor.param(recordType, record);
+		initRecordCtor.body().invoke(SUPER).arg(initRecordCtorParam1).arg(initRecordCtorParam2);
+
+		final JMethod recordCtor = recordClass.constructor(JMod.PRIVATE);
+		final JVar recordCtorParam1 = recordCtor.param(clientProvider, clientProviderName);
+		final JVar recordCtorParam2 = recordCtor.param(recordType, record);
+		recordCtor.body().invoke(SUPER).arg(recordCtorParam1).arg(recordCtorParam2);
 
 		// build field wrappers
-		final String record = classAsIdentifier(recordType);
 		for(final Field xField: xPane.fields.fields) {
 			// initRecordType
 			final AbstractJClass initRecordTypeImpl = typeImpl(codeModel, xField.type, !xField.create);
 			if (initRecordTypeImpl != null) {
-				final JFieldVar recordField = initRecordClass.fields().get(record);
 				final JInvocation fieldWrapper =
-					JExpr._new(initRecordTypeImpl).arg(recordField.invoke("getData"))
+					JExpr._new(initRecordTypeImpl).arg(JExpr.invoke("getContext").invoke("getData"))
 					                              .arg(xField.name.toLowerCase());
 				initRecordClass.method(JMod.PUBLIC, initRecordTypeImpl, lowerCaseFirstLetter(xField.name))
 				               .body()._return(fieldWrapper);
@@ -163,10 +196,9 @@ public class CodeGenerator {
 			// recordType
 			final AbstractJClass recordTypeImpl = typeImpl(codeModel, xField.type, !xField.update);
 			if (recordTypeImpl != null) {
-				final JFieldVar recordField = recordClass.fields().get(record);
 				final JInvocation fieldWrapper =
-					JExpr._new(recordTypeImpl).arg(recordField.invoke("getData"))
-					                              .arg(xField.name.toLowerCase());
+					JExpr._new(recordTypeImpl).arg(JExpr.invoke("getContext").invoke("getData"))
+					                          .arg(xField.name.toLowerCase());
 				recordClass.method(JMod.PUBLIC, recordTypeImpl, lowerCaseFirstLetter(xField.name))
 				           .body()._return(fieldWrapper);
 			}
@@ -174,21 +206,11 @@ public class CodeGenerator {
 		return paneClass;
 	}
 
-	/** Initialize a single, final field based on a 1-args constructor. */
-	private JMethod ctor1(final int mods, final JDefinedClass clazz, final Class<?> field1Type) {
-		final String field1Name = classAsIdentifier(field1Type);
-		clazz.field(JMod.PRIVATE + JMod.FINAL, field1Type, field1Name);
-		final JMethod ctor = clazz.constructor(mods);
-		ctor.param(field1Type, field1Name);
-		ctor.body().assign(JExpr.refthis(field1Name), JExpr.ref(field1Name));
-		return ctor;
-	}
-
-	/** Returns a 1-args constructor function reference of the given type. */
-	private JLambda ctor1fn(final JDefinedClass clazz, final String argumentName) {
+	/** Returns a 2-args constructor function reference of the given type. */
+	private JLambda ctor2fn(final JDefinedClass clazz, final IJExpression arg, final String lambdaArg) {
 		final JLambda jLambda = new JLambda();
-		final JLambdaParam parameter = jLambda.addParam(argumentName);
-		jLambda.body()._return(JExpr._new(clazz).arg(parameter));
+		final JLambdaParam parameter = jLambda.addParam(lambdaArg);
+		jLambda.body()._return(JExpr._new(clazz).arg(arg).arg(parameter));
 		return jLambda;
 	}
 

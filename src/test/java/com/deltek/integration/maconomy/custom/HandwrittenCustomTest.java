@@ -1,5 +1,7 @@
 package com.deltek.integration.maconomy.custom;
 
+import static org.junit.Assert.assertNotNull;
+
 import java.util.List;
 
 import org.junit.Before;
@@ -11,6 +13,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import com.deltek.integration.maconomy.client.MaconomyClient;
 import com.deltek.integration.maconomy.configuration.Server;
+import com.deltek.integration.maconomy.custom.Notes.Filter.Record;
 import com.deltek.integration.maconomy.relations.FilterRestriction;
 
 /**
@@ -40,10 +43,15 @@ public class HandwrittenCustomTest {
 	@Test
 	public void testApi() {
 		final Notes notesContainer = new Notes(maconomyClient);
+		final Notes.Card.InitRecord initRecord = notesContainer.insert();
+		assertNotNull(initRecord);
+
+
 		final Notes.Filter filter = notesContainer.filter(FilterRestriction.none());
 		final List<Notes.Filter.Record> records = filter.records();
-		final String description = records.get(0).noteNumber().get();
-		System.out.println("description: " + description);
+		final Record secondRecord = records.get(1);
+		final String oldNoteNumber = secondRecord.noteNumber().get();
+
 
 		final Notes.Card.Record record = notesContainer.card().records().get(0);
 		final String noteNumber = record.noteNumber().get();
