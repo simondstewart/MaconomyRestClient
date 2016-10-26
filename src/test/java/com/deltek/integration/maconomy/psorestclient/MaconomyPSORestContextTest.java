@@ -101,6 +101,11 @@ public class MaconomyPSORestContextTest {
 		Assert.assertNotNull(filterResponse);
 		Assert.assertTrue(filterResponse.getPanes() instanceof FilterPanes);
 		
+		JobBudget firstBudgetRecord = filterResponse.getPanes().getFilter().getRecords().get(0).getData();
+		firstBudgetRecord.getTransactiontimestamp();
+		firstBudgetRecord.getAccountmanagernumber();
+		firstBudgetRecord.getCreateddate();
+		
 	}
 	
 	@Test

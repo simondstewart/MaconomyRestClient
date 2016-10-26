@@ -12,6 +12,7 @@ import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.GenericType;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import javax.ws.rs.ext.ContextResolver;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -22,22 +23,18 @@ import org.glassfish.jersey.logging.LoggingFeature;
 import org.glassfish.jersey.message.GZipEncoder;
 
 import com.deltek.integration.maconomy.configuration.MaconomyServerConfiguration;
-import com.deltek.integration.maconomy.domain.CardTableContainer;
+import com.deltek.integration.maconomy.configuration.jackson.MLocalDateTimeDeserialiser;
+import com.deltek.integration.maconomy.configuration.jackson.MLocalDateTimeSerialiser;
 import com.deltek.integration.maconomy.domain.Endpoint;
 import com.deltek.integration.maconomy.domain.Error;
-import com.deltek.integration.maconomy.domain.FilterContainer;
 import com.deltek.integration.maconomy.domain.HasConcurrencyControl;
 import com.deltek.integration.maconomy.domain.HasLinks;
 import com.deltek.integration.maconomy.domain.HasLinksAndConcurrencyHolder;
-import com.deltek.integration.maconomy.domain.Links;
-import com.deltek.integration.maconomy.domain.Record;
-import com.deltek.integration.maconomy.domain.Table;
-import com.deltek.integration.maconomy.psorestclient.domain.EmployeeCard;
-import com.deltek.integration.maconomy.psorestclient.domain.EmployeeTable;
-import com.deltek.integration.maconomy.psorestclient.domain.HoursJournal;
-import com.deltek.integration.maconomy.psorestclient.domain.JobBudget;
-import com.deltek.integration.maconomy.psorestclient.domain.JobBudgetLine;
-import com.deltek.integration.maconomy.psorestclient.domain.Journal;
+import com.deltek.integration.maconomy.domain.commontypes.MLocalDateTime;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.databind.module.SimpleModule;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 
 public class MaconomyRestClient {
 
@@ -61,9 +58,48 @@ public class MaconomyRestClient {
 
 		HttpAuthenticationFeature authFeature = HttpAuthenticationFeature.basic(maconomyUser, maconomyPassword);
 
-		Client client = ClientBuilder.newBuilder().register(JacksonFeature.class).register(authFeature)
+		Client client = ClientBuilder.newBuilder().register(JacksonFeature.class)
+				.register(new CustomObjectMapperContextResolver())
+				.register(authFeature)
 				.register(EncodingFilter.class).register(GZipEncoder.class).register(LoggingFeature.class).build();
 		return client;
+	}
+	
+	private class CustomObjectMapperContextResolver implements ContextResolver<ObjectMapper> {
+
+		private final ObjectMapper objectMapper;
+		
+		public CustomObjectMapperContextResolver() {
+			super();
+			this.objectMapper = new ObjectMapper()
+					//This handles standard Java 8 Time types.
+					.registerModule(new JavaTimeModule())
+					.registerModule(new CustomSerialisationModule())
+					.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
+		}
+
+		@Override
+		public ObjectMapper getContext(Class<?> type) {
+			return objectMapper;
+		}
+
+	}
+	
+	/**
+	 * Mapper wide type serialisation configuration module.
+	 * 
+	 * @author simonstewart
+	 *
+	 */
+	public class CustomSerialisationModule extends SimpleModule {
+
+		public CustomSerialisationModule() {
+			super("CustomSerialisationModule");
+			//Map a custom type to the de/serialisers
+		    addSerializer(MLocalDateTime.class, new MLocalDateTimeSerialiser());
+		    addDeserializer(MLocalDateTime.class, new MLocalDateTimeDeserialiser());
+		}
+		
 	}
 	
 	public Endpoint getEndpoint(String endpointPath) {
