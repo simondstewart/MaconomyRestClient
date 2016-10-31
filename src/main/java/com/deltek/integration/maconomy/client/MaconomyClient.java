@@ -5,12 +5,17 @@ import static com.deltek.integration.maconomy.containers.v1.Constants.MACONOMY_C
 import static com.deltek.integration.maconomy.relations.LinkRelations.read;
 import static javax.ws.rs.client.Entity.json;
 
+import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.nio.charset.Charset;
 
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
+import javax.ws.rs.client.ClientRequestContext;
+import javax.ws.rs.client.ClientRequestFilter;
+import javax.ws.rs.client.ClientResponseContext;
+import javax.ws.rs.client.ClientResponseFilter;
 import javax.ws.rs.client.Invocation;
 import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.HttpHeaders;
@@ -56,13 +61,19 @@ public final class MaconomyClient {
 						   final String shortname,
 						   final String username,
 						   final String password) {
-		this.client = client;
+		this.client = configureClient(client);
 		this.target = target;
 		this.shortname = shortname;
 		this.username = username;
 		this.password = password;
 	}
-
+	
+	private Client configureClient(final Client newClient) {
+		newClient.register(new RequestHandler());
+		newClient.register(new ResponseHandler());
+		return newClient;
+	}
+	
 	/**
 	 * Load Containers endpoint for general system information.
 	 *
@@ -143,8 +154,6 @@ public final class MaconomyClient {
 	private <TargetResource, EntityType> TargetResource executeRequest(final Invocation.Builder request,
 			                                       final LinkRelation<TargetResource> linkRelation,
 									 	           final EntityType requestEntity) {
-		addAuthenticationHeaders(request);
-
 		final Response response;
 		if (requestEntity == null) {
 			response = request.method(linkRelation.getMethod().name());
@@ -153,9 +162,6 @@ public final class MaconomyClient {
 		}
 
 		check(response);
-
-		// TODO: (ANH) replace this with a request/response filter
-		reconnectToken = response.getHeaderString(Constants.MACONOMY_RECONNECT);
 
 		LOG.info(response);
 		final Class<TargetResource> clazz = linkRelation.getTargetResource();
@@ -173,23 +179,39 @@ public final class MaconomyClient {
 				     .path(Constants.PATH)
 				     .path(shortname);
 	}
+	
+	/** Handler called before sending the request to the server. */
+	private final class RequestHandler implements ClientRequestFilter {
 
-	// TODO: (ANH) replace this with a request/response filter
-	private void addAuthenticationHeaders(final Invocation.Builder invocationBuilder) {
-		invocationBuilder.header(Constants.MACONOMY_AUTHENTICATION, Constants.X_RECONNECT);
-		if (reconnectToken != null) {
-			invocationBuilder.header(HttpHeaders.AUTHORIZATION, Constants.X_RECONNECT + " " + reconnectToken);
-			LOG.info("Using reconnect token");
-		} else if (username != null && password != null) {
-			final String combined = username + ":" + password;
-			final byte[] utf8_bytes = combined.getBytes(Charset.forName("UTF-8"));
-			final String base64 = Base64Utils.encodeToString(utf8_bytes);
-			invocationBuilder.header(HttpHeaders.AUTHORIZATION, "BASIC " + base64);
-			LOG.info("Using basic authentication");
+		@Override
+		public void filter(ClientRequestContext requestContext) throws IOException {
+			requestContext.getHeaders().add(Constants.MACONOMY_AUTHENTICATION, Constants.X_RECONNECT);
+			if (reconnectToken != null) {
+				requestContext.getHeaders().add(HttpHeaders.AUTHORIZATION, Constants.X_RECONNECT + " " + reconnectToken);
+				LOG.info("Using reconnect token");
+			} else if (username != null && password != null) {
+				final String combined = username + ":" + password;
+				final byte[] utf8_bytes = combined.getBytes(Charset.forName("UTF-8"));
+				final String base64 = Base64Utils.encodeToString(utf8_bytes);
+				requestContext.getHeaders().add(HttpHeaders.AUTHORIZATION, "BASIC " + base64);
+				LOG.info("Using basic authentication");
+			}
+			// TODO: (ANH) handle domain credentials
 		}
-		// TODO: (ANH) handle domain credentials
+		
 	}
+	
+	/** Handler called after receiving the response from the server. */
+	private final class ResponseHandler implements ClientResponseFilter {
 
+		@Override
+		public void filter(ClientRequestContext requestContext, ClientResponseContext responseContext)
+				throws IOException {
+			reconnectToken = responseContext.getHeaderString(Constants.MACONOMY_RECONNECT);
+		}
+		
+	}
+	
 	public static final class Builder {
 
 		// mandatory fields
