@@ -45,7 +45,7 @@ public abstract class Pane<RecordType> implements ContextResource {
 		if (getClass() != obj.getClass()) {
 			return false;
 		}
-		final Pane other = (Pane) obj;
+		final Pane<?> other = (Pane<?>) obj;
 		if (links == null) {
 			if (other.links != null) {
 				return false;

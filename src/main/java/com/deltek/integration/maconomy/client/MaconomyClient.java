@@ -52,25 +52,29 @@ public final class MaconomyClient {
 
 	private final Client client;
 	private final URI target;
-	private final String shortname, username, password;
+	private final String shortname, language, username, password;
 
 	private String reconnectToken;
 
 	private MaconomyClient(final Client client,
 						   final URI target,
 						   final String shortname,
+						   final String language,
 						   final String username,
 						   final String password) {
-		this.client = configureClient(client);
 		this.target = target;
 		this.shortname = shortname;
+		this.language = language;
 		this.username = username;
 		this.password = password;
+		this.client = configureClient(client);
 	}
 	
 	private Client configureClient(final Client newClient) {
-		newClient.register(new RequestHandler());
-		newClient.register(new ResponseHandler());
+		newClient.register(new AuthorizationFilter());
+		if (language != null) {
+			newClient.register(new LanguageFilter());
+		}
 		return newClient;
 	}
 	
@@ -180,8 +184,8 @@ public final class MaconomyClient {
 				     .path(shortname);
 	}
 	
-	/** Handler called before sending the request to the server. */
-	private final class RequestHandler implements ClientRequestFilter {
+	/** Filter for authorization. */
+	private final class AuthorizationFilter implements ClientRequestFilter, ClientResponseFilter {
 
 		@Override
 		public void filter(ClientRequestContext requestContext) throws IOException {
@@ -199,17 +203,22 @@ public final class MaconomyClient {
 			// TODO: (ANH) handle domain credentials
 		}
 		
-	}
-	
-	/** Handler called after receiving the response from the server. */
-	private final class ResponseHandler implements ClientResponseFilter {
-
 		@Override
 		public void filter(ClientRequestContext requestContext, ClientResponseContext responseContext)
 				throws IOException {
 			reconnectToken = responseContext.getHeaderString(Constants.MACONOMY_RECONNECT);
 		}
-		
+
+	}
+	
+	/** Filter for language selection. */
+	private final class LanguageFilter implements ClientRequestFilter {
+
+		@Override
+		public void filter(ClientRequestContext requestContext) throws IOException {
+			requestContext.getHeaders().add(Constants.ACCEPT_LANGUAGE, language);
+		}
+
 	}
 	
 	public static final class Builder {
@@ -224,7 +233,7 @@ public final class MaconomyClient {
 				                             .register(GZipEncoder.class)
 				                             .register(LoggingFeature.class)
 				                             .build();
-		private String username, password;
+		private String language, username, password;
 
 		public Builder(final String host, final String port, final String shortname) {
 			this.host = host;
@@ -234,6 +243,11 @@ public final class MaconomyClient {
 
 		/* package */ Builder client(final Client client) {
 			this.client = client;
+			return this;
+		}
+
+		public Builder language(final String language) {
+			this.language = language;
 			return this;
 		}
 
@@ -253,6 +267,7 @@ public final class MaconomyClient {
 				return new MaconomyClient(client,
 										  target,
 						                  shortname,
+						                  language,
 						                  username,
 						                  password);
 			} catch (final URISyntaxException e) {

@@ -14,5 +14,7 @@ public interface Constants {
 	public static final String X_RECONNECT = "X-Reconnect";
 
 	public static final String MACONOMY_CONCURRENCY_CONTROL = "Maconomy-Concurrency-Control";
+	
+	public static final String ACCEPT_LANGUAGE = "Accept-Language";
 
 }
