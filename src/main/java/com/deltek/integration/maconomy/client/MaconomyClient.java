@@ -183,7 +183,7 @@ public final class MaconomyClient {
 				     .path(Constants.PATH)
 				     .path(shortname);
 	}
-	
+
 	/** Filter for authorization. */
 	private final class AuthorizationFilter implements ClientRequestFilter, ClientResponseFilter {
 
@@ -202,25 +202,30 @@ public final class MaconomyClient {
 			}
 			// TODO: (ANH) handle domain credentials
 		}
-		
+
 		@Override
 		public void filter(ClientRequestContext requestContext, ClientResponseContext responseContext)
 				throws IOException {
-			reconnectToken = responseContext.getHeaderString(Constants.MACONOMY_RECONNECT);
+			final String newReconnectToken = responseContext.getHeaderString(Constants.MACONOMY_RECONNECT);
+			if (newReconnectToken != null) {
+				reconnectToken = newReconnectToken;
+			}
 		}
 
 	}
-	
+
 	/** Filter for language selection. */
 	private final class LanguageFilter implements ClientRequestFilter {
 
 		@Override
 		public void filter(ClientRequestContext requestContext) throws IOException {
-			requestContext.getHeaders().add(Constants.ACCEPT_LANGUAGE, language);
+			if (language != null) {
+				requestContext.getHeaders().add(Constants.ACCEPT_LANGUAGE, language);
+			}
 		}
 
 	}
-	
+
 	public static final class Builder {
 
 		// mandatory fields
