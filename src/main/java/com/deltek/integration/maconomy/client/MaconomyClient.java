@@ -5,20 +5,13 @@ import static com.deltek.integration.maconomy.containers.v1.Constants.MACONOMY_C
 import static com.deltek.integration.maconomy.relations.LinkRelations.read;
 import static javax.ws.rs.client.Entity.json;
 
-import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.nio.charset.Charset;
 
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
-import javax.ws.rs.client.ClientRequestContext;
-import javax.ws.rs.client.ClientRequestFilter;
-import javax.ws.rs.client.ClientResponseContext;
-import javax.ws.rs.client.ClientResponseFilter;
 import javax.ws.rs.client.Invocation;
 import javax.ws.rs.client.WebTarget;
-import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriBuilder;
@@ -29,8 +22,9 @@ import org.glassfish.jersey.client.filter.EncodingFilter;
 import org.glassfish.jersey.jackson.JacksonFeature;
 import org.glassfish.jersey.logging.LoggingFeature;
 import org.glassfish.jersey.message.GZipEncoder;
-import org.springframework.util.Base64Utils;
 
+import com.deltek.integration.maconomy.client.filters.AuthorizationFilter;
+import com.deltek.integration.maconomy.client.filters.LanguageFilter;
 import com.deltek.integration.maconomy.containers.v1.ConcurrencyControl;
 import com.deltek.integration.maconomy.containers.v1.Constants;
 import com.deltek.integration.maconomy.containers.v1.Container;
@@ -51,40 +45,21 @@ public final class MaconomyClient {
 	private static final Log LOG = LogFactory.getLog(MaconomyClient.class);
 
 	private final Client client;
-	private final URI target;
-	private final String shortname, language, username, password;
-
-	private String reconnectToken;
+	private final WebTarget baseWebTarget;
 
 	private MaconomyClient(final Client client,
-						   final URI target,
-						   final String shortname,
-						   final String language,
-						   final String username,
-						   final String password) {
-		this.target = target;
-		this.shortname = shortname;
-		this.language = language;
-		this.username = username;
-		this.password = password;
-		this.client = configureClient(client);
+						   final WebTarget baseWebTarget) {
+		this.client = client;
+		this.baseWebTarget = baseWebTarget;
 	}
-	
-	private Client configureClient(final Client newClient) {
-		newClient.register(new AuthorizationFilter());
-		if (language != null) {
-			newClient.register(new LanguageFilter());
-		}
-		return newClient;
-	}
-	
+
 	/**
 	 * Load Containers endpoint for general system information.
 	 *
 	 * @return The Containers endpoint.
 	 */
 	public Containers containers() {
-		final Invocation.Builder request = baseWebTarget().request(MediaType.APPLICATION_JSON);
+		final Invocation.Builder request = baseWebTarget.request(MediaType.APPLICATION_JSON);
 		return executeRequest(request, read(Containers.class), null);
 	}
 
@@ -95,7 +70,7 @@ public final class MaconomyClient {
 	 * @return A representation of the container overview
 	 */
 	public Container container(final String containerName) {
-		final Invocation.Builder request = baseWebTarget().path(containerName)
+		final Invocation.Builder request = baseWebTarget.path(containerName)
 				                                          .request(MediaType.APPLICATION_JSON);
 		return executeRequest(request, read(Container.class), null);
 	}
@@ -178,54 +153,6 @@ public final class MaconomyClient {
 		}
 	}
 
-	private WebTarget baseWebTarget() {
-		return client.target(target)
-				     .path(Constants.PATH)
-				     .path(shortname);
-	}
-
-	/** Filter for authorization. */
-	private final class AuthorizationFilter implements ClientRequestFilter, ClientResponseFilter {
-
-		@Override
-		public void filter(ClientRequestContext requestContext) throws IOException {
-			requestContext.getHeaders().add(Constants.MACONOMY_AUTHENTICATION, Constants.X_RECONNECT);
-			if (reconnectToken != null) {
-				requestContext.getHeaders().add(HttpHeaders.AUTHORIZATION, Constants.X_RECONNECT + " " + reconnectToken);
-				LOG.info("Using reconnect token");
-			} else if (username != null && password != null) {
-				final String combined = username + ":" + password;
-				final byte[] utf8_bytes = combined.getBytes(Charset.forName("UTF-8"));
-				final String base64 = Base64Utils.encodeToString(utf8_bytes);
-				requestContext.getHeaders().add(HttpHeaders.AUTHORIZATION, "BASIC " + base64);
-				LOG.info("Using basic authentication");
-			}
-			// TODO: (ANH) handle domain credentials
-		}
-
-		@Override
-		public void filter(ClientRequestContext requestContext, ClientResponseContext responseContext)
-				throws IOException {
-			final String newReconnectToken = responseContext.getHeaderString(Constants.MACONOMY_RECONNECT);
-			if (newReconnectToken != null) {
-				reconnectToken = newReconnectToken;
-			}
-		}
-
-	}
-
-	/** Filter for language selection. */
-	private final class LanguageFilter implements ClientRequestFilter {
-
-		@Override
-		public void filter(ClientRequestContext requestContext) throws IOException {
-			if (language != null) {
-				requestContext.getHeaders().add(Constants.ACCEPT_LANGUAGE, language);
-			}
-		}
-
-	}
-
 	public static final class Builder {
 
 		// mandatory fields
@@ -267,14 +194,22 @@ public final class MaconomyClient {
 		}
 
 		public MaconomyClient build() {
+			configureClient();
+			return new MaconomyClient(client, baseWebTarget());
+			
+		}
+
+		private void configureClient() {
+			client.register(new AuthorizationFilter(username, password));
+			if (language != null) {
+				client.register(new LanguageFilter(language));
+			}
+		}
+		
+		private WebTarget baseWebTarget() {
 			try {
 				final URI target = new URI(host + ":" + port);
-				return new MaconomyClient(client,
-										  target,
-						                  shortname,
-						                  language,
-						                  username,
-						                  password);
+				return client.target(target).path(Constants.PATH).path(shortname);
 			} catch (final URISyntaxException e) {
 				throw new ClientException(host + ":" + port, e);
 			}
