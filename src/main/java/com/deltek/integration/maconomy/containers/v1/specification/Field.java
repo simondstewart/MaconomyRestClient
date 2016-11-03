@@ -145,7 +145,7 @@ public class Field {
 
 	@JsonAnySetter
 	public void setOther(String name, Object value) {
-		this.others.put(name, value);
+		others.put(name, value);
 	}
 
 }

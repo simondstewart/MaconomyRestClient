@@ -6,9 +6,19 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class Pane {
 	
+	private String paneName;
 	private String title;
 	private String entity;
+	private Actions actions;
 	private Map<String, Field> fields;
+
+	public String getPaneName() {
+		return paneName;
+	}
+
+	public void setPaneName(String paneName) {
+		this.paneName = paneName;
+	}
 
 	public String getTitle() {
 		return title;
@@ -21,9 +31,17 @@ public class Pane {
 	public String getEntity() {
 		return entity;
 	}
-	
+
 	public void setEntity(String entity) {
 		this.entity = entity;
+	}
+
+	public Actions getActions() {
+		return actions;
+	}
+
+	public void setActions(Actions actions) {
+		this.actions = actions;
 	}
 
 	public Map<String, Field> getFields() {

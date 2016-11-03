@@ -11,6 +11,8 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
+import java.util.Map;
+
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -25,6 +27,7 @@ import com.deltek.integration.maconomy.containers.v1.CardTableData;
 import com.deltek.integration.maconomy.containers.v1.Container;
 import com.deltek.integration.maconomy.containers.v1.FilterData;
 import com.deltek.integration.maconomy.containers.v1.Links;
+import com.deltek.integration.maconomy.containers.v1.specification.Action;
 import com.deltek.integration.maconomy.containers.v1.specification.Field;
 import com.deltek.integration.maconomy.containers.v1.specification.Pane;
 import com.deltek.integration.maconomy.containers.v1.specification.Specification;
@@ -83,11 +86,27 @@ public class ContainerOverviewTest {
 		final Container jobsContainer = maconomyClient.container(JOBS);
 		final Specification specification = maconomyClient.transition(jobsContainer, specification());
 		assertEquals(JOBS, specification.getContainerName());
+	}
+
+	@Test
+	public void testSpecificationField() {
+		final Container jobsContainer = maconomyClient.container(JOBS);
+		final Specification specification = maconomyClient.transition(jobsContainer, specification());
 		final Pane filter = specification.getPanes().getFilter();
 		assertNotNull(filter);
 		final Field jobNumber = filter.getFields().get("jobnumber");
 		assertNotNull(jobNumber);
 		assertTrue(jobNumber.isKey() && jobNumber.getType().equals("string") && jobNumber.getOthers().get("maxLength").equals(255));
+	}
+
+	@Test
+	public void testSpecificationActions() {
+		final Container jobsContainer = maconomyClient.container(JOBS);
+		final Specification specification = maconomyClient.transition(jobsContainer, specification());
+		final Pane card = specification.getPanes().getCard();
+		assertNotNull(card);
+		final Map<String, Action> others = card.getActions().getOthers();
+		assertTrue(others.containsKey("action:create") && others.containsKey("action:read") && others.containsKey("action:update") && others.containsKey("action:delete"));
 	}
 
 	@Test
