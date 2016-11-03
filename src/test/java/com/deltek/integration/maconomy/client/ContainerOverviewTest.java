@@ -8,6 +8,7 @@ import static com.deltek.integration.maconomy.relations.LinkRelations.dataFilter
 import static com.deltek.integration.maconomy.relations.LinkRelations.specification;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import org.junit.Before;
@@ -24,7 +25,9 @@ import com.deltek.integration.maconomy.containers.v1.CardTableData;
 import com.deltek.integration.maconomy.containers.v1.Container;
 import com.deltek.integration.maconomy.containers.v1.FilterData;
 import com.deltek.integration.maconomy.containers.v1.Links;
-import com.deltek.integration.maconomy.containers.v1.Specification;
+import com.deltek.integration.maconomy.containers.v1.specification.Field;
+import com.deltek.integration.maconomy.containers.v1.specification.Pane;
+import com.deltek.integration.maconomy.containers.v1.specification.Specification;
 
 
 /**
@@ -80,6 +83,11 @@ public class ContainerOverviewTest {
 		final Container jobsContainer = maconomyClient.container(JOBS);
 		final Specification specification = maconomyClient.transition(jobsContainer, specification());
 		assertEquals(JOBS, specification.getContainerName());
+		final Pane filter = specification.getPanes().getFilter();
+		assertNotNull(filter);
+		final Field jobNumber = filter.getFields().get("jobnumber");
+		assertNotNull(jobNumber);
+		assertTrue(jobNumber.isKey() && jobNumber.getType().equals("string") && jobNumber.getOthers().get("maxLength").equals(255));
 	}
 
 	@Test

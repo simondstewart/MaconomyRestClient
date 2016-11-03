@@ -3,7 +3,7 @@ package com.deltek.integration.maconomy.relations;
 import com.deltek.integration.maconomy.containers.v1.CardTableData;
 import com.deltek.integration.maconomy.containers.v1.CardTableRecord;
 import com.deltek.integration.maconomy.containers.v1.FilterData;
-import com.deltek.integration.maconomy.containers.v1.Specification;
+import com.deltek.integration.maconomy.containers.v1.specification.Specification;
 
 /**
  * Factory that produces link relations.

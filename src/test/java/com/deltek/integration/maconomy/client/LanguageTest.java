@@ -16,8 +16,8 @@ import com.deltek.integration.maconomy.configuration.Server;
 import com.deltek.integration.maconomy.containers.v1.Container;
 import com.deltek.integration.maconomy.containers.v1.Containers;
 import com.deltek.integration.maconomy.containers.v1.Language;
-import com.deltek.integration.maconomy.containers.v1.Specification;
-import com.deltek.integration.maconomy.containers.v1.SpecificationPanes;
+import com.deltek.integration.maconomy.containers.v1.specification.Specification;
+import com.deltek.integration.maconomy.containers.v1.specification.Panes;
 import com.deltek.integration.maconomy.relations.LinkRelations;
 
 /**
@@ -50,7 +50,7 @@ public class LanguageTest {
 			final MaconomyClient danishClient = getClientWithLanguage(DANISH_TAG);
 			final Container notesContainer = danishClient.container(Constants.NOTES);
 			final Specification specification = danishClient.transition(notesContainer, LinkRelations.specification());
-			final SpecificationPanes specificationPanes = specification.getPanes();
+			final Panes specificationPanes = specification.getPanes();
 			assertEquals("Liste med noter", specificationPanes.getFilter().getTitle());
 			assertEquals("Noter", specificationPanes.getCard().getTitle());
 			assertEquals("Knudelinier", specificationPanes.getTable().getTitle());

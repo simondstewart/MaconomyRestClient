@@ -1,4 +1,4 @@
-package com.deltek.integration.maconomy.containers.v1;
+package com.deltek.integration.maconomy.containers.v1.specification;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
@@ -9,7 +9,7 @@ public class Specification {
 
 	// TODO: (ANH) Implement remaining specification
 
-	private SpecificationPanes panes;
+	private Panes panes;
 	//private Object relatedContainers;
 
 	public String getContainerName() {
@@ -20,11 +20,11 @@ public class Specification {
 		this.containerName = containerName;
 	}
 
-	public SpecificationPanes getPanes() {
+	public Panes getPanes() {
 		return panes;
 	}
 
-	public void setPanes(final SpecificationPanes panes) {
+	public void setPanes(final Panes panes) {
 		this.panes = panes;
 	}
 
