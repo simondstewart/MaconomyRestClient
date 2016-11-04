@@ -26,12 +26,12 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
-import com.deltek.integration.maconomy.containers.v1.ApplicationPackagingUnit;
 import com.deltek.integration.maconomy.containers.v1.Constants;
-import com.deltek.integration.maconomy.containers.v1.Containers;
-import com.deltek.integration.maconomy.containers.v1.Language;
-import com.deltek.integration.maconomy.containers.v1.ToolsPackagingUnit;
-import com.deltek.integration.maconomy.containers.v1.Versions;
+import com.deltek.integration.maconomy.containers.v1.handshake.ApplicationPackagingUnit;
+import com.deltek.integration.maconomy.containers.v1.handshake.Containers;
+import com.deltek.integration.maconomy.containers.v1.handshake.Language;
+import com.deltek.integration.maconomy.containers.v1.handshake.ToolsPackagingUnit;
+import com.deltek.integration.maconomy.containers.v1.handshake.Versions;
 
 /**
  * These tests are "offline" in the sense that they do NOT require a live server.
