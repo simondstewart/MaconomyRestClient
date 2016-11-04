@@ -1,16 +1,15 @@
 package com.deltek.integration.maconomy.containers.v1.specification;
 
+import java.util.Map;
+
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class Specification {
 
 	private String containerName;
-
-	// TODO: (ANH) Implement remaining specification
-
 	private Panes panes;
-	//private Object relatedContainers;
+	private Map<String, RelatedContainer> relatedContainers;
 
 	public String getContainerName() {
 		return containerName;
@@ -26,6 +25,14 @@ public class Specification {
 
 	public void setPanes(final Panes panes) {
 		this.panes = panes;
+	}
+
+	public Map<String, RelatedContainer> getRelatedContainers() {
+		return relatedContainers;
+	}
+
+	public void setRelatedContainers(Map<String, RelatedContainer> relatedContainers) {
+		this.relatedContainers = relatedContainers;
 	}
 
 }

@@ -11,6 +11,7 @@ public class Pane {
 	private String entity;
 	private Actions actions;
 	private Map<String, Field> fields;
+	private Map<String, ForeignKey> foreignKeys;
 
 	public String getPaneName() {
 		return paneName;
@@ -50,6 +51,14 @@ public class Pane {
 
 	public void setFields(Map<String, Field> fields) {
 		this.fields = fields;
+	}
+
+	public Map<String, ForeignKey> getForeignKeys() {
+		return foreignKeys;
+	}
+
+	public void setForeignKeys(Map<String, ForeignKey> foreignKeys) {
+		this.foreignKeys = foreignKeys;
 	}
 
 }

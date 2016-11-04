@@ -4,7 +4,9 @@ import static com.deltek.integration.maconomy.Constants.JOBS;
 import static com.deltek.integration.maconomy.Constants.TIMEREGISTRATION;
 import static com.deltek.integration.maconomy.relations.FilterRestriction.none;
 import static com.deltek.integration.maconomy.relations.LinkRelations.dataAnyKey;
+import static com.deltek.integration.maconomy.relations.LinkRelations.dataEnumValues;
 import static com.deltek.integration.maconomy.relations.LinkRelations.dataFilter;
+import static com.deltek.integration.maconomy.relations.LinkRelations.dataSearch;
 import static com.deltek.integration.maconomy.relations.LinkRelations.specification;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -29,8 +31,11 @@ import com.deltek.integration.maconomy.containers.v1.FilterData;
 import com.deltek.integration.maconomy.containers.v1.Links;
 import com.deltek.integration.maconomy.containers.v1.specification.Action;
 import com.deltek.integration.maconomy.containers.v1.specification.Field;
+import com.deltek.integration.maconomy.containers.v1.specification.ForeignKey;
 import com.deltek.integration.maconomy.containers.v1.specification.Pane;
+import com.deltek.integration.maconomy.containers.v1.specification.RelatedContainer;
 import com.deltek.integration.maconomy.containers.v1.specification.Specification;
+import com.deltek.integration.maconomy.relations.FilterRestriction;
 
 
 /**
@@ -106,7 +111,37 @@ public class ContainerOverviewTest {
 		final Pane card = specification.getPanes().getCard();
 		assertNotNull(card);
 		final Map<String, Action> others = card.getActions().getOthers();
-		assertTrue(others.containsKey("action:create") && others.containsKey("action:read") && others.containsKey("action:update") && others.containsKey("action:delete"));
+		assertTrue(others.containsKey("action:create") &&
+				others.containsKey("action:read") &&
+				others.containsKey("action:update") &&
+				others.containsKey("action:delete"));
+	}
+
+	@Test
+	public void testSpecificationForeignKey() {
+		final Container jobsContainer = maconomyClient.container(JOBS);
+		final Specification specification = maconomyClient.transition(jobsContainer, specification());
+		final Pane card = specification.getPanes().getCard();
+		final ForeignKey jobNumberJobHeader = card.getForeignKeys().get("jobnumber_jobheader");
+		assertNotNull(jobNumberJobHeader);
+		assertTrue(jobNumberJobHeader.getName().equals("jobnumber_jobheader") &&
+				jobNumberJobHeader.getRel().equals("data:key:jobnumber_jobheader") &&
+				jobNumberJobHeader.getSearchContainer().equals("jobs") &&
+				jobNumberJobHeader.getSearchPane().equals("filter") &&
+				jobNumberJobHeader.getTitle().equals("Job") &&
+				jobNumberJobHeader.getLinks().get(dataSearch(FilterRestriction.none())) != null);
+	}
+
+	@Test
+	public void testSpecificationRelatedContainers() {
+		final Container jobsContainer = maconomyClient.container(JOBS);
+		final Specification specification = maconomyClient.transition(jobsContainer, specification());
+		final Map<String, RelatedContainer> relatedContainers = specification.getRelatedContainers();
+		final RelatedContainer popupCountryType = relatedContainers.get("popup_countrytype");
+		assertNotNull(popupCountryType);
+		assertTrue(popupCountryType.getContainerName().equals("popup_countrytype") &&
+				popupCountryType.getLinks().get(specification()) != null &&
+				popupCountryType.getLinks().get(dataEnumValues()) != null);
 	}
 
 	@Test
