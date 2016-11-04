@@ -93,6 +93,15 @@ public class LinkRelations {
 	}
 
 	/**
+	 * Indicates a link that is used to obtain the enum values.
+	 * 
+	 * @return A "data:enumvalues" link relation
+	 */
+	public static SafeLinkRelation<FilterData> dataEnumValues() {
+		return new BaseLinkRelation.SafeLinkRelationImpl<>("data:enumvalues", HttpMethod.GET, FilterData.class);
+	}
+
+	/**
      * Indicates a link that is used to perform the initialize state transition in
 	 * the insert variant. This resource computes a template to be used when creating
 	 * a record. The template record is pre-filled with the default value for each field in
