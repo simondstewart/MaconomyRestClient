@@ -82,6 +82,15 @@ public class LinkRelations {
 	public static SafeLinkRelation<CardTableData> dataSameKey() {
 		return new BaseLinkRelation.SafeLinkRelationImpl<>("data:same-key", HttpMethod.GET, CardTableData.class);
 	}
+	
+	/**
+	 * Indicates a link that is used to perform a foreign key search.
+	 * 
+	 * @return A "data:search" link relation
+	 */
+	public static SafeLinkRelation<FilterData> dataSearch(final FilterRestriction filterRestriction) {
+		return new BaseLinkRelation.SafeLinkRelationImpl<>("data:search", HttpMethod.GET, FilterData.class, filterRestriction);
+	}
 
 	/**
      * Indicates a link that is used to perform the initialize state transition in

@@ -29,8 +29,11 @@ import com.deltek.integration.maconomy.containers.v1.FilterData;
 import com.deltek.integration.maconomy.containers.v1.Links;
 import com.deltek.integration.maconomy.containers.v1.specification.Action;
 import com.deltek.integration.maconomy.containers.v1.specification.Field;
+import com.deltek.integration.maconomy.containers.v1.specification.ForeignKey;
 import com.deltek.integration.maconomy.containers.v1.specification.Pane;
 import com.deltek.integration.maconomy.containers.v1.specification.Specification;
+import com.deltek.integration.maconomy.relations.FilterRestriction;
+import com.deltek.integration.maconomy.relations.LinkRelations;
 
 
 /**
@@ -107,6 +110,21 @@ public class ContainerOverviewTest {
 		assertNotNull(card);
 		final Map<String, Action> others = card.getActions().getOthers();
 		assertTrue(others.containsKey("action:create") && others.containsKey("action:read") && others.containsKey("action:update") && others.containsKey("action:delete"));
+	}
+
+	@Test
+	public void testSpecificationForeignKey() {
+		final Container jobsContainer = maconomyClient.container(JOBS);
+		final Specification specification = maconomyClient.transition(jobsContainer, specification());
+		final Pane card = specification.getPanes().getCard();
+		final ForeignKey jobNumberJobHeader = card.getForeignKeys().get("jobnumber_jobheader");
+		assertNotNull(jobNumberJobHeader);
+		assertTrue(jobNumberJobHeader.getName().equals("jobnumber_jobheader") && 
+				jobNumberJobHeader.getRel().equals("data:key:jobnumber_jobheader") && 
+				jobNumberJobHeader.getSearchContainer().equals("jobs") &&
+				jobNumberJobHeader.getSearchPane().equals("filter") &&
+				jobNumberJobHeader.getTitle().equals("Job") &&
+				jobNumberJobHeader.getLinks().get(LinkRelations.dataSearch(FilterRestriction.none())) != null);
 	}
 
 	@Test
