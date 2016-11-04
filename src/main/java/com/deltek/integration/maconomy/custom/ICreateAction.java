@@ -1,7 +1,7 @@
 package com.deltek.integration.maconomy.custom;
 
-import com.deltek.integration.maconomy.containers.v1.CardTableData;
-import com.deltek.integration.maconomy.containers.v1.CardTableRecord;
+import com.deltek.integration.maconomy.containers.v1.data.CardTableData;
+import com.deltek.integration.maconomy.containers.v1.data.CardTableRecord;
 import com.deltek.integration.maconomy.relations.LinkRelations;
 
 public interface ICreateAction<CardType extends ICard<?,?>>

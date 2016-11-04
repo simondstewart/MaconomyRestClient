@@ -1,8 +1,8 @@
 package com.deltek.integration.maconomy.relations;
 
-import com.deltek.integration.maconomy.containers.v1.CardTableData;
-import com.deltek.integration.maconomy.containers.v1.CardTableRecord;
-import com.deltek.integration.maconomy.containers.v1.FilterData;
+import com.deltek.integration.maconomy.containers.v1.data.CardTableData;
+import com.deltek.integration.maconomy.containers.v1.data.CardTableRecord;
+import com.deltek.integration.maconomy.containers.v1.data.FilterData;
 import com.deltek.integration.maconomy.containers.v1.specification.Specification;
 
 /**

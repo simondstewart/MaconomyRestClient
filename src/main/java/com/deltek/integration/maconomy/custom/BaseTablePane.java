@@ -4,8 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Function;
 
-import com.deltek.integration.maconomy.containers.v1.CardTableData;
-import com.deltek.integration.maconomy.containers.v1.CardTableRecord;
+import com.deltek.integration.maconomy.containers.v1.data.CardTableData;
+import com.deltek.integration.maconomy.containers.v1.data.CardTableRecord;
 
 public abstract class BaseTablePane<InitRecordType extends IInitRecord, RecordType extends IRecord>
 extends BasePane<InitRecordType, RecordType>

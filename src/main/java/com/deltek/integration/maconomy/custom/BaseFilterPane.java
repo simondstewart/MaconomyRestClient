@@ -4,8 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Function;
 
-import com.deltek.integration.maconomy.containers.v1.FilterData;
-import com.deltek.integration.maconomy.containers.v1.FilterRecord;
+import com.deltek.integration.maconomy.containers.v1.data.FilterData;
+import com.deltek.integration.maconomy.containers.v1.data.FilterRecord;
 
 public abstract class BaseFilterPane<InitRecordType extends IInitRecord, RecordType extends IRecord>
 extends BasePane<InitRecordType, RecordType>

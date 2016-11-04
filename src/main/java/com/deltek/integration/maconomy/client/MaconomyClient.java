@@ -25,11 +25,11 @@ import org.glassfish.jersey.message.GZipEncoder;
 
 import com.deltek.integration.maconomy.client.filters.AuthorizationFilter;
 import com.deltek.integration.maconomy.client.filters.LanguageFilter;
-import com.deltek.integration.maconomy.containers.v1.ConcurrencyControl;
 import com.deltek.integration.maconomy.containers.v1.Constants;
-import com.deltek.integration.maconomy.containers.v1.Container;
 import com.deltek.integration.maconomy.containers.v1.Link;
-import com.deltek.integration.maconomy.containers.v1.Meta;
+import com.deltek.integration.maconomy.containers.v1.data.ConcurrencyControl;
+import com.deltek.integration.maconomy.containers.v1.data.Container;
+import com.deltek.integration.maconomy.containers.v1.data.Meta;
 import com.deltek.integration.maconomy.containers.v1.handshake.Containers;
 import com.deltek.integration.maconomy.relations.ContextResource;
 import com.deltek.integration.maconomy.relations.EntityLinkRelation;

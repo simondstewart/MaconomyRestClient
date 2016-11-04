@@ -1,13 +1,20 @@
-package com.deltek.integration.maconomy.containers.v1;
+package com.deltek.integration.maconomy.containers.v1.data;
 
-import java.util.Map;
-
+import com.deltek.integration.maconomy.containers.v1.Links;
 import com.deltek.integration.maconomy.relations.ContextResource;
 
-public abstract class Record implements ContextResource {
+public class Container implements ContextResource {
 
+	private String containerName;
 	private Links links;
-	private Map<String, Object> data;
+
+	public String getContainerName() {
+		return containerName;
+	}
+
+	public void setContainerName(final String containerName) {
+		this.containerName = containerName;
+	}
 
 	@Override
 	public Links getLinks() {
@@ -18,19 +25,11 @@ public abstract class Record implements ContextResource {
 		this.links = links;
 	}
 
-	public Map<String, Object> getData() {
-		return data;
-	}
-
-	public void setData(final Map<String, Object> data) {
-		this.data = data;
-	}
-
 	@Override
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
-		result = prime * result + ((data == null) ? 0 : data.hashCode());
+		result = prime * result + ((containerName == null) ? 0 : containerName.hashCode());
 		result = prime * result + ((links == null) ? 0 : links.hashCode());
 		return result;
 	}
@@ -46,12 +45,12 @@ public abstract class Record implements ContextResource {
 		if (getClass() != obj.getClass()) {
 			return false;
 		}
-		final Record other = (Record) obj;
-		if (data == null) {
-			if (other.data != null) {
+		final Container other = (Container) obj;
+		if (containerName == null) {
+			if (other.containerName != null) {
 				return false;
 			}
-		} else if (!data.equals(other.data)) {
+		} else if (!containerName.equals(other.containerName)) {
 			return false;
 		}
 		if (links == null) {
@@ -66,7 +65,7 @@ public abstract class Record implements ContextResource {
 
 	@Override
 	public String toString() {
-		return "Record [links=" + links + ", data=" + data + "]";
+		return "Container [containerName=" + containerName + ", links=" + links + "]";
 	}
 
 }

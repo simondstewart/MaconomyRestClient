@@ -1,5 +1,6 @@
-package com.deltek.integration.maconomy.containers.v1;
+package com.deltek.integration.maconomy.containers.v1.data;
 
+import com.deltek.integration.maconomy.containers.v1.Links;
 import com.deltek.integration.maconomy.relations.ContextResource;
 
 public abstract class Data implements ContextResource {

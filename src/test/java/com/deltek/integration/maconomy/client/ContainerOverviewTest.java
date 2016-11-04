@@ -25,10 +25,10 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import com.deltek.integration.maconomy.configuration.Server;
-import com.deltek.integration.maconomy.containers.v1.CardTableData;
-import com.deltek.integration.maconomy.containers.v1.Container;
-import com.deltek.integration.maconomy.containers.v1.FilterData;
 import com.deltek.integration.maconomy.containers.v1.Links;
+import com.deltek.integration.maconomy.containers.v1.data.CardTableData;
+import com.deltek.integration.maconomy.containers.v1.data.Container;
+import com.deltek.integration.maconomy.containers.v1.data.FilterData;
 import com.deltek.integration.maconomy.containers.v1.specification.Action;
 import com.deltek.integration.maconomy.containers.v1.specification.Field;
 import com.deltek.integration.maconomy.containers.v1.specification.ForeignKey;

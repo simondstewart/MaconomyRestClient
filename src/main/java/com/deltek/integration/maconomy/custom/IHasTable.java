@@ -2,8 +2,8 @@ package com.deltek.integration.maconomy.custom;
 
 import java.util.function.Function;
 
-import com.deltek.integration.maconomy.containers.v1.CardTableData;
-import com.deltek.integration.maconomy.containers.v1.Container;
+import com.deltek.integration.maconomy.containers.v1.data.CardTableData;
+import com.deltek.integration.maconomy.containers.v1.data.Container;
 import com.deltek.integration.maconomy.relations.LinkRelations;
 
 public interface IHasTable<TableType> extends IHasClient, IHasContext<Container> {

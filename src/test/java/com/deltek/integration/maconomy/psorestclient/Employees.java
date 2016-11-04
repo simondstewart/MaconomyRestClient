@@ -3,11 +3,11 @@ package com.deltek.integration.maconomy.psorestclient;
 import java.util.function.Function;
 
 import com.deltek.integration.maconomy.client.MaconomyClient;
-import com.deltek.integration.maconomy.containers.v1.CardTableData;
-import com.deltek.integration.maconomy.containers.v1.CardTableRecord;
-import com.deltek.integration.maconomy.containers.v1.Container;
-import com.deltek.integration.maconomy.containers.v1.FilterData;
-import com.deltek.integration.maconomy.containers.v1.FilterRecord;
+import com.deltek.integration.maconomy.containers.v1.data.CardTableData;
+import com.deltek.integration.maconomy.containers.v1.data.CardTableRecord;
+import com.deltek.integration.maconomy.containers.v1.data.Container;
+import com.deltek.integration.maconomy.containers.v1.data.FilterData;
+import com.deltek.integration.maconomy.containers.v1.data.FilterRecord;
 import com.deltek.integration.maconomy.custom.BaseCardPane;
 import com.deltek.integration.maconomy.custom.BaseCardTableRecord;
 import com.deltek.integration.maconomy.custom.BaseContainer;
