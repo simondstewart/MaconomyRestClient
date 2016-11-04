@@ -196,7 +196,6 @@ public final class MaconomyClient {
 		public MaconomyClient build() {
 			configureClient();
 			return new MaconomyClient(client, baseWebTarget());
-			
 		}
 
 		private void configureClient() {
@@ -205,7 +204,7 @@ public final class MaconomyClient {
 				client.register(new LanguageFilter(language));
 			}
 		}
-		
+
 		private WebTarget baseWebTarget() {
 			try {
 				final URI target = new URI(host + ":" + port);
