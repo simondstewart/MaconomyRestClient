@@ -201,4 +201,8 @@ public class LinkRelations {
 		return new BaseLinkRelation.SafeLinkRelationImpl<>("filedrop:new", HttpMethod.POST, FiledropLocation.class);
 	}
 
+	public static SafeLinkRelation<?> uploadFile() {
+		return new BaseLinkRelation.SafeLinkRelationImpl<>("file:upload", HttpMethod.POST, null);
+	}
+
 }
