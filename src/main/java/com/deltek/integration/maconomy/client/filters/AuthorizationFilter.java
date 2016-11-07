@@ -13,7 +13,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.util.Base64Utils;
 
-import com.deltek.integration.maconomy.containers.v1.Constants;
+import com.deltek.integration.maconomy.containers.v1.ContainersConstants;
 
 /** Filter for authorization. */
 public final class AuthorizationFilter implements ClientRequestFilter, ClientResponseFilter {
@@ -30,9 +30,9 @@ public final class AuthorizationFilter implements ClientRequestFilter, ClientRes
 
 	@Override
 	public void filter(ClientRequestContext requestContext) throws IOException {
-		requestContext.getHeaders().add(Constants.MACONOMY_AUTHENTICATION, Constants.X_RECONNECT);
+		requestContext.getHeaders().add(ContainersConstants.MACONOMY_AUTHENTICATION, ContainersConstants.X_RECONNECT);
 		if (reconnectToken != null) {
-			requestContext.getHeaders().add(HttpHeaders.AUTHORIZATION, Constants.X_RECONNECT + " " + reconnectToken);
+			requestContext.getHeaders().add(HttpHeaders.AUTHORIZATION, ContainersConstants.X_RECONNECT + " " + reconnectToken);
 			LOG.info("Using reconnect token");
 		} else if (username != null && password != null) {
 			final String combined = username + ":" + password;
@@ -47,7 +47,7 @@ public final class AuthorizationFilter implements ClientRequestFilter, ClientRes
 	@Override
 	public void filter(ClientRequestContext requestContext, ClientResponseContext responseContext)
 			throws IOException {
-		final String newReconnectToken = responseContext.getHeaderString(Constants.MACONOMY_RECONNECT);
+		final String newReconnectToken = responseContext.getHeaderString(ContainersConstants.MACONOMY_RECONNECT);
 		if (newReconnectToken != null) {
 			reconnectToken = newReconnectToken;
 		}

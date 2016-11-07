@@ -27,7 +27,7 @@ import org.springframework.core.io.ClassPathResource;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import com.deltek.integration.maconomy.containers.v1.ApplicationPackagingUnit;
-import com.deltek.integration.maconomy.containers.v1.Constants;
+import com.deltek.integration.maconomy.containers.v1.ContainersConstants;
 import com.deltek.integration.maconomy.containers.v1.Containers;
 import com.deltek.integration.maconomy.containers.v1.Language;
 import com.deltek.integration.maconomy.containers.v1.ToolsPackagingUnit;
@@ -41,7 +41,7 @@ import com.deltek.integration.maconomy.containers.v1.Versions;
 public class OfflineTests extends JerseyTest {
 
 	private static final String SHORTNAME = "w17";
-	private static final String PATH = Constants.PATH + "/" + SHORTNAME;
+	private static final String PATH = ContainersConstants.PATH + "/" + SHORTNAME;
 
 	@Rule
 	public ExpectedException expectedEx = ExpectedException.none();

@@ -1,7 +1,8 @@
 package com.deltek.integration.maconomy.client;
 
 import static com.deltek.integration.maconomy.client.ServerException.serverException;
-import static com.deltek.integration.maconomy.containers.v1.Constants.MACONOMY_CONCURRENCY_CONTROL;
+import static com.deltek.integration.maconomy.containers.v1.ContainersConstants.MACONOMY_CONCURRENCY_CONTROL;
+import static com.deltek.integration.maconomy.relations.LinkRelations.newFiledrop;
 import static com.deltek.integration.maconomy.relations.LinkRelations.read;
 import static javax.ws.rs.client.Entity.json;
 
@@ -26,11 +27,13 @@ import org.glassfish.jersey.message.GZipEncoder;
 import com.deltek.integration.maconomy.client.filters.AuthorizationFilter;
 import com.deltek.integration.maconomy.client.filters.LanguageFilter;
 import com.deltek.integration.maconomy.containers.v1.ConcurrencyControl;
-import com.deltek.integration.maconomy.containers.v1.Constants;
+import com.deltek.integration.maconomy.containers.v1.ContainersConstants;
 import com.deltek.integration.maconomy.containers.v1.Container;
 import com.deltek.integration.maconomy.containers.v1.Containers;
 import com.deltek.integration.maconomy.containers.v1.Link;
 import com.deltek.integration.maconomy.containers.v1.Meta;
+import com.deltek.integration.maconomy.filedrop.v1.FiledropConstants;
+import com.deltek.integration.maconomy.filedrop.v1.FiledropLocation;
 import com.deltek.integration.maconomy.relations.ContextResource;
 import com.deltek.integration.maconomy.relations.EntityLinkRelation;
 import com.deltek.integration.maconomy.relations.LinkRelation;
@@ -45,12 +48,16 @@ public final class MaconomyClient {
 	private static final Log LOG = LogFactory.getLog(MaconomyClient.class);
 
 	private final Client client;
-	private final WebTarget baseWebTarget;
+	private final String host, port, shortname;
 
 	private MaconomyClient(final Client client,
-						   final WebTarget baseWebTarget) {
+						   final String host,
+						   final String port,
+						   final String shortname) {
 		this.client = client;
-		this.baseWebTarget = baseWebTarget;
+		this.host = host;
+		this.port = port;
+		this.shortname = shortname;
 	}
 
 	/**
@@ -59,7 +66,7 @@ public final class MaconomyClient {
 	 * @return The Containers endpoint.
 	 */
 	public Containers containers() {
-		final Invocation.Builder request = baseWebTarget.request(MediaType.APPLICATION_JSON);
+		final Invocation.Builder request = containersWebTarget().request(MediaType.APPLICATION_JSON);
 		return executeRequest(request, read(Containers.class), null);
 	}
 
@@ -70,7 +77,7 @@ public final class MaconomyClient {
 	 * @return A representation of the container overview
 	 */
 	public Container container(final String containerName) {
-		final Invocation.Builder request = baseWebTarget.path(containerName)
+		final Invocation.Builder request = containersWebTarget().path(containerName)
 				                                          .request(MediaType.APPLICATION_JSON);
 		return executeRequest(request, read(Container.class), null);
 	}
@@ -117,6 +124,16 @@ public final class MaconomyClient {
 		return executeRequest(request, linkRelation, linkRelation.getEntity());
 	}
 
+	/**
+	 * Create a new filedrop to upload a file to.
+	 * 
+	 * @return a location of the new filedrop.
+	 */
+	public FiledropLocation createFiledrop() {
+		final Invocation.Builder request = filedropWebTarget().path(FiledropConstants.NEW_FILEDROP_PATH).request(MediaType.APPLICATION_JSON);
+		return executeRequest(request, newFiledrop(), null);
+	}
+
 	private Invocation.Builder invocationBuilder(final ContextResource contextResource,
                                                  final LinkRelation<?> linkRelation) {
 		final Link link = contextResource.getLinks()
@@ -150,6 +167,22 @@ public final class MaconomyClient {
 	private void check(final Response response) {
 		if (response.getStatus() >= 300) {
 			throw serverException(response);
+		}
+	}
+
+	private WebTarget containersWebTarget() {
+		return client.target(server()).path(ContainersConstants.PATH).path(shortname);
+	}
+
+	private WebTarget filedropWebTarget() {
+		return client.target(server()).path(FiledropConstants.PATH).path(shortname);
+	}
+
+	private URI server() {
+		try {
+			return new URI(host + ":" + port);
+		} catch (final URISyntaxException e) {
+			throw new ClientException(host + ":" + port, e);
 		}
 	}
 
@@ -195,22 +228,13 @@ public final class MaconomyClient {
 
 		public MaconomyClient build() {
 			configureClient();
-			return new MaconomyClient(client, baseWebTarget());
+			return new MaconomyClient(client, host, port, shortname);
 		}
 
 		private void configureClient() {
 			client.register(new AuthorizationFilter(username, password));
 			if (language != null) {
 				client.register(new LanguageFilter(language));
-			}
-		}
-
-		private WebTarget baseWebTarget() {
-			try {
-				final URI target = new URI(host + ":" + port);
-				return client.target(target).path(Constants.PATH).path(shortname);
-			} catch (final URISyntaxException e) {
-				throw new ClientException(host + ":" + port, e);
 			}
 		}
 

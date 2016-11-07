@@ -4,6 +4,7 @@ import com.deltek.integration.maconomy.containers.v1.CardTableData;
 import com.deltek.integration.maconomy.containers.v1.CardTableRecord;
 import com.deltek.integration.maconomy.containers.v1.FilterData;
 import com.deltek.integration.maconomy.containers.v1.specification.Specification;
+import com.deltek.integration.maconomy.filedrop.v1.FiledropLocation;
 
 /**
  * Factory that produces link relations.
@@ -192,4 +193,12 @@ public class LinkRelations {
 				                                                                CardTableData.class,
 				                                                                null);
 	}
+
+	/**
+	 * @return A link relation used to create a new filedrop.
+	 */
+	public static SafeLinkRelation<FiledropLocation> newFiledrop() {
+		return new BaseLinkRelation.SafeLinkRelationImpl<>("filedrop:new", HttpMethod.POST, FiledropLocation.class);
+	}
+
 }
