@@ -1,21 +1,14 @@
-package com.deltek.integration.maconomy.containers.v1;
+package com.deltek.integration.maconomy.containers.v1.data;
 
-import java.util.List;
+import java.util.Map;
 
+import com.deltek.integration.maconomy.containers.v1.Links;
 import com.deltek.integration.maconomy.relations.ContextResource;
 
-public abstract class Pane<RecordType> implements ContextResource {
+public abstract class Record implements ContextResource {
 
 	private Links links;
-
-	private List<RecordType> records;
-	public List<RecordType> getRecords() {
-		return records;
-	}
-
-	public void setRecords(final List<RecordType> records) {
-		this.records = records;
-	}
+	private Map<String, Object> data;
 
 	@Override
 	public Links getLinks() {
@@ -26,10 +19,19 @@ public abstract class Pane<RecordType> implements ContextResource {
 		this.links = links;
 	}
 
+	public Map<String, Object> getData() {
+		return data;
+	}
+
+	public void setData(final Map<String, Object> data) {
+		this.data = data;
+	}
+
 	@Override
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
+		result = prime * result + ((data == null) ? 0 : data.hashCode());
 		result = prime * result + ((links == null) ? 0 : links.hashCode());
 		return result;
 	}
@@ -45,7 +47,14 @@ public abstract class Pane<RecordType> implements ContextResource {
 		if (getClass() != obj.getClass()) {
 			return false;
 		}
-		final Pane<?> other = (Pane<?>) obj;
+		final Record other = (Record) obj;
+		if (data == null) {
+			if (other.data != null) {
+				return false;
+			}
+		} else if (!data.equals(other.data)) {
+			return false;
+		}
 		if (links == null) {
 			if (other.links != null) {
 				return false;
@@ -58,7 +67,7 @@ public abstract class Pane<RecordType> implements ContextResource {
 
 	@Override
 	public String toString() {
-		return "Pane [links=" + links + "]";
+		return "Record [links=" + links + ", data=" + data + "]";
 	}
 
 }

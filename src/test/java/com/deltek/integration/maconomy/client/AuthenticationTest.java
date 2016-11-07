@@ -16,7 +16,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import com.deltek.integration.maconomy.configuration.Server;
-import com.deltek.integration.maconomy.containers.v1.Containers;
+import com.deltek.integration.maconomy.containers.v1.handshake.Containers;
 
 /**
  * REQUIRES A SERVER CONNECTION!

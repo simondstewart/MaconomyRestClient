@@ -2,8 +2,8 @@ package com.deltek.integration.maconomy.custom;
 
 import java.util.function.Function;
 
-import com.deltek.integration.maconomy.containers.v1.CardTableData;
-import com.deltek.integration.maconomy.containers.v1.CardTableRecord;
+import com.deltek.integration.maconomy.containers.v1.data.CardTableData;
+import com.deltek.integration.maconomy.containers.v1.data.CardTableRecord;
 
 public abstract class BaseCardTableRecord<CardType extends ICard<?,?>>
 extends BaseRecord<CardTableRecord>

@@ -1,4 +1,4 @@
-package com.deltek.integration.maconomy.containers.v1;
+package com.deltek.integration.maconomy.containers.v1.handshake;
 
 public class Scheme {
 

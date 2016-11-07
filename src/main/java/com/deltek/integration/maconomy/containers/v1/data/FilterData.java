@@ -1,4 +1,4 @@
-package com.deltek.integration.maconomy.containers.v1;
+package com.deltek.integration.maconomy.containers.v1.data;
 
 public class FilterData extends Data {
 

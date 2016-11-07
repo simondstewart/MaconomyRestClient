@@ -13,6 +13,8 @@ public class ForeignKey implements ContextResource {
 	private String searchPane;
 	private String title;
 	private boolean incomplete;
+	private String switchField;
+	private String switchValue;
 	private List<FieldReference> fieldReferences;
 	private Links links;
 
@@ -20,7 +22,7 @@ public class ForeignKey implements ContextResource {
 		return name;
 	}
 
-	public void setName(String name) {
+	public void setName(final String name) {
 		this.name = name;
 	}
 
@@ -28,7 +30,7 @@ public class ForeignKey implements ContextResource {
 		return rel;
 	}
 
-	public void setRel(String rel) {
+	public void setRel(final String rel) {
 		this.rel = rel;
 	}
 
@@ -36,7 +38,7 @@ public class ForeignKey implements ContextResource {
 		return searchContainer;
 	}
 
-	public void setSearchContainer(String searchContainer) {
+	public void setSearchContainer(final String searchContainer) {
 		this.searchContainer = searchContainer;
 	}
 
@@ -44,7 +46,7 @@ public class ForeignKey implements ContextResource {
 		return searchPane;
 	}
 
-	public void setSearchPane(String searchPane) {
+	public void setSearchPane(final String searchPane) {
 		this.searchPane = searchPane;
 	}
 
@@ -52,7 +54,7 @@ public class ForeignKey implements ContextResource {
 		return title;
 	}
 
-	public void setTitle(String title) {
+	public void setTitle(final String title) {
 		this.title = title;
 	}
 
@@ -60,15 +62,31 @@ public class ForeignKey implements ContextResource {
 		return incomplete;
 	}
 
-	public void setIncomplete(boolean incomplete) {
+	public void setIncomplete(final boolean incomplete) {
 		this.incomplete = incomplete;
+	}
+
+	public String getSwitchField() {
+		return switchField;
+	}
+
+	public void setSwitchField(final String switchField) {
+		this.switchField = switchField;
+	}
+
+	public String getSwitchValue() {
+		return switchValue;
+	}
+
+	public void setSwitchValue(final String switchValue) {
+		this.switchValue = switchValue;
 	}
 
 	public List<FieldReference> getFieldReferences() {
 		return fieldReferences;
 	}
 
-	public void setFieldReferences(List<FieldReference> fieldReferences) {
+	public void setFieldReferences(final List<FieldReference> fieldReferences) {
 		this.fieldReferences = fieldReferences;
 	}
 
@@ -77,7 +95,7 @@ public class ForeignKey implements ContextResource {
 		return links;
 	}
 
-	public void setLinks(Links links) {
+	public void setLinks(final Links links) {
 		this.links = links;
 	}
 

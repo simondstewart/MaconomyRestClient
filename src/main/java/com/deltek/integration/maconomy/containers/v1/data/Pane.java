@@ -1,18 +1,21 @@
-package com.deltek.integration.maconomy.containers.v1;
+package com.deltek.integration.maconomy.containers.v1.data;
 
+import java.util.List;
+
+import com.deltek.integration.maconomy.containers.v1.Links;
 import com.deltek.integration.maconomy.relations.ContextResource;
 
-public class Container implements ContextResource {
+public abstract class Pane<RecordType> implements ContextResource {
 
-	private String containerName;
 	private Links links;
 
-	public String getContainerName() {
-		return containerName;
+	private List<RecordType> records;
+	public List<RecordType> getRecords() {
+		return records;
 	}
 
-	public void setContainerName(final String containerName) {
-		this.containerName = containerName;
+	public void setRecords(final List<RecordType> records) {
+		this.records = records;
 	}
 
 	@Override
@@ -28,7 +31,6 @@ public class Container implements ContextResource {
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
-		result = prime * result + ((containerName == null) ? 0 : containerName.hashCode());
 		result = prime * result + ((links == null) ? 0 : links.hashCode());
 		return result;
 	}
@@ -44,14 +46,7 @@ public class Container implements ContextResource {
 		if (getClass() != obj.getClass()) {
 			return false;
 		}
-		final Container other = (Container) obj;
-		if (containerName == null) {
-			if (other.containerName != null) {
-				return false;
-			}
-		} else if (!containerName.equals(other.containerName)) {
-			return false;
-		}
+		final Pane<?> other = (Pane<?>) obj;
 		if (links == null) {
 			if (other.links != null) {
 				return false;
@@ -64,7 +59,7 @@ public class Container implements ContextResource {
 
 	@Override
 	public String toString() {
-		return "Container [containerName=" + containerName + ", links=" + links + "]";
+		return "Pane [links=" + links + "]";
 	}
 
 }
