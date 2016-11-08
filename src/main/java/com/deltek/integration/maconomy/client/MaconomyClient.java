@@ -171,13 +171,32 @@ public final class MaconomyClient {
         return client.target(uriBuilder).request(MediaType.APPLICATION_JSON);
 	}
 
-	// TODO: (ANH) clean up this stuff
+	/**
+	 * Execute the request based on a given link relation which will be used to determine the HTTP method and the type of the target resource.
+	 * If there is request entity, then it has to use a JSON format which is assumed for this method.
+	 * Response entity is attempted to be read to a given target type specified in the link relation and returned.
+	 * 
+	 * @param request
+	 * @param linkRelation
+	 * @param requestEntity using JSON format
+	 * @return the resource obtained after executing the request
+	 */
 	private <TargetResource, EntityType> TargetResource executeRequest(final Invocation.Builder request,
 			                                                           final LinkRelation<TargetResource> linkRelation,
 			                                                           final EntityType requestEntity) {
 		return executeRequest(request, linkRelation.getMethod(), linkRelation.getTargetResource(), json(requestEntity));
 	}
 
+	/**
+	 * Execute the request using the HTTP method, type of the target resource and request entity format.
+	 * Response entity is attempted to be read to a given target type and returned.
+	 * 
+	 * @param request
+	 * @param method
+	 * @param target
+	 * @param requestEntity
+	 * @return the resource obtained after executing the request
+	 */
 	private <TargetResource, EntityType> TargetResource executeRequest(final Invocation.Builder request,
 			                                                           final HttpMethod method,
 			                                                           final Class<TargetResource> target,
@@ -186,18 +205,21 @@ public final class MaconomyClient {
 		return response.readEntity(target);
 	}
 
+	/**
+	 * Execute the request using the HTTP method and request entity format.
+	 * Response entity is not attempted to be read, response is returned instead.
+	 * 
+	 * @param request
+	 * @param method
+	 * @param requestEntity
+	 * @return the response obtained after executing the request
+	 */
 	private <EntityType> Response executeRequest(final Invocation.Builder request,
-			                                 final HttpMethod method,
-			                                 final Entity<EntityType> requestEntity) {
-		final Response response;
-		if (requestEntity == null || requestEntity.getEntity() == null) {
-			response = request.method(method.name());
-		} else {
-			response = request.method(method.name(), requestEntity);
-		}
-
+			                                     final HttpMethod method,
+			                                     final Entity<EntityType> requestEntity) {
+		final boolean hasRequestEntity = requestEntity != null && requestEntity.getEntity() != null;
+		final Response response = hasRequestEntity ? request.method(method.name(), requestEntity) : request.method(method.name());
 		check(response);
-
 		LOG.info(response);
 		return response;
 	}
@@ -209,14 +231,14 @@ public final class MaconomyClient {
 	}
 
 	private WebTarget containersWebTarget() {
-		return client.target(server()).path(ContainersConstants.PATH).path(shortname);
+		return client.target(getServerAddress()).path(ContainersConstants.PATH).path(shortname);
 	}
 
 	private WebTarget filedropWebTarget() {
-		return client.target(server()).path(FiledropConstants.PATH).path(shortname);
+		return client.target(getServerAddress()).path(FiledropConstants.PATH).path(shortname);
 	}
 
-	private URI server() {
+	private URI getServerAddress() {
 		try {
 			return new URI(host + ":" + port);
 		} catch (final URISyntaxException e) {
@@ -228,7 +250,7 @@ public final class MaconomyClient {
 		try {
 			return Files.readAllBytes(path);
 		} catch (IOException e) {
-			throw new ClientException("Error while attempting file upload", e);
+			throw new ClientException("Error while reading file constants", e);
 		}
 	}
 
