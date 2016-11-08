@@ -3,7 +3,7 @@ package com.deltek.integration.maconomy.client;
 import static com.deltek.integration.maconomy.client.ServerException.serverException;
 import static com.deltek.integration.maconomy.containers.v1.ContainersConstants.MACONOMY_CONCURRENCY_CONTROL;
 import static com.deltek.integration.maconomy.filedrop.v1.FiledropConstants.CONTENT_DISPOSITION;
-import static com.deltek.integration.maconomy.filedrop.v1.FiledropConstants.CONTENT_DISPOSITION_VALUE;
+import static com.deltek.integration.maconomy.filedrop.v1.FiledropConstants.CONTENT_DISPOSITION_VALUE_FORMAT;
 import static com.deltek.integration.maconomy.filedrop.v1.FiledropConstants.CONTENT_TYPE;
 import static com.deltek.integration.maconomy.filedrop.v1.FiledropConstants.CONTENT_TYPE_VALUE;
 import static com.deltek.integration.maconomy.relations.LinkRelations.read;
@@ -151,7 +151,7 @@ public final class MaconomyClient {
 		final String fileName = path.getFileName().toString();
 		final byte[] fileContents = Utils.getFileContents(path);
 		final Invocation.Builder request = client.target(filedrop.getLocation()).request(MediaType.APPLICATION_JSON)
-				.header(CONTENT_TYPE, CONTENT_TYPE_VALUE).header(CONTENT_DISPOSITION, getContentDispositionValue(fileName));
+				.header(CONTENT_TYPE, CONTENT_TYPE_VALUE).header(CONTENT_DISPOSITION, String.format(CONTENT_DISPOSITION_VALUE_FORMAT, fileName));
 		executeRequest(request, HttpMethod.POST, Entity.entity(fileContents, CONTENT_TYPE_VALUE));
 	}
 
@@ -167,10 +167,6 @@ public final class MaconomyClient {
 		final String type = (String)response.getHeaders().getFirst(CONTENT_TYPE);
 		final byte[] data = response.readEntity(byte[].class);
 		return new Contents(type, data);
-	}
-
-	private String getContentDispositionValue(final String fileName) {
-		return CONTENT_DISPOSITION_VALUE + "\"" + fileName + "\"";
 	}
 
 	private Invocation.Builder invocationBuilder(final ContextResource contextResource,

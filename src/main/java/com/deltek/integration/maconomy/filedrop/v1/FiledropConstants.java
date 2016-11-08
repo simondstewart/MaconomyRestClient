@@ -18,6 +18,7 @@ public class FiledropConstants {
 
 	public static final String CONTENT_DISPOSITION = "Content-Disposition";
 
-	public static final String CONTENT_DISPOSITION_VALUE = "attachment; filename=";
+	/** Format used for the content disposition header value, where a filename has to be supplied to complete it. */
+	public static final String CONTENT_DISPOSITION_VALUE_FORMAT = "attachment; filename=\"%s\"";
 
 }
