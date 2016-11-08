@@ -11,6 +11,7 @@ import static com.deltek.integration.maconomy.relations.LinkRelations.insert;
 import static com.deltek.integration.maconomy.relations.LinkRelations.self;
 import static com.deltek.integration.maconomy.relations.LinkRelations.update;
 import static java.time.Instant.now;
+import static java.util.Optional.empty;
 import static org.hamcrest.Matchers.startsWith;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
@@ -75,7 +76,7 @@ public class CrudTest {
 		// run action:create to receive initialization data
 		final String noteNumber = "Note_" + now().getEpochSecond();
 		initData.getData().put("notenumber", noteNumber);
-		/*final CardTableData created = */ maconomyClient.transition(initData, create(initData));
+		/*final CardTableData created = */ maconomyClient.transition(initData, create(initData), empty());
 
 		// load filter to store see after-stats
 		final FilterData updatedFilter = maconomyClient.transition(notesFilter, self(FilterData.class));
@@ -91,13 +92,13 @@ public class CrudTest {
 
 		final CardTablePane table = notesCardTable.getPanes().getTable();
 		// run action:add to receive initialization data, TODO: (ANH) it would be nice to avoid the null-arg here
-		final CardTableRecord initData = maconomyClient.transition(table, addTable());
+		final CardTableRecord initData = maconomyClient.transition(table, addTable(), empty());
 		assertTrue(initData.getLinks().get(create(initData)).isPresent());
 		final int originalLineNumber = Integer.parseInt(initData.getData().get("linenumber").toString());
 		assertSame(originalLineNumber, 0);
 
 		// run action:create to receive initialization data
-		final CardTableData afterCreate = maconomyClient.transition(initData, create(initData));
+		final CardTableData afterCreate = maconomyClient.transition(initData, create(initData), empty());
 
 		// load filter to store see after-stats
 		final int rowCountAfterCreate = afterCreate.getPanes().getTable().getMeta().getRowCount();
@@ -105,7 +106,7 @@ public class CrudTest {
 
 		final List<CardTableRecord> records = afterCreate.getPanes().getTable().getRecords();
 		final CardTableRecord cardTableRecord = records.get(records.size() - 1);
-		final CardTableData afterDelete = maconomyClient.transition(cardTableRecord, delete());
+		final CardTableData afterDelete = maconomyClient.transition(cardTableRecord, delete(), empty());
 
 		// load filter to store see after-stats
 		final int rowCountAfterDelete = afterDelete.getPanes().getTable().getMeta().getRowCount();
@@ -122,7 +123,7 @@ public class CrudTest {
 		final String oldDescription = cardRecord.getData().get(description).toString();
 		final String timestamp = LocalDateTime.now().toString();
 		cardRecord.getData().put(description, timestamp);
-		final CardTableData updated = maconomyClient.transition(cardRecord, update(cardRecord));
+		final CardTableData updated = maconomyClient.transition(cardRecord, update(cardRecord), empty());
 		final CardTableRecord updatedRecord = updated.getPanes().getCard().getRecords().get(0);
 		assertNotEquals(oldDescription, updatedRecord.getData().get(description));
 		assertEquals(timestamp, updatedRecord.getData().get(description));

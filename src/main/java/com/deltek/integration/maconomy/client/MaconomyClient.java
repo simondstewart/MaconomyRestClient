@@ -6,12 +6,15 @@ import static com.deltek.integration.maconomy.filedrop.v1.FiledropConstants.CONT
 import static com.deltek.integration.maconomy.filedrop.v1.FiledropConstants.CONTENT_DISPOSITION_VALUE_FORMAT;
 import static com.deltek.integration.maconomy.filedrop.v1.FiledropConstants.CONTENT_TYPE;
 import static com.deltek.integration.maconomy.filedrop.v1.FiledropConstants.CONTENT_TYPE_VALUE;
+import static com.deltek.integration.maconomy.filedrop.v1.FiledropConstants.MACONOMY_FILE_CALLBACK;
+import static com.deltek.integration.maconomy.filedrop.v1.FiledropConstants.MACONOMY_FILE_CALLBACK_VALUE_FORMAT;
 import static com.deltek.integration.maconomy.relations.LinkRelations.read;
 import static javax.ws.rs.client.Entity.json;
 
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.nio.file.Path;
+import java.util.Optional;
 
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
@@ -118,16 +121,15 @@ public final class MaconomyClient {
 	 *
 	 * @param contextResource
 	 * @param linkRelation
-	 * @param requestEntity
+	 * @param filedrop
 	 * @return
 	 */
 	public <EntityType, TargetResource> TargetResource transition(final Meta<? extends ConcurrencyControl> contextResource,
-			                                                      final EntityLinkRelation<EntityType, TargetResource> linkRelation) {
+			                                                      final EntityLinkRelation<EntityType, TargetResource> linkRelation,
+			                                                      final Optional<Filedrop> filedrop) {
 		final Invocation.Builder request = invocationBuilder(contextResource, linkRelation);
-		final String concurrencyControl = contextResource.getMeta().getConcurrencyControl();
-		if (concurrencyControl != null && !concurrencyControl.isEmpty()) {
-			request.header(MACONOMY_CONCURRENCY_CONTROL, concurrencyControl);
-		}
+		addConcurrencyControlHeader(request, contextResource.getMeta().getConcurrencyControl());
+		addMaconomyFileCallbackHeader(request, filedrop);
 		return executeRequest(request, linkRelation, linkRelation.getEntity());
 	}
 
@@ -179,6 +181,18 @@ public final class MaconomyClient {
         	uriBuilder.queryParam(queryPart.getName(), queryPart.getValues());
         }
         return client.target(uriBuilder).request(MediaType.APPLICATION_JSON);
+	}
+	
+	private void addConcurrencyControlHeader(final Invocation.Builder request, final String concurrencyControl) {
+		if (concurrencyControl != null && !concurrencyControl.isEmpty()) {
+			request.header(MACONOMY_CONCURRENCY_CONTROL, concurrencyControl);
+		}
+	}
+
+	private void addMaconomyFileCallbackHeader(Invocation.Builder request, Optional<Filedrop> filedrop) {
+		if (filedrop.isPresent() && filedrop.get().getLocation() != null && !filedrop.get().getLocation().isEmpty()) {
+			request.header(MACONOMY_FILE_CALLBACK, String.format(MACONOMY_FILE_CALLBACK_VALUE_FORMAT, filedrop.get().getLocation()));
+		}
 	}
 
 	/**
