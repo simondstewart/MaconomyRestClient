@@ -1,6 +1,7 @@
 package com.deltek.integration.maconomy.client;
 
 import static org.junit.Assert.assertArrayEquals;
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.fail;
 
@@ -18,6 +19,7 @@ import org.springframework.core.io.ClassPathResource;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import com.deltek.integration.maconomy.configuration.Server;
+import com.deltek.integration.maconomy.filedrop.v1.Contents;
 import com.deltek.integration.maconomy.filedrop.v1.Filedrop;
 
 /**
@@ -44,6 +46,7 @@ public class FiledropTest {
 	@Test
 	public void testFiledropCreation() {
 		final Filedrop filedrop = maconomyClient.createFiledrop();
+
 		assertNotNull(filedrop);
 		assertNotNull(filedrop.getLocation());
 	}
@@ -54,8 +57,10 @@ public class FiledropTest {
 		try {
 			final Path path = new ClassPathResource("file.png").getFile().toPath();
 			maconomyClient.uploadFile(path, filedrop);
-			final byte[] filedropContents = maconomyClient.readFiledrop(filedrop);
-			assertArrayEquals(filedropContents, Utils.getFileContents(path));
+			final Contents contents = maconomyClient.readFiledrop(filedrop);
+
+			assertEquals(contents.getType(), "image/png");
+			assertArrayEquals(contents.getData(), Utils.getFileContents(path));
 		} catch (IOException e) {
 			fail("Error while uploading file to a filedrop: " + e.getMessage());
 		}

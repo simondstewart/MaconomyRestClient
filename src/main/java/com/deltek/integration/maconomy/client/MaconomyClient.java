@@ -34,6 +34,7 @@ import com.deltek.integration.maconomy.client.filters.LanguageFilter;
 import com.deltek.integration.maconomy.containers.v1.ContainersConstants;
 import com.deltek.integration.maconomy.containers.v1.Link;
 import com.deltek.integration.maconomy.filedrop.v1.FiledropConstants;
+import com.deltek.integration.maconomy.filedrop.v1.Contents;
 import com.deltek.integration.maconomy.filedrop.v1.Filedrop;
 import com.deltek.integration.maconomy.containers.v1.data.ConcurrencyControl;
 import com.deltek.integration.maconomy.containers.v1.data.Container;
@@ -141,7 +142,7 @@ public final class MaconomyClient {
 	}
 
 	/**
-	 * Upload the contents of the file specified at a given path to a given filedrop.
+	 * Upload the contents of the file specified at a given path to a given filedrop, which should be empty, otherwise an error will be thrown.
 	 * 
 	 * @param file
 	 * @param filedrop
@@ -160,10 +161,12 @@ public final class MaconomyClient {
 	 * @param filedrop
 	 * @return the contents of the filedrop.
 	 */
-	public byte[] readFiledrop(final Filedrop filedrop) {
+	public Contents readFiledrop(final Filedrop filedrop) {
 		final Invocation.Builder request = client.target(filedrop.getLocation()).request(CONTENT_TYPE_VALUE);
 		final Response response = executeRequest(request, HttpMethod.GET, null);
-		return response.readEntity(byte[].class);
+		final String type = (String)response.getHeaders().getFirst(CONTENT_TYPE);
+		final byte[] data = response.readEntity(byte[].class);
+		return new Contents(type, data);
 	}
 
 	private String getContentDispositionValue(final String fileName) {
