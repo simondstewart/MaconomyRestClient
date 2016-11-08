@@ -9,12 +9,9 @@ import static com.deltek.integration.maconomy.filedrop.v1.FiledropConstants.CONT
 import static com.deltek.integration.maconomy.relations.LinkRelations.read;
 import static javax.ws.rs.client.Entity.json;
 
-import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
@@ -37,7 +34,7 @@ import com.deltek.integration.maconomy.client.filters.LanguageFilter;
 import com.deltek.integration.maconomy.containers.v1.ContainersConstants;
 import com.deltek.integration.maconomy.containers.v1.Link;
 import com.deltek.integration.maconomy.filedrop.v1.FiledropConstants;
-import com.deltek.integration.maconomy.filedrop.v1.FiledropLocation;
+import com.deltek.integration.maconomy.filedrop.v1.Filedrop;
 import com.deltek.integration.maconomy.containers.v1.data.ConcurrencyControl;
 import com.deltek.integration.maconomy.containers.v1.data.Container;
 import com.deltek.integration.maconomy.containers.v1.data.Meta;
@@ -138,21 +135,35 @@ public final class MaconomyClient {
 	 * 
 	 * @return a location of the new filedrop.
 	 */
-	public FiledropLocation createFiledrop() {
+	public Filedrop createFiledrop() {
 		final Invocation.Builder request = filedropWebTarget().path(FiledropConstants.NEW_FILEDROP_PATH).request(MediaType.APPLICATION_JSON);
-		return executeRequest(request, HttpMethod.POST, FiledropLocation.class, null);
+		return executeRequest(request, HttpMethod.POST, Filedrop.class, null);
 	}
 
-	public void uploadFile(final String file, final FiledropLocation filedrop) {
-		final Path path = Paths.get(file);
+	/**
+	 * Upload the contents of the file specified at a given path to a given filedrop.
+	 * 
+	 * @param file
+	 * @param filedrop
+	 */
+	public void uploadFile(final Path path, final Filedrop filedrop) {
 		final String fileName = path.getFileName().toString();
-		final byte[] fileContents = getFileContents(path);
-		final Invocation.Builder request = client.target(filedrop.getLocation())
-				.request(MediaType.APPLICATION_JSON)
-				.header(CONTENT_TYPE, CONTENT_TYPE_VALUE)
-				.header(CONTENT_DISPOSITION, getContentDispositionValue(fileName));
-
+		final byte[] fileContents = Utils.getFileContents(path);
+		final Invocation.Builder request = client.target(filedrop.getLocation()).request(MediaType.APPLICATION_JSON)
+				.header(CONTENT_TYPE, CONTENT_TYPE_VALUE).header(CONTENT_DISPOSITION, getContentDispositionValue(fileName));
 		executeRequest(request, HttpMethod.POST, Entity.entity(fileContents, CONTENT_TYPE_VALUE));
+	}
+
+	/**
+	 * Read the contents of the given filedrop.
+	 * 
+	 * @param filedrop
+	 * @return the contents of the filedrop.
+	 */
+	public byte[] readFiledrop(final Filedrop filedrop) {
+		final Invocation.Builder request = client.target(filedrop.getLocation()).request(CONTENT_TYPE_VALUE);
+		final Response response = executeRequest(request, HttpMethod.GET, null);
+		return response.readEntity(byte[].class);
 	}
 
 	private String getContentDispositionValue(final String fileName) {
@@ -243,14 +254,6 @@ public final class MaconomyClient {
 			return new URI(host + ":" + port);
 		} catch (final URISyntaxException e) {
 			throw new ClientException(host + ":" + port, e);
-		}
-	}
-
-	private byte[] getFileContents(final Path path) {
-		try {
-			return Files.readAllBytes(path);
-		} catch (IOException e) {
-			throw new ClientException("Error while reading file constants", e);
 		}
 	}
 

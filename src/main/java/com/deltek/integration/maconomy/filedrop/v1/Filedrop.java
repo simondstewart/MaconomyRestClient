@@ -3,7 +3,7 @@ package com.deltek.integration.maconomy.filedrop.v1;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class FiledropLocation {
+public class Filedrop {
 
 	private String location;
 
