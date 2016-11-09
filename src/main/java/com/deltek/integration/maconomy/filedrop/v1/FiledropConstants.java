@@ -1,7 +1,8 @@
 package com.deltek.integration.maconomy.filedrop.v1;
 
-import java.util.regex.Pattern;
+import static com.deltek.integration.maconomy.client.Utils.URL_PATTERN;
 
+import java.util.regex.Pattern;
 import javax.ws.rs.core.MediaType;
 
 public class FiledropConstants {
@@ -34,6 +35,6 @@ public class FiledropConstants {
 	public static final String LINK = "Link";
 
 	/** Pattern used for the link header value. */
-	public static final Pattern LINK_VALUE_PATTERN = Pattern.compile("^\\<([^\\>]*)\\>;rel\\=file;type\\=.*$");
+	public static final Pattern LINK_VALUE_PATTERN = Pattern.compile("^\\<(" + URL_PATTERN + ")\\>;rel\\=file;type\\=.*$");
 
 }
