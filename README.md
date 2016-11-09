@@ -7,7 +7,6 @@ TODO: (in no particular order)
 * Set format header appropriately. Necessary for prints and certain other actions
 * Support login with domain credentials
 * Implement navigation strategy for singleton containers
-* Handle file up- and download as well as prints
 * Handle batch import actions
 * Support foreign-key searches
 * Implement Performance logger using a request/response filter

@@ -193,4 +193,13 @@ public class LinkRelations {
 				                                                                null);
 	}
 
+	/**
+	 * Indicates a link that is used to perform the print action.
+	 * 
+	 * @return
+	 */
+	public static SafeLinkRelation<Void> print() {
+		return new BaseLinkRelation.SafeLinkRelationImpl<>("action:print", HttpMethod.POST, Void.class);
+	}
+
 }

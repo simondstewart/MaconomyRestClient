@@ -1,5 +1,7 @@
 package com.deltek.integration.maconomy.filedrop.v1;
 
+import java.util.regex.Pattern;
+
 import javax.ws.rs.core.MediaType;
 
 public class FiledropConstants {
@@ -27,5 +29,11 @@ public class FiledropConstants {
 
 	/** Format used for the content disposition header value, where a filename has to be supplied to complete it. */
 	public static final String CONTENT_DISPOSITION_VALUE_FORMAT = "attachment; filename=\"%s\"";
+
+	/** Header used to return the filedrop contents. */
+	public static final String LINK = "Link";
+
+	/** Pattern used for the link header value. */
+	public static final Pattern LINK_VALUE_PATTERN = Pattern.compile("^\\<([^\\>]*)\\>;rel\\=file;type\\=.*$");
 
 }

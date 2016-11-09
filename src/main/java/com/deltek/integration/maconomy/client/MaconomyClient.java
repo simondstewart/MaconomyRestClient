@@ -6,8 +6,11 @@ import static com.deltek.integration.maconomy.filedrop.v1.FiledropConstants.CONT
 import static com.deltek.integration.maconomy.filedrop.v1.FiledropConstants.CONTENT_DISPOSITION_VALUE_FORMAT;
 import static com.deltek.integration.maconomy.filedrop.v1.FiledropConstants.CONTENT_TYPE;
 import static com.deltek.integration.maconomy.filedrop.v1.FiledropConstants.CONTENT_TYPE_VALUE;
+import static com.deltek.integration.maconomy.filedrop.v1.FiledropConstants.LINK;
+import static com.deltek.integration.maconomy.filedrop.v1.FiledropConstants.LINK_VALUE_PATTERN;
 import static com.deltek.integration.maconomy.filedrop.v1.FiledropConstants.MACONOMY_FILE_CALLBACK;
 import static com.deltek.integration.maconomy.filedrop.v1.FiledropConstants.MACONOMY_FILE_CALLBACK_VALUE_FORMAT;
+import static com.deltek.integration.maconomy.filedrop.v1.FiledropConstants.NEW_FILEDROP_PATH;
 import static com.deltek.integration.maconomy.relations.LinkRelations.read;
 import static javax.ws.rs.client.Entity.json;
 
@@ -15,6 +18,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.nio.file.Path;
 import java.util.Optional;
+import java.util.regex.Matcher;
 
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
@@ -37,7 +41,7 @@ import com.deltek.integration.maconomy.client.filters.LanguageFilter;
 import com.deltek.integration.maconomy.containers.v1.ContainersConstants;
 import com.deltek.integration.maconomy.containers.v1.Link;
 import com.deltek.integration.maconomy.filedrop.v1.FiledropConstants;
-import com.deltek.integration.maconomy.filedrop.v1.Contents;
+import com.deltek.integration.maconomy.filedrop.v1.FiledropContents;
 import com.deltek.integration.maconomy.filedrop.v1.Filedrop;
 import com.deltek.integration.maconomy.containers.v1.data.ConcurrencyControl;
 import com.deltek.integration.maconomy.containers.v1.data.Container;
@@ -104,7 +108,7 @@ public final class MaconomyClient {
 	}
 
 	/**
-	 * Invokes a transition without supplying an entity.
+	 * Invokes a transition returning a resource without supplying an entity.
 	 *
 	 * @param contextResource
 	 * @param linkRelation
@@ -117,7 +121,7 @@ public final class MaconomyClient {
 	}
 
 	/**
-	 * Invokes a transition that requires an entity.
+	 * Invokes a transition returning a resource that requires an entity.
 	 *
 	 * @param contextResource
 	 * @param linkRelation
@@ -133,13 +137,21 @@ public final class MaconomyClient {
 		return executeRequest(request, linkRelation, linkRelation.getEntity());
 	}
 
+	public Optional<Filedrop> filedrop(final Meta<? extends ConcurrencyControl> contextResource,
+			                           final SafeLinkRelation<?> linkRelation) {
+		final Invocation.Builder request = invocationBuilder(contextResource, linkRelation);
+		addConcurrencyControlHeader(request, contextResource.getMeta().getConcurrencyControl());
+		final Response response = executeRequest(request, linkRelation.getMethod(), null);
+		return getLinkFiledrop(response.getHeaderString(LINK));
+	}
+
 	/**
 	 * Create a new filedrop to upload a file to.
 	 * 
 	 * @return a location of the new filedrop.
 	 */
 	public Filedrop createFiledrop() {
-		final Invocation.Builder request = filedropWebTarget().path(FiledropConstants.NEW_FILEDROP_PATH).request(MediaType.APPLICATION_JSON);
+		final Invocation.Builder request = filedropWebTarget().path(NEW_FILEDROP_PATH).request(MediaType.APPLICATION_JSON);
 		return executeRequest(request, HttpMethod.POST, Filedrop.class, null);
 	}
 
@@ -163,12 +175,12 @@ public final class MaconomyClient {
 	 * @param filedrop
 	 * @return the contents of the filedrop.
 	 */
-	public Contents readFiledrop(final Filedrop filedrop) {
+	public FiledropContents readFiledrop(final Filedrop filedrop) {
 		final Invocation.Builder request = client.target(filedrop.getLocation()).request(CONTENT_TYPE_VALUE);
 		final Response response = executeRequest(request, HttpMethod.GET, null);
-		final String type = (String)response.getHeaders().getFirst(CONTENT_TYPE);
+		final String type = response.getHeaderString(CONTENT_TYPE);
 		final byte[] data = response.readEntity(byte[].class);
-		return new Contents(type, data);
+		return new FiledropContents(type, data);
 	}
 
 	private Invocation.Builder invocationBuilder(final ContextResource contextResource,
@@ -260,6 +272,23 @@ public final class MaconomyClient {
 
 	private WebTarget filedropWebTarget() {
 		return client.target(getServerAddress()).path(FiledropConstants.PATH).path(shortname);
+	}
+
+	private Optional<Filedrop> getLinkFiledrop(final String linkValue) {
+		if (linkValue != null) {
+			final Optional<String> filedropLocation = getMatchingFiledropLocation(LINK_VALUE_PATTERN.matcher(linkValue));
+			if (filedropLocation.isPresent()) {
+				final Filedrop filedrop = new Filedrop();
+				filedrop.setLocation(filedropLocation.get());
+				return Optional.of(filedrop);
+			}
+		}
+		return Optional.empty();
+	}
+
+	private Optional<String> getMatchingFiledropLocation(final Matcher matcher) {
+		final boolean isMatchingLocation = matcher.matches() && matcher.groupCount() == 1 && matcher.group(1) != null && !matcher.group(1).isEmpty();
+		return isMatchingLocation ? Optional.of(matcher.group(1)) : Optional.empty();
 	}
 
 	private URI getServerAddress() {

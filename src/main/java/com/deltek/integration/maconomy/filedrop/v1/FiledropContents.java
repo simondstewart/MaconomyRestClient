@@ -1,11 +1,11 @@
 package com.deltek.integration.maconomy.filedrop.v1;
 
-public class Contents {
+public class FiledropContents {
 
 	private final String type;
 	private final byte[] data;
 
-	public Contents(final String type, final byte[] data) {
+	public FiledropContents(final String type, final byte[] data) {
 		this.type = type;
 		this.data = data;
 	}
