@@ -17,4 +17,7 @@ public class Constants {
 	/** Path to output directory for generated code which should not be under version control */
 	public static final String GENERATED = "generated/src/test/java/";
 
+	/** Path to test output directory. */
+	public static final String TEST_OUTPUT = "test/output/";
+
 }

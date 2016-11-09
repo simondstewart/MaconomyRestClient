@@ -8,6 +8,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
+import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.Optional;
@@ -90,7 +91,7 @@ public class FiledropTest {
 	}
 
 	@Test
-	public void testPrint() {
+	public void testPrintCorrectness() {
 		final Container notesContainer = maconomyClient.container(Constants.NOTES);
 		final CardTableData notesCardTable = maconomyClient.transition(notesContainer, dataAnyKey());
 		final CardTablePane notesTable = notesCardTable.getPanes().getTable();
@@ -100,6 +101,31 @@ public class FiledropTest {
 			if (print.isPresent()) {
 				final Optional<Filedrop> filedrop = maconomyClient.filedrop(record, print());
 				assertTrue(filedrop.isPresent());
+			}
+		}
+	}
+
+	@Test
+	public void testPrintContent() {
+		final Container notesContainer = maconomyClient.container(Constants.NOTES);
+		final CardTableData notesCardTable = maconomyClient.transition(notesContainer, dataAnyKey());
+		final CardTablePane notesTable = notesCardTable.getPanes().getTable();
+		if (notesTable.getRecords().size() > 0) {
+			final CardTableRecord record = notesTable.getRecords().get(0);
+			final Optional<Link> print = record.getLinks().get(print());
+			if (print.isPresent()) {
+				final Optional<Filedrop> filedrop = maconomyClient.filedrop(record, print());
+				if (filedrop.isPresent()) {
+					final FiledropContents filedropContents = maconomyClient.readFiledrop(filedrop.get());
+					if (filedropContents.getType() != null && filedropContents.getType().equals("application/pdf") 
+							&& filedropContents.getData() != null) {
+						final File output = new File(Constants.TEST_OUTPUT);
+						output.mkdirs();
+						final File outputFile = new File(output, "print.pdf");
+						filedropContents.writeToFile(outputFile);
+						assertTrue(outputFile.length() > 0);
+					}
+				}
 			}
 		}
 	}
