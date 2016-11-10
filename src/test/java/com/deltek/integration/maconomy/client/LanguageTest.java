@@ -59,8 +59,7 @@ public class LanguageTest {
 
 	private MaconomyClient getClientWithLanguage(final String langaugeTag) {
 		return new MaconomyClient.Builder(conf.getHost(), conf.getPort(), conf.getShortname())
-		                         .username(conf.getUsername())
-		                         .password(conf.getPassword())
+		                         .username(conf.getUsername()).password(conf.getPassword())
 		                         .language(langaugeTag)
 		                         .build();
 	}

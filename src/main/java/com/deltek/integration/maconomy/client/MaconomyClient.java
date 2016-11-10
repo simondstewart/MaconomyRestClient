@@ -37,6 +37,7 @@ import org.glassfish.jersey.logging.LoggingFeature;
 import org.glassfish.jersey.message.GZipEncoder;
 
 import com.deltek.integration.maconomy.client.filters.AuthorizationFilter;
+import com.deltek.integration.maconomy.client.filters.FormatFilter;
 import com.deltek.integration.maconomy.client.filters.LanguageFilter;
 import com.deltek.integration.maconomy.containers.v1.ContainersConstants;
 import com.deltek.integration.maconomy.containers.v1.Link;
@@ -47,6 +48,7 @@ import com.deltek.integration.maconomy.containers.v1.data.ConcurrencyControl;
 import com.deltek.integration.maconomy.containers.v1.data.Container;
 import com.deltek.integration.maconomy.containers.v1.data.Meta;
 import com.deltek.integration.maconomy.containers.v1.handshake.Containers;
+import com.deltek.integration.maconomy.custom.MaconomyFormat;
 import com.deltek.integration.maconomy.relations.ContextResource;
 import com.deltek.integration.maconomy.relations.EntityLinkRelation;
 import com.deltek.integration.maconomy.relations.HttpMethod;
@@ -194,7 +196,7 @@ public final class MaconomyClient {
         }
         return client.target(uriBuilder).request(MediaType.APPLICATION_JSON);
 	}
-	
+
 	private void addConcurrencyControlHeader(final Invocation.Builder request, final String concurrencyControl) {
 		if (concurrencyControl != null && !concurrencyControl.isEmpty()) {
 			request.header(MACONOMY_CONCURRENCY_CONTROL, concurrencyControl);
@@ -312,6 +314,7 @@ public final class MaconomyClient {
 				                             .register(LoggingFeature.class)
 				                             .build();
 		private String language, username, password;
+		private MaconomyFormat format;
 
 		public Builder(final String host, final String port, final String shortname) {
 			this.host = host;
@@ -326,6 +329,11 @@ public final class MaconomyClient {
 
 		public Builder language(final String language) {
 			this.language = language;
+			return this;
+		}
+
+		public Builder format(final MaconomyFormat format) {
+			this.format = format;
 			return this;
 		}
 
@@ -348,6 +356,9 @@ public final class MaconomyClient {
 			client.register(new AuthorizationFilter(username, password));
 			if (language != null) {
 				client.register(new LanguageFilter(language));
+			}
+			if (format != null && format.isValid()) {
+				client.register(new FormatFilter(format));
 			}
 		}
 

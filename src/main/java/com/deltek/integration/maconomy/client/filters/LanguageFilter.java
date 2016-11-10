@@ -1,11 +1,11 @@
 package com.deltek.integration.maconomy.client.filters;
 
+import static com.deltek.integration.maconomy.containers.v1.ContainersConstants.ACCEPT_LANGUAGE;
+
 import java.io.IOException;
 
 import javax.ws.rs.client.ClientRequestContext;
 import javax.ws.rs.client.ClientRequestFilter;
-
-import com.deltek.integration.maconomy.containers.v1.ContainersConstants;
 
 /** Filter for language selection. */
 public final class LanguageFilter implements ClientRequestFilter {
@@ -18,7 +18,7 @@ public final class LanguageFilter implements ClientRequestFilter {
 
 	@Override
 	public void filter(ClientRequestContext requestContext) throws IOException {
-		requestContext.getHeaders().add(ContainersConstants.ACCEPT_LANGUAGE, language);
+		requestContext.getHeaders().add(ACCEPT_LANGUAGE, language);
 	}
 
 }

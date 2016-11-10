@@ -15,6 +15,7 @@ import org.junit.runners.Suite.SuiteClasses;
 	com.deltek.integration.maconomy.client.FilterTest.class,
 	com.deltek.integration.maconomy.client.CrudTest.class,
 	com.deltek.integration.maconomy.client.LanguageTest.class,
+	com.deltek.integration.maconomy.client.FormatTest.class,
 	com.deltek.integration.maconomy.client.FiledropTest.class,
 	com.deltek.integration.maconomy.custom.HandwrittenCustomTest.class,
 	com.deltek.integration.maconomy.custom.codegen.GeneratedCustomTest.class,
