@@ -31,6 +31,7 @@ import javax.ws.rs.core.UriBuilder;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
 import org.glassfish.jersey.client.filter.EncodingFilter;
 import org.glassfish.jersey.jackson.JacksonFeature;
 import org.glassfish.jersey.logging.LoggingFeature;
@@ -127,7 +128,7 @@ public final class MaconomyClient {
 	 *
 	 * @param contextResource
 	 * @param linkRelation
-	 * @param filedrop
+	 * @param filedrop an optional filedrop used during the request.
 	 * @return
 	 */
 	public <EntityType, TargetResource> TargetResource transition(final Meta<? extends ConcurrencyControl> contextResource,
@@ -139,6 +140,13 @@ public final class MaconomyClient {
 		return executeRequest(request, linkRelation, linkRelation.getEntity());
 	}
 
+	/**
+	 * Invokes a transition returning a filedrop without supplying an entity.
+	 * 
+	 * @param contextResource
+	 * @param linkRelation
+	 * @return the location of the filedrop that was pointed to in the response.
+	 */
 	public Optional<Filedrop> filedrop(final Meta<? extends ConcurrencyControl> contextResource,
 			                           final SafeLinkRelation<?> linkRelation) {
 		final Invocation.Builder request = invocationBuilder(contextResource, linkRelation);
@@ -164,11 +172,10 @@ public final class MaconomyClient {
 	 * @param filedrop
 	 */
 	public void uploadFile(final Path path, final Filedrop filedrop) {
-		final String fileName = path.getFileName().toString();
-		final byte[] fileContents = Utils.getFileContents(path);
 		final Invocation.Builder request = client.target(filedrop.getLocation()).request(MediaType.APPLICATION_JSON)
-				.header(CONTENT_TYPE, CONTENT_TYPE_VALUE).header(CONTENT_DISPOSITION, String.format(CONTENT_DISPOSITION_VALUE_FORMAT, fileName));
-		executeRequest(request, HttpMethod.POST, Entity.entity(fileContents, CONTENT_TYPE_VALUE));
+				                           .header(CONTENT_TYPE, CONTENT_TYPE_VALUE)
+				                           .header(CONTENT_DISPOSITION, String.format(CONTENT_DISPOSITION_VALUE_FORMAT, path.getFileName().toString()));
+		executeRequest(request, HttpMethod.POST, Entity.entity(Utils.getFileContents(path), CONTENT_TYPE_VALUE));
 	}
 
 	/**
@@ -301,6 +308,7 @@ public final class MaconomyClient {
 		}
 	}
 
+	/** Use to create a Maconomy client instance. */
 	public static final class Builder {
 
 		// mandatory fields
@@ -316,37 +324,79 @@ public final class MaconomyClient {
 		private String language, username, password;
 		private MaconomyFormat format;
 
+		/**
+		 * Constructor initializing all the mandatory fields of the Maconomy client.
+		 * 
+		 * @param host
+		 * @param port
+		 * @param shortname
+		 */
 		public Builder(final String host, final String port, final String shortname) {
 			this.host = host;
 			this.port = port;
 			this.shortname = shortname;
 		}
 
-		/* package */ Builder client(final Client client) {
+		/** Overwrites the default request execution client.
+		 * 
+		 * @param client to execute requests with
+		 * @return this builder
+		 */
+		 /* package */ Builder client(final Client client) {
 			this.client = client;
 			return this;
 		}
 
+		/** 
+		 * Overwrites the default language to use when translating localization terms on the server.
+		 * Used in all requests sent to the server.
+		 * 
+		 * @param language to use
+		 * @return this builder
+		 */
 		public Builder language(final String language) {
 			this.language = language;
 			return this;
 		}
 
+		/** 
+		 * Overwrites the default data format in which the print action is being executed. 
+		 * Check {@code MaconomyFormat} for details of what format options are configurable. 
+		 * Used in all requests sent to the server.
+		 * 
+		 * @param format to use
+		 * @return this builder
+		 */
 		public Builder format(final MaconomyFormat format) {
 			this.format = format;
 			return this;
 		}
 
+		/**
+		 * Set if the requests that need to be executed require authentication.
+		 * 
+		 * @param username to authenticate with
+		 * @return this builder
+		 */
 		public Builder username(final String username) {
 			this.username = username;
 			return this;
 		}
 
+		/**
+		 * Set if the requests that need to be executed require authentication.
+		 * 
+		 * @param password to authenticate with
+		 * @return this builder
+		 */
 		public Builder password(final String password) {
 			this.password = password;
 			return this;
 		}
 
+		/**
+		 * @return the Maconomy client instance corresponding to the state of this builder.
+		 */
 		public MaconomyClient build() {
 			configureClient();
 			return new MaconomyClient(client, host, port, shortname);

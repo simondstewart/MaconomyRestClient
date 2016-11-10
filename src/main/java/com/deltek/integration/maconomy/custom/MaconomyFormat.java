@@ -8,7 +8,9 @@ import static com.deltek.integration.maconomy.containers.v1.ContainersConstants.
 
 import java.util.Optional;
 
-/** Represents the Maconomy format that is handled by the server. */
+/** 
+ * Represents the Maconomy format that is used to customize the print data formats. Check the details of this class to see what parameters can be customized. 
+ */
 public class MaconomyFormat {
 
 	private final Optional<String> dateFormat;
@@ -17,12 +19,14 @@ public class MaconomyFormat {
 	private final Optional<Character> decimalSeparator;
 	private final Optional<Integer> numberOfDecimals;
 
-	private MaconomyFormat(final Builder builder) {
-		this.dateFormat = builder.dateFormat;
-		this.timeFormat = builder.timeFormat;
-		this.thousandSeparator = builder.thousandSeparator;
-		this.decimalSeparator = builder.decimalSeparator;
-		this.numberOfDecimals = builder.numberOfDecimals;
+	private MaconomyFormat(final Optional<String> dateFormat, final Optional<String> timeFormat,
+			               final Optional<Character> thousandSeparator, final Optional<Character> decimalSeparator,
+			               final Optional<Integer> numberOfDecimals) {
+		this.dateFormat = dateFormat;
+		this.timeFormat = timeFormat;
+		this.thousandSeparator = thousandSeparator;
+		this.decimalSeparator = decimalSeparator;
+		this.numberOfDecimals = numberOfDecimals;
 	}
 
 	/**
@@ -99,10 +103,10 @@ public class MaconomyFormat {
 		}
 
 		/**
-		 * @return the Maconomy format corresponding to the state of this builder.
+		 * @return the Maconomy format instance corresponding to the state of this builder.
 		 */
 		public MaconomyFormat build() {
-			return new MaconomyFormat(this);
+			return new MaconomyFormat(dateFormat, timeFormat, thousandSeparator, decimalSeparator, numberOfDecimals);
 		}
 
 	}
