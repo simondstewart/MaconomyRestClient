@@ -129,7 +129,7 @@ public class ContainerOverviewTest {
 				jobNumberJobHeader.getSearchContainer().equals("jobs") &&
 				jobNumberJobHeader.getSearchPane().equals("filter") &&
 				jobNumberJobHeader.getTitle().equals("Job") &&
-				jobNumberJobHeader.getLinks().get(dataSearch(FilterRestriction.none())) != null);
+				jobNumberJobHeader.getLinks().get(dataSearch(null, FilterRestriction.none())) != null);
 	}
 
 	@Test

@@ -82,14 +82,16 @@ public class LinkRelations {
 	public static SafeLinkRelation<CardTableData> dataSameKey() {
 		return new BaseLinkRelation.SafeLinkRelationImpl<>("data:same-key", HttpMethod.GET, CardTableData.class);
 	}
-	
+
 	/**
 	 * Indicates a link that is used to perform a foreign key search.
 	 * 
+	 * @param cardTableRecord current state of the record used to perform the search
+	 * @param filterRestriction to further restrict the result
 	 * @return A "data:search" link relation
 	 */
-	public static SafeLinkRelation<FilterData> dataSearch(final FilterRestriction filterRestriction) {
-		return new BaseLinkRelation.SafeLinkRelationImpl<>("data:search", HttpMethod.GET, FilterData.class, filterRestriction);
+	public static EntityLinkRelation<CardTableRecord, FilterData> dataSearch(final CardTableRecord cardTableRecord, final FilterRestriction filterRestriction) {
+		return new BaseLinkRelation.EntityLinkRelationImpl<CardTableRecord, FilterData>("data:search", HttpMethod.POST, FilterData.class, filterRestriction, cardTableRecord);
 	}
 
 	/**

@@ -11,6 +11,9 @@ public class Constants {
 	/** Notes container */
 	public static final String NOTES = "notes";
 
+	/** Name of the field used for foreigh key search in the {@code Constants#JOBS} container. */
+	public static final String PROJECT_MANAGER_NUMBER = "projectmanagernumber";
+
 	/** Default package for custom generated code: com.deltek.integration.maconomy.custom.codegen */
 	public static final String CUSTOM_PACKAGE = "com.deltek.integration.maconomy.custom.codegen";
 

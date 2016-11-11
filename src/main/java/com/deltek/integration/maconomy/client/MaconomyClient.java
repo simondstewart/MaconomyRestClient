@@ -45,8 +45,10 @@ import com.deltek.integration.maconomy.containers.v1.Link;
 import com.deltek.integration.maconomy.filedrop.v1.FiledropConstants;
 import com.deltek.integration.maconomy.filedrop.v1.FiledropContents;
 import com.deltek.integration.maconomy.filedrop.v1.Filedrop;
+import com.deltek.integration.maconomy.containers.v1.data.CardTableRecord;
 import com.deltek.integration.maconomy.containers.v1.data.ConcurrencyControl;
 import com.deltek.integration.maconomy.containers.v1.data.Container;
+import com.deltek.integration.maconomy.containers.v1.data.FilterData;
 import com.deltek.integration.maconomy.containers.v1.data.Meta;
 import com.deltek.integration.maconomy.containers.v1.handshake.Containers;
 import com.deltek.integration.maconomy.custom.MaconomyFormat;
@@ -94,8 +96,7 @@ public final class MaconomyClient {
 	 * @return A representation of the container overview
 	 */
 	public Container container(final String containerName) {
-		final Invocation.Builder request = containersWebTarget().path(containerName)
-				                                          .request(MediaType.APPLICATION_JSON);
+		final Invocation.Builder request = containersWebTarget().path(containerName).request(MediaType.APPLICATION_JSON);
 		return executeRequest(request, read(Container.class), null);
 	}
 
@@ -138,6 +139,11 @@ public final class MaconomyClient {
 		addConcurrencyControlHeader(request, contextResource.getMeta().getConcurrencyControl());
 		addMaconomyFileCallbackHeader(request, filedrop);
 		return executeRequest(request, linkRelation, linkRelation.getEntity());
+	}
+
+	public FilterData foreignKey(final Link link, EntityLinkRelation<CardTableRecord, FilterData> dataSearch) {
+		final Invocation.Builder request = invocationBuilder(link, dataSearch);
+		return executeRequest(request, dataSearch, dataSearch.getEntity());
 	}
 
 	/**
@@ -197,6 +203,10 @@ public final class MaconomyClient {
 		final Link link = contextResource.getLinks()
                                          .get(linkRelation)
                                          .orElseThrow(() -> new ClientException(linkRelation.getName()));
+		return invocationBuilder(link, linkRelation);
+	}
+
+	private Invocation.Builder invocationBuilder(final Link link, final LinkRelation<?> linkRelation) {
 		final UriBuilder uriBuilder = client.target(link.getHref()).getUriBuilder();
         for(final QueryPart queryPart : linkRelation.getQuery()) {
         	uriBuilder.queryParam(queryPart.getName(), queryPart.getValues());

@@ -7,7 +7,6 @@ TODO: (in no particular order)
 * Support login with domain credentials
 * Implement navigation strategy for singleton containers
 * Handle batch import actions
-* Support foreign-key searches
 * Implement Performance logger using a request/response filter
 * Implement filtering, sorting and field selection for filter queries
 * Code generator for typed API, input from either xml files or specification webservice
