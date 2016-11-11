@@ -5,6 +5,7 @@ import static com.deltek.integration.maconomy.relations.LinkRelations.dataAnyKey
 import static com.deltek.integration.maconomy.relations.LinkRelations.dataSearch;
 import static com.deltek.integration.maconomy.relations.LinkRelations.specification;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 import java.util.Optional;
 
@@ -51,6 +52,19 @@ public class ForeignKeyTest {
 
 	@Test
 	public void testForeighKeySearchWithoutRestriction() {
+		final Optional<FilterData> foreignKeySearchData = getForeignKeySearchData(FilterRestriction.none());
+		assertTrue(foreignKeySearchData.isPresent());
+	}
+
+	@Test
+	public void testForeignKeySearchWithRestriction() {
+		final Optional<FilterData> foreignKeySearchData = getForeignKeySearchData(FilterRestriction.restrict("true", 1, 0));
+		assertTrue(foreignKeySearchData.isPresent());
+		assertNotNull(foreignKeySearchData.get().getPanes().getFilter());
+		assertTrue(foreignKeySearchData.get().getPanes().getFilter().getRecords().size() == 1);
+	}
+
+	private Optional<FilterData> getForeignKeySearchData(final FilterRestriction restriction) {
 		final Container jobsContainer = maconomyClient.container(Constants.JOBS);
 		final Specification jobsSpecification = maconomyClient.transition(jobsContainer, specification());
 		final Pane jobsCardSpecification = jobsSpecification.getPanes().getCard();
@@ -63,16 +77,16 @@ public class ForeignKeyTest {
 					final CardTableData cardTableData = maconomyClient.transition(jobsContainer, dataAnyKey());
 					final CardTablePane cardTablePane = cardTableData.getPanes().getCard();
 					if (cardTablePane != null && cardTablePane.getRecords().size() > 0) {
-						final EntityLinkRelation<CardTableRecord, FilterData> dataSearch = dataSearch(cardTablePane.getRecords().get(0), FilterRestriction.none());
+						final EntityLinkRelation<CardTableRecord, FilterData> dataSearch = dataSearch(cardTablePane.getRecords().get(0), restriction);
 						final Optional<Link> foreignKeyLink = foreignKey.getLinks().get(dataSearch);
 						if (foreignKeyLink.isPresent()) {
-							final FilterData searchPane = maconomyClient.foreignKey(foreignKeyLink.get(), dataSearch);
-							assertNotNull(searchPane);
+							return Optional.of(maconomyClient.foreignKey(foreignKeyLink.get(), dataSearch));
 						}
 					}
 				}
 			}
 		}
+		return Optional.empty();
 	}
 
 }

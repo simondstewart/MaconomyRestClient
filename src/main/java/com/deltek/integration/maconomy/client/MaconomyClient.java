@@ -86,7 +86,7 @@ public final class MaconomyClient {
 	 */
 	public Containers containers() {
 		final Invocation.Builder request = containersWebTarget().request(MediaType.APPLICATION_JSON);
-		return executeRequest(request, read(Containers.class), null);
+		return executeRequest(request, read(Containers.class));
 	}
 
 	/**
@@ -97,7 +97,7 @@ public final class MaconomyClient {
 	 */
 	public Container container(final String containerName) {
 		final Invocation.Builder request = containersWebTarget().path(containerName).request(MediaType.APPLICATION_JSON);
-		return executeRequest(request, read(Container.class), null);
+		return executeRequest(request, read(Container.class));
 	}
 
 	/**
@@ -121,7 +121,7 @@ public final class MaconomyClient {
 	public <TargetResource> TargetResource transition(final ContextResource contextResource,
 			                                          final SafeLinkRelation<TargetResource> linkRelation) {
 		final Invocation.Builder request = invocationBuilder(contextResource, linkRelation);
-		return executeRequest(request, linkRelation, null);
+		return executeRequest(request, linkRelation);
 	}
 
 	/**
@@ -138,12 +138,19 @@ public final class MaconomyClient {
 		final Invocation.Builder request = invocationBuilder(contextResource, linkRelation);
 		addConcurrencyControlHeader(request, contextResource.getMeta().getConcurrencyControl());
 		addMaconomyFileCallbackHeader(request, filedrop);
-		return executeRequest(request, linkRelation, linkRelation.getEntity());
+		return executeRequest(request, linkRelation);
 	}
 
-	public FilterData foreignKey(final Link link, EntityLinkRelation<CardTableRecord, FilterData> dataSearch) {
-		final Invocation.Builder request = invocationBuilder(link, dataSearch);
-		return executeRequest(request, dataSearch, dataSearch.getEntity());
+	/**
+	 * Invokes the foreign key search for a given link and link relation.
+	 * 
+	 * @param link of the foreign key
+	 * @param linkRelation of the foreign key search
+	 * @return the filter data resource corresponding to the foreign key search.
+	 */
+	public FilterData foreignKey(final Link link, EntityLinkRelation<CardTableRecord, FilterData> linkRelation) {
+		final Invocation.Builder request = invocationBuilder(link, linkRelation);
+		return executeRequest(request, linkRelation);
 	}
 
 	/**
@@ -228,18 +235,30 @@ public final class MaconomyClient {
 
 	/**
 	 * Execute the request based on a given link relation which will be used to determine the HTTP method and the type of the target resource.
+	 * For this type of link relation there is no request entity.
+	 * Response entity is attempted to be read to a given target type specified in the link relation and returned.
+	 * 
+	 * @param request
+	 * @param linkRelation without an entity
+	 * @return the resource obtained after executing the request.
+	 */
+	private <TargetResource, EntityType> TargetResource executeRequest(final Invocation.Builder request,
+			                                                           final SafeLinkRelation<TargetResource> linkRelation) {
+		return executeRequest(request, linkRelation.getMethod(), linkRelation.getTargetResource(), null);
+	}
+
+	/**
+	 * Execute the request based on a given link relation which will be used to determine the HTTP method and the type of the target resource.
 	 * If there is request entity, then it has to use a JSON format which is assumed for this method.
 	 * Response entity is attempted to be read to a given target type specified in the link relation and returned.
 	 * 
 	 * @param request
-	 * @param linkRelation
-	 * @param requestEntity using JSON format
-	 * @return the resource obtained after executing the request
+	 * @param linkRelation with a possible entity
+	 * @return the resource obtained after executing the request.
 	 */
 	private <TargetResource, EntityType> TargetResource executeRequest(final Invocation.Builder request,
-			                                                           final LinkRelation<TargetResource> linkRelation,
-			                                                           final EntityType requestEntity) {
-		return executeRequest(request, linkRelation.getMethod(), linkRelation.getTargetResource(), json(requestEntity));
+			                                                           final EntityLinkRelation<EntityType, TargetResource> linkRelation) {
+		return executeRequest(request, linkRelation.getMethod(), linkRelation.getTargetResource(), json(linkRelation.getEntity()));
 	}
 
 	/**
