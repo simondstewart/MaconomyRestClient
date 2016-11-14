@@ -40,6 +40,7 @@ import org.glassfish.jersey.message.GZipEncoder;
 import com.deltek.integration.maconomy.client.filters.AuthorizationFilter;
 import com.deltek.integration.maconomy.client.filters.FormatFilter;
 import com.deltek.integration.maconomy.client.filters.LanguageFilter;
+import com.deltek.integration.maconomy.client.filters.PerformanceFilter;
 import com.deltek.integration.maconomy.containers.v1.ContainersConstants;
 import com.deltek.integration.maconomy.containers.v1.Link;
 import com.deltek.integration.maconomy.filedrop.v1.FiledropConstants;
@@ -352,6 +353,7 @@ public final class MaconomyClient {
 				                             .build();
 		private String language, username, password;
 		private MaconomyFormat format;
+		private boolean logPerformance;
 
 		/**
 		 * Constructor initializing all the mandatory fields of the Maconomy client.
@@ -424,6 +426,17 @@ public final class MaconomyClient {
 		}
 
 		/**
+		 * Set if the request and response times should be logged.
+		 * 
+		 * @param logPerformance
+		 * @return this builder
+		 */
+		public Builder logPerformance(final boolean logPerformance) {
+			this.logPerformance = logPerformance;
+			return this;
+		}
+
+		/**
 		 * @return the Maconomy client instance corresponding to the state of this builder.
 		 */
 		public MaconomyClient build() {
@@ -438,6 +451,9 @@ public final class MaconomyClient {
 			}
 			if (format != null && format.isValid()) {
 				client.register(new FormatFilter(format));
+			}
+			if (logPerformance) {
+				client.register(new PerformanceFilter());
 			}
 		}
 

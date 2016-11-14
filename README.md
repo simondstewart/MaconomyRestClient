@@ -6,8 +6,6 @@ TODO: (in no particular order)
 * Support different Maconomy data types: Integer, Real, Amount, Boolean, String, Date, Time, Enum, TimeDuration, Auto Timestamp
 * Support login with domain credentials
 * Implement navigation strategy for singleton containers
-* Handle batch import actions
-* Implement Performance logger using a request/response filter
 * Implement filtering, sorting and field selection for filter queries
 * Code generator for typed API, input from either xml files or specification webservice
 * Guide on how to use this codebase in integrations, stand-alone tools etc (packaging)
