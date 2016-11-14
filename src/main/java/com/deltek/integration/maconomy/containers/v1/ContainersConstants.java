@@ -34,4 +34,7 @@ public interface ContainersConstants {
 	/** Maconomy format header value part that indicates the number of decimals to include. */
 	public static final String NUMBER_OF_DECIMALS = "number-of-decimals";
 
+	/** Placeholder used in link template to be replaced with the container name the user is navigating to. */
+	public static final String CONTAINER_PLACEHOLDER = "{container}";
+
 }

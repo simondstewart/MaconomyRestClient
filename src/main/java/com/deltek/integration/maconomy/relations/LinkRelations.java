@@ -95,6 +95,15 @@ public class LinkRelations {
 	}
 
 	/**
+	 * Indicates a link that is used to perform a foreign key navigation.
+	 * @param foreignKeyName
+	 * @return A "data:key:{@code foreignKeyName}" link relation
+	 */
+	public static SafeLinkRelation<CardTableData> dataKey(final String foreignKeyName) {
+		return new BaseLinkRelation.SafeLinkRelationImpl<>("data:key:" + foreignKeyName, HttpMethod.GET, CardTableData.class);
+	}
+
+	/**
 	 * Indicates a link that is used to obtain the enum values.
 	 * 
 	 * @return A "data:enumvalues" link relation

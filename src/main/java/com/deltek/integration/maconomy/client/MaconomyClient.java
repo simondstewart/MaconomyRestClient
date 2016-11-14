@@ -1,6 +1,7 @@
 package com.deltek.integration.maconomy.client;
 
 import static com.deltek.integration.maconomy.client.ServerException.serverException;
+import static com.deltek.integration.maconomy.containers.v1.ContainersConstants.CONTAINER_PLACEHOLDER;
 import static com.deltek.integration.maconomy.containers.v1.ContainersConstants.MACONOMY_CONCURRENCY_CONTROL;
 import static com.deltek.integration.maconomy.filedrop.v1.FiledropConstants.CONTENT_DISPOSITION;
 import static com.deltek.integration.maconomy.filedrop.v1.FiledropConstants.CONTENT_DISPOSITION_VALUE_FORMAT;
@@ -46,6 +47,7 @@ import com.deltek.integration.maconomy.containers.v1.Link;
 import com.deltek.integration.maconomy.filedrop.v1.FiledropConstants;
 import com.deltek.integration.maconomy.filedrop.v1.FiledropContents;
 import com.deltek.integration.maconomy.filedrop.v1.Filedrop;
+import com.deltek.integration.maconomy.containers.v1.data.CardTableData;
 import com.deltek.integration.maconomy.containers.v1.data.CardTableRecord;
 import com.deltek.integration.maconomy.containers.v1.data.ConcurrencyControl;
 import com.deltek.integration.maconomy.containers.v1.data.Container;
@@ -155,6 +157,19 @@ public final class MaconomyClient {
 	}
 
 	/**
+	 * Invokes the foreign key navigation.
+	 * 
+	 * @param link
+	 * @param linkRelation
+	 * @param containerName
+	 * @return the card table data resource corresponding to the foreign key navigation.
+	 */
+	public CardTableData foreignKey(final Link link, final SafeLinkRelation<CardTableData> linkRelation, final String containerName) {
+		final Invocation.Builder request = invocationBuilder(link, linkRelation, containerName);
+		return executeRequest(request, linkRelation);
+	}
+
+	/**
 	 * Invokes a transition returning a filedrop without supplying an entity.
 	 * 
 	 * @param contextResource
@@ -216,10 +231,19 @@ public final class MaconomyClient {
 
 	private Invocation.Builder invocationBuilder(final Link link, final LinkRelation<?> linkRelation) {
 		final UriBuilder uriBuilder = client.target(link.getHref()).getUriBuilder();
-        for(final QueryPart queryPart : linkRelation.getQuery()) {
-        	uriBuilder.queryParam(queryPart.getName(), queryPart.getValues());
-        }
-        return client.target(uriBuilder).request(MediaType.APPLICATION_JSON);
+		return invocationBuilder(uriBuilder, linkRelation.getQuery());
+	}
+
+	private Invocation.Builder invocationBuilder(final Link link, final LinkRelation<?> linkRelation, final String containerName) {
+		final UriBuilder uriBuilder = client.target(link.getTemplate().replace(CONTAINER_PLACEHOLDER, containerName)).getUriBuilder();
+		return invocationBuilder(uriBuilder, linkRelation.getQuery());
+	}
+
+	private Invocation.Builder invocationBuilder(final UriBuilder uriBuilder, final Iterable<QueryPart> queries) {
+		for (final QueryPart queryPart : queries) {
+			uriBuilder.queryParam(queryPart.getName(), queryPart.getValues());
+		}
+		return client.target(uriBuilder).request(MediaType.APPLICATION_JSON);
 	}
 
 	private void addConcurrencyControlHeader(final Invocation.Builder request, final String concurrencyControl) {

@@ -2,11 +2,13 @@ package com.deltek.integration.maconomy.client;
 
 import static com.deltek.integration.maconomy.Constants.PROJECT_MANAGER_NUMBER;
 import static com.deltek.integration.maconomy.relations.LinkRelations.dataAnyKey;
+import static com.deltek.integration.maconomy.relations.LinkRelations.dataKey;
 import static com.deltek.integration.maconomy.relations.LinkRelations.dataSearch;
 import static com.deltek.integration.maconomy.relations.LinkRelations.specification;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
+import java.util.List;
 import java.util.Optional;
 
 import org.junit.Before;
@@ -30,6 +32,7 @@ import com.deltek.integration.maconomy.containers.v1.specification.Pane;
 import com.deltek.integration.maconomy.containers.v1.specification.Specification;
 import com.deltek.integration.maconomy.relations.EntityLinkRelation;
 import com.deltek.integration.maconomy.relations.FilterRestriction;
+import com.deltek.integration.maconomy.relations.SafeLinkRelation;
 
 /**
  * REQUIRES A SERVER CONNECTION!
@@ -62,6 +65,24 @@ public class ForeignKeyTest {
 		assertTrue(foreignKeySearchData.isPresent());
 		assertNotNull(foreignKeySearchData.get().getPanes().getFilter());
 		assertTrue(foreignKeySearchData.get().getPanes().getFilter().getRecords().size() == 1);
+	}
+
+	@Test
+	public void testForeignKeyNavigation() {
+		final Container expensesheetsContainer = maconomyClient.container(Constants.EXPENSESHEETS);
+		final CardTableData expensesheetsData = maconomyClient.transition(expensesheetsContainer, dataAnyKey());
+		final CardTablePane expensesheetsTablePane = expensesheetsData.getPanes().getTable();
+		assertNotNull(expensesheetsTablePane);
+		final List<CardTableRecord> expensesheetTableRecords = expensesheetsTablePane.getRecords();
+		if (expensesheetTableRecords.size() > 0) {
+			final CardTableRecord expensesheetTableRecord = expensesheetTableRecords.get(0);
+			final SafeLinkRelation<CardTableData> foreignKeyNavigationLinkRelation = dataKey(Constants.ACTIVITYNUMBER_ACTIVITY_FOREIGN_KEY);
+			final Optional<Link> foreignKeyNavigationLink = expensesheetTableRecord.getLinks().get(foreignKeyNavigationLinkRelation);
+			assertTrue(foreignKeyNavigationLink.isPresent());
+			//TODO: (KSL) the name of the container substitution should be obtained from specification
+			final CardTableData foreignKeyNavigationResult = maconomyClient.foreignKey(foreignKeyNavigationLink.get(), foreignKeyNavigationLinkRelation, "activities");
+			assertNotNull(foreignKeyNavigationResult);
+		}
 	}
 
 	private Optional<FilterData> getForeignKeySearchData(final FilterRestriction restriction) {

@@ -8,6 +8,12 @@ public class Constants {
 	/** TimeRegistration container */
 	public static final String TIMEREGISTRATION = "timeregistration";
 
+	/** Expensesheets container */
+	public static final String EXPENSESHEETS = "expensesheets";
+
+	/** Name of the foreign key linking expense sheet line to an activity. */
+	public static final String ACTIVITYNUMBER_ACTIVITY_FOREIGN_KEY = "activitynumber_activity";
+
 	/** Notes container */
 	public static final String NOTES = "notes";
 
