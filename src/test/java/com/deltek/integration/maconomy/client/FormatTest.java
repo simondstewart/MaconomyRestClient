@@ -21,14 +21,14 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import com.deltek.integration.maconomy.Constants;
+import com.deltek.integration.maconomy.client.api.Container;
+import com.deltek.integration.maconomy.client.api.Filedrop;
 import com.deltek.integration.maconomy.configuration.Server;
 import com.deltek.integration.maconomy.containers.v1.Link;
 import com.deltek.integration.maconomy.containers.v1.data.CardTableData;
 import com.deltek.integration.maconomy.containers.v1.data.CardTablePane;
 import com.deltek.integration.maconomy.containers.v1.data.CardTableRecord;
-import com.deltek.integration.maconomy.containers.v1.data.Container;
 import com.deltek.integration.maconomy.custom.MaconomyFormat;
-import com.deltek.integration.maconomy.filedrop.v1.Filedrop;
 import com.deltek.integration.maconomy.filedrop.v1.FiledropContents;
 
 /**
@@ -109,23 +109,21 @@ public class FormatTest {
 	private void printNotesContainerTableRecord(final MaconomyFormat format, final String filename) {
 		final MaconomyClient maconomyClient = getClientWithFormat(format);
 		final Container notesContainer = maconomyClient.container(Constants.NOTES);
-		final CardTableData notesCardTable = maconomyClient.transition(notesContainer, dataAnyKey());
+		final CardTableData notesCardTable = notesContainer.transition(dataAnyKey());
 		final CardTablePane notesTable = notesCardTable.getPanes().getTable();
 		if (notesTable.getRecords().size() > 0) {
 			final CardTableRecord record = notesTable.getRecords().get(0);
 			final Optional<Link> print = record.getLinks().get(print());
 			if (print.isPresent()) {
-				final Optional<Filedrop> filedrop = maconomyClient.filedrop(record, print());
-				if (filedrop.isPresent()) {
-					final FiledropContents filedropContents = maconomyClient.readFiledrop(filedrop.get());
-					if (filedropContents.getType() != null && filedropContents.getType().equals("application/pdf") 
-							&& filedropContents.getData() != null) {
-						final File output = new File(Constants.TEST_OUTPUT);
-						output.mkdirs();
-						final File outputFile = new File(output, filename);
-						filedropContents.writeToFile(outputFile);
-						assertTrue(outputFile.length() > 0);
-					}
+				final Filedrop filedropClient = maconomyClient.filedrop(record, print());
+				final FiledropContents filedropContents = filedropClient.readFiledrop();
+				if (filedropContents.getType() != null && filedropContents.getType().equals("application/pdf") 
+						&& filedropContents.getData() != null) {
+					final File output = new File(Constants.TEST_OUTPUT);
+					output.mkdirs();
+					final File outputFile = new File(output, filename);
+					filedropContents.writeToFile(outputFile);
+					assertTrue(outputFile.length() > 0);
 				}
 			}
 		}

@@ -1,7 +1,7 @@
 package com.deltek.integration.maconomy.custom;
 
+import com.deltek.integration.maconomy.client.api.Container;
 import com.deltek.integration.maconomy.containers.v1.data.CardTableData;
-import com.deltek.integration.maconomy.containers.v1.data.Container;
 import com.deltek.integration.maconomy.relations.LinkRelations;
 
 public interface IHasCard<CardType extends ICard<?, ?>>

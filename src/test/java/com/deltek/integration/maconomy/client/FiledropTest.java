@@ -4,6 +4,7 @@ import static com.deltek.integration.maconomy.relations.LinkRelations.dataAnyKey
 import static com.deltek.integration.maconomy.relations.LinkRelations.print;
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
@@ -24,14 +25,14 @@ import org.springframework.core.io.ClassPathResource;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import com.deltek.integration.maconomy.Constants;
+import com.deltek.integration.maconomy.client.api.Container;
+import com.deltek.integration.maconomy.client.api.Filedrop;
 import com.deltek.integration.maconomy.configuration.Server;
 import com.deltek.integration.maconomy.containers.v1.Link;
 import com.deltek.integration.maconomy.containers.v1.data.CardTableData;
 import com.deltek.integration.maconomy.containers.v1.data.CardTablePane;
 import com.deltek.integration.maconomy.containers.v1.data.CardTableRecord;
-import com.deltek.integration.maconomy.containers.v1.data.Container;
 import com.deltek.integration.maconomy.filedrop.v1.FiledropContents;
-import com.deltek.integration.maconomy.filedrop.v1.Filedrop;
 
 /**
  * REQUIRES A SERVER CONNECTION!
@@ -56,19 +57,19 @@ public class FiledropTest {
 
 	@Test
 	public void testFiledropCreation() {
-		final Filedrop filedrop = maconomyClient.createFiledrop();
+		final Filedrop filedropClient = maconomyClient.createFiledrop();
 
-		assertNotNull(filedrop);
-		assertNotNull(filedrop.getLocation());
+		assertNotNull(filedropClient);
+		assertNotNull(filedropClient.getLocation());
 	}
 
 	@Test
 	public void testFileUpload() {
-		final Filedrop filedrop = maconomyClient.createFiledrop();
+		final Filedrop filedropClient = maconomyClient.createFiledrop();
 		try {
 			final Path path = new ClassPathResource("file.png").getFile().toPath();
-			maconomyClient.uploadFile(path, filedrop);
-			final FiledropContents contents = maconomyClient.readFiledrop(filedrop);
+			filedropClient.uploadFile(path);
+			final FiledropContents contents = filedropClient.readFiledrop();
 
 			assertEquals(contents.getType(), "image/png");
 			assertArrayEquals(contents.getData(), Utils.getFileContents(path));
@@ -80,11 +81,11 @@ public class FiledropTest {
 	@Test
 	public void testDoubleFileUploadFails() {
 		exception.expect(ServerException.class);
-		final Filedrop filedrop = maconomyClient.createFiledrop();
+		final Filedrop filedropClient = maconomyClient.createFiledrop();
 		try {
 			final Path path = new ClassPathResource("file.png").getFile().toPath();
-			maconomyClient.uploadFile(path, filedrop);
-			maconomyClient.uploadFile(path, filedrop);
+			filedropClient.uploadFile(path);
+			filedropClient.uploadFile(path);
 		} catch (IOException e) {
 			fail("Error while uploading file to a filedrop: " + e.getMessage());
 		}
@@ -93,14 +94,14 @@ public class FiledropTest {
 	@Test
 	public void testPrintCorrectness() {
 		final Container notesContainer = maconomyClient.container(Constants.NOTES);
-		final CardTableData notesCardTable = maconomyClient.transition(notesContainer, dataAnyKey());
+		final CardTableData notesCardTable = notesContainer.transition(dataAnyKey());
 		final CardTablePane notesTable = notesCardTable.getPanes().getTable();
 		if (notesTable.getRecords().size() > 0) {
 			final CardTableRecord record = notesTable.getRecords().get(0);
 			final Optional<Link> print = record.getLinks().get(print());
 			if (print.isPresent()) {
-				final Optional<Filedrop> filedrop = maconomyClient.filedrop(record, print());
-				assertTrue(filedrop.isPresent());
+				final Filedrop filedropClient = maconomyClient.filedrop(record, print());
+				assertFalse(filedropClient.getLocation().isEmpty());
 			}
 		}
 	}
@@ -108,23 +109,21 @@ public class FiledropTest {
 	@Test
 	public void testPrintContent() {
 		final Container notesContainer = maconomyClient.container(Constants.NOTES);
-		final CardTableData notesCardTable = maconomyClient.transition(notesContainer, dataAnyKey());
+		final CardTableData notesCardTable = notesContainer.transition(dataAnyKey());
 		final CardTablePane notesTable = notesCardTable.getPanes().getTable();
 		if (notesTable.getRecords().size() > 0) {
 			final CardTableRecord record = notesTable.getRecords().get(0);
 			final Optional<Link> print = record.getLinks().get(print());
 			if (print.isPresent()) {
-				final Optional<Filedrop> filedrop = maconomyClient.filedrop(record, print());
-				if (filedrop.isPresent()) {
-					final FiledropContents filedropContents = maconomyClient.readFiledrop(filedrop.get());
-					if (filedropContents.getType() != null && filedropContents.getType().equals("application/pdf") 
-							&& filedropContents.getData() != null) {
-						final File output = new File(Constants.TEST_OUTPUT);
-						output.mkdirs();
-						final File outputFile = new File(output, "print.pdf");
-						filedropContents.writeToFile(outputFile);
-						assertTrue(outputFile.length() > 0);
-					}
+				final Filedrop filedropClient = maconomyClient.filedrop(record, print());
+				final FiledropContents filedropContents = filedropClient.readFiledrop();
+				if (filedropContents.getType() != null && filedropContents.getType().equals("application/pdf") 
+						&& filedropContents.getData() != null) {
+					final File output = new File(Constants.TEST_OUTPUT);
+					output.mkdirs();
+					final File outputFile = new File(output, "print.pdf");
+					filedropContents.writeToFile(outputFile);
+					assertTrue(outputFile.length() > 0);
 				}
 			}
 		}

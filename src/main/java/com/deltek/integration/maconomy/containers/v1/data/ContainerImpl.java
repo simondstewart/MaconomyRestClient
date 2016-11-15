@@ -1,9 +1,11 @@
 package com.deltek.integration.maconomy.containers.v1.data;
 
+import com.deltek.integration.maconomy.client.api.IContainer;
 import com.deltek.integration.maconomy.containers.v1.Links;
-import com.deltek.integration.maconomy.relations.ContextResource;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
-public class Container implements ContextResource {
+@JsonIgnoreProperties(ignoreUnknown = true)
+public class ContainerImpl implements IContainer {
 
 	private String containerName;
 	private Links links;
@@ -45,7 +47,7 @@ public class Container implements ContextResource {
 		if (getClass() != obj.getClass()) {
 			return false;
 		}
-		final Container other = (Container) obj;
+		final ContainerImpl other = (ContainerImpl) obj;
 		if (containerName == null) {
 			if (other.containerName != null) {
 				return false;
