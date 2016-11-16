@@ -1,4 +1,4 @@
-package com.deltek.integration.maconomy.client;
+package com.deltek.integration.maconomy.client.internal;
 
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.Entity;
@@ -12,7 +12,7 @@ import com.deltek.integration.maconomy.relations.SafeLinkRelation;
 /**
  * Client used to make the requests to the server.
  */
-public interface RequestClient {
+public interface IRequestClient {
 
 	/**
 	 * @return the current instance of the client used to invoke the server requests.

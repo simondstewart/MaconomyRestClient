@@ -12,8 +12,8 @@ import javax.ws.rs.client.Invocation;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
-import com.deltek.integration.maconomy.client.RequestClient;
-import com.deltek.integration.maconomy.client.Utils;
+import com.deltek.integration.maconomy.client.internal.IRequestClient;
+import com.deltek.integration.maconomy.client.util.Utils;
 import com.deltek.integration.maconomy.filedrop.v1.FiledropContents;
 import com.deltek.integration.maconomy.relations.HttpMethod;
 
@@ -23,9 +23,9 @@ import com.deltek.integration.maconomy.relations.HttpMethod;
 public class Filedrop implements IFiledrop {
 
 	private final IFiledrop filedrop;
-	private final RequestClient requestClient;
+	private final IRequestClient requestClient;
 
-	public Filedrop(final IFiledrop filedrop, final RequestClient requestClient) {
+	public Filedrop(final IFiledrop filedrop, final IRequestClient requestClient) {
 		this.filedrop = filedrop;
 		this.requestClient = requestClient;
 	}

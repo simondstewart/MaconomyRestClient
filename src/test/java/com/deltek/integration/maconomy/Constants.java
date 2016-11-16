@@ -2,20 +2,8 @@ package com.deltek.integration.maconomy;
 
 public class Constants {
 
-	/** Jobs container */
-	public static final String JOBS = "jobs";
-
-	/** TimeRegistration container */
-	public static final String TIMEREGISTRATION = "timeregistration";
-
-	/** Expensesheets container */
-	public static final String EXPENSESHEETS = "expensesheets";
-
 	/** Name of the foreign key linking expense sheet line to an activity. */
 	public static final String ACTIVITYNUMBER_ACTIVITY_FOREIGN_KEY = "activitynumber_activity";
-
-	/** Notes container */
-	public static final String NOTES = "notes";
 
 	/** Name of the field used for foreign key search in the {@code Constants#JOBS} container. */
 	public static final String PROJECT_MANAGER_NUMBER = "projectmanagernumber";

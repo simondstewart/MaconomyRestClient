@@ -1,6 +1,6 @@
 package com.deltek.integration.maconomy.client.api;
 
-import com.deltek.integration.maconomy.client.RequestClient;
+import com.deltek.integration.maconomy.client.internal.IRequestClient;
 import com.deltek.integration.maconomy.containers.v1.Links;
 import com.deltek.integration.maconomy.relations.SafeLinkRelation;
 
@@ -10,9 +10,9 @@ import com.deltek.integration.maconomy.relations.SafeLinkRelation;
 public class Container implements IContainer {
 
 	private final IContainer container;
-	private RequestClient requestClient;
+	private IRequestClient requestClient;
 
-	public Container(final IContainer container, final RequestClient requestClient) {
+	public Container(final IContainer container, final IRequestClient requestClient) {
 		this.container = container;
 		this.requestClient = requestClient;
 	}

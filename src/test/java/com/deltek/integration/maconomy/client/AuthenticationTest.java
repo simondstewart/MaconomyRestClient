@@ -1,6 +1,5 @@
 package com.deltek.integration.maconomy.client;
 
-import static com.deltek.integration.maconomy.Constants.JOBS;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
@@ -15,6 +14,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
+import com.deltek.integration.maconomy.client.util.ImportantContainers;
+import com.deltek.integration.maconomy.client.util.ServerException;
 import com.deltek.integration.maconomy.configuration.Server;
 import com.deltek.integration.maconomy.containers.v1.handshake.Containers;
 
@@ -60,7 +61,7 @@ public class AuthenticationTest {
 	public void testThatMissingCredentailsCausesError() {
 		expectedEx.expect(ServerException.class);
 		final MaconomyClient maconomyClient = clientBuilder.build(); // no credentials supplied
-		maconomyClient.container(JOBS);
+		maconomyClient.container(ImportantContainers.JOBS.getName());
 	}
 
 	@Ignore // TODO: (ANH) figure out how to implement that test. How do we inspect the request?

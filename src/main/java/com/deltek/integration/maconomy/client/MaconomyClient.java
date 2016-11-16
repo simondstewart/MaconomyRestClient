@@ -31,6 +31,7 @@ import com.deltek.integration.maconomy.client.filters.FormatFilter;
 import com.deltek.integration.maconomy.client.filters.LanguageFilter;
 import com.deltek.integration.maconomy.client.filters.PerformanceFilter;
 import com.deltek.integration.maconomy.client.internal.RequestClientImpl;
+import com.deltek.integration.maconomy.client.util.ClientException;
 import com.deltek.integration.maconomy.containers.v1.Link;
 import com.deltek.integration.maconomy.filedrop.v1.FiledropImpl;
 import com.deltek.integration.maconomy.containers.v1.data.CardTableData;

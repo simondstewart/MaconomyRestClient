@@ -1,4 +1,4 @@
-package com.deltek.integration.maconomy.client;
+package com.deltek.integration.maconomy.client.util;
 
 /**
  * Represents exception originating from the REST API/Server.

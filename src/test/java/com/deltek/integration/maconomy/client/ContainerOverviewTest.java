@@ -1,7 +1,5 @@
 package com.deltek.integration.maconomy.client;
 
-import static com.deltek.integration.maconomy.Constants.JOBS;
-import static com.deltek.integration.maconomy.Constants.TIMEREGISTRATION;
 import static com.deltek.integration.maconomy.relations.FilterRestriction.none;
 import static com.deltek.integration.maconomy.relations.LinkRelations.dataAnyKey;
 import static com.deltek.integration.maconomy.relations.LinkRelations.dataEnumValues;
@@ -25,6 +23,8 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import com.deltek.integration.maconomy.client.api.Container;
+import com.deltek.integration.maconomy.client.util.ClientException;
+import com.deltek.integration.maconomy.client.util.ImportantContainers;
 import com.deltek.integration.maconomy.configuration.Server;
 import com.deltek.integration.maconomy.containers.v1.Links;
 import com.deltek.integration.maconomy.containers.v1.data.CardTableData;
@@ -61,8 +61,8 @@ public class ContainerOverviewTest {
 
 	@Test
 	public void testThatContainerOverviewIsAvailable() {
-		final Container jobsContainer = maconomyClient.container(JOBS);
-		assertEquals(JOBS, jobsContainer.getContainerName());
+		final Container jobsContainer = maconomyClient.container(ImportantContainers.JOBS.getName());
+		assertEquals(ImportantContainers.JOBS.getName(), jobsContainer.getContainerName());
 
 		// Check presence of transitions from container overview
 		final Links links = jobsContainer.getLinks();
@@ -73,7 +73,7 @@ public class ContainerOverviewTest {
 
 	@Test
 	public void testThatFilterIsMissingOnSingletonContainers() {
-		final Links links = maconomyClient.container(TIMEREGISTRATION).getLinks();
+		final Links links = maconomyClient.container(ImportantContainers.TIMEREGISTRATION.getName()).getLinks();
 		assertTrue(links.get(specification()).isPresent());
 		assertFalse(links.get(dataFilter(none())).isPresent()); // <---- missing
 		assertTrue(links.get(dataAnyKey()).isPresent());
@@ -82,20 +82,20 @@ public class ContainerOverviewTest {
 	@Test
 	public void testThatTransitionsFailOnUnknownLinkRelations() {
 		expectedEx.expect(ClientException.class);
-		final Container container = maconomyClient.container(TIMEREGISTRATION);
+		final Container container = maconomyClient.container(ImportantContainers.TIMEREGISTRATION.getName());
 		container.transition(dataFilter(none()));
 	}
 
 	@Test
 	public void testSpecificationResource() {
-		final Container jobsContainer = maconomyClient.container(JOBS);
+		final Container jobsContainer = maconomyClient.container(ImportantContainers.JOBS.getName());
 		final Specification specification = jobsContainer.transition(specification());
-		assertEquals(JOBS, specification.getContainerName());
+		assertEquals(ImportantContainers.JOBS.getName(), specification.getContainerName());
 	}
 
 	@Test
 	public void testSpecificationField() {
-		final Container jobsContainer = maconomyClient.container(JOBS);
+		final Container jobsContainer = maconomyClient.container(ImportantContainers.JOBS.getName());
 		final Specification specification = jobsContainer.transition(specification());
 		final Pane filter = specification.getPanes().getFilter();
 		assertNotNull(filter);
@@ -106,7 +106,7 @@ public class ContainerOverviewTest {
 
 	@Test
 	public void testSpecificationActions() {
-		final Container jobsContainer = maconomyClient.container(JOBS);
+		final Container jobsContainer = maconomyClient.container(ImportantContainers.JOBS.getName());
 		final Specification specification = jobsContainer.transition(specification());
 		final Pane card = specification.getPanes().getCard();
 		assertNotNull(card);
@@ -119,7 +119,7 @@ public class ContainerOverviewTest {
 
 	@Test
 	public void testSpecificationForeignKey() {
-		final Container jobsContainer = maconomyClient.container(JOBS);
+		final Container jobsContainer = maconomyClient.container(ImportantContainers.JOBS.getName());
 		final Specification specification = jobsContainer.transition(specification());
 		final Pane card = specification.getPanes().getCard();
 		final ForeignKey jobNumberJobHeader = card.getForeignKeys().get("jobnumber_jobheader");
@@ -134,7 +134,7 @@ public class ContainerOverviewTest {
 
 	@Test
 	public void testSpecificationRelatedContainers() {
-		final Container jobsContainer = maconomyClient.container(JOBS);
+		final Container jobsContainer = maconomyClient.container(ImportantContainers.JOBS.getName());
 		final Specification specification = jobsContainer.transition(specification());
 		final Map<String, RelatedContainer> relatedContainers = specification.getRelatedContainers();
 		final RelatedContainer popupCountryType = relatedContainers.get("popup_countrytype");
@@ -146,16 +146,16 @@ public class ContainerOverviewTest {
 
 	@Test
 	public void testDataFilterTransition() {
-		final Container jobsContainer = maconomyClient.container(JOBS);
+		final Container jobsContainer = maconomyClient.container(ImportantContainers.JOBS.getName());
 		final FilterData jobsFilter = jobsContainer.transition(dataFilter(none()));
-		assertEquals(JOBS, jobsFilter.getMeta().getContainerName());
+		assertEquals(ImportantContainers.JOBS.getName(), jobsFilter.getMeta().getContainerName());
 	}
 
 	@Test
 	public void testDataAnyTransition() {
-		final Container jobsContainer = maconomyClient.container(TIMEREGISTRATION);
+		final Container jobsContainer = maconomyClient.container(ImportantContainers.TIMEREGISTRATION.getName());
 		final CardTableData timeregistration = jobsContainer.transition(dataAnyKey());
-		assertEquals(TIMEREGISTRATION, timeregistration.getMeta().getContainerName());
+		assertEquals(ImportantContainers.TIMEREGISTRATION.getName(), timeregistration.getMeta().getContainerName());
 	}
 
 }

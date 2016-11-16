@@ -1,6 +1,6 @@
 package com.deltek.integration.maconomy.client.internal;
 
-import static com.deltek.integration.maconomy.client.ServerException.serverException;
+import static com.deltek.integration.maconomy.client.util.ServerException.serverException;
 import static com.deltek.integration.maconomy.containers.v1.ContainersConstants.CONTAINER_PLACEHOLDER;
 import static javax.ws.rs.client.Entity.json;
 
@@ -17,8 +17,7 @@ import javax.ws.rs.core.UriBuilder;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import com.deltek.integration.maconomy.client.ClientException;
-import com.deltek.integration.maconomy.client.RequestClient;
+import com.deltek.integration.maconomy.client.util.ClientException;
 import com.deltek.integration.maconomy.containers.v1.ContainersConstants;
 import com.deltek.integration.maconomy.containers.v1.Link;
 import com.deltek.integration.maconomy.filedrop.v1.FiledropConstants;
@@ -29,7 +28,7 @@ import com.deltek.integration.maconomy.relations.LinkRelation;
 import com.deltek.integration.maconomy.relations.QueryPart;
 import com.deltek.integration.maconomy.relations.SafeLinkRelation;
 
-public class RequestClientImpl implements RequestClient {
+public class RequestClientImpl implements IRequestClient {
 
 	private static final Log LOG = LogFactory.getLog(RequestClientImpl.class);
 

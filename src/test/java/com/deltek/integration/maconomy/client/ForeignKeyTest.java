@@ -20,6 +20,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import com.deltek.integration.maconomy.Constants;
 import com.deltek.integration.maconomy.client.api.Container;
+import com.deltek.integration.maconomy.client.util.ImportantContainers;
 import com.deltek.integration.maconomy.configuration.Server;
 import com.deltek.integration.maconomy.containers.v1.Link;
 import com.deltek.integration.maconomy.containers.v1.data.CardTableData;
@@ -69,7 +70,7 @@ public class ForeignKeyTest {
 
 	@Test
 	public void testForeignKeyNavigation() {
-		final Container expensesheetsContainer = maconomyClient.container(Constants.EXPENSESHEETS);
+		final Container expensesheetsContainer = maconomyClient.container(ImportantContainers.EXPENSESHEETS.getName());
 		final CardTableData expensesheetsData = expensesheetsContainer.transition(dataAnyKey());
 		final CardTablePane expensesheetsTablePane = expensesheetsData.getPanes().getTable();
 		assertNotNull(expensesheetsTablePane);
@@ -86,7 +87,7 @@ public class ForeignKeyTest {
 	}
 
 	private Optional<FilterData> getForeignKeySearchData(final FilterRestriction restriction) {
-		final Container jobsContainer = maconomyClient.container(Constants.JOBS);
+		final Container jobsContainer = maconomyClient.container(ImportantContainers.JOBS.getName());
 		final Specification jobsSpecification = jobsContainer.transition(specification());
 		final Pane jobsCardSpecification = jobsSpecification.getPanes().getCard();
 		if (jobsCardSpecification.getFields().containsKey(PROJECT_MANAGER_NUMBER)) {

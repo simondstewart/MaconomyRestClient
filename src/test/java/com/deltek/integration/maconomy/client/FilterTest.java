@@ -1,6 +1,5 @@
 package com.deltek.integration.maconomy.client;
 
-import static com.deltek.integration.maconomy.Constants.NOTES;
 import static com.deltek.integration.maconomy.relations.FilterRestriction.none;
 import static com.deltek.integration.maconomy.relations.LinkRelations.dataFilter;
 import static com.deltek.integration.maconomy.relations.LinkRelations.dataSameKey;
@@ -20,6 +19,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import com.deltek.integration.maconomy.client.api.Container;
+import com.deltek.integration.maconomy.client.util.ImportantContainers;
 import com.deltek.integration.maconomy.configuration.Server;
 import com.deltek.integration.maconomy.containers.v1.data.CardTableData;
 import com.deltek.integration.maconomy.containers.v1.data.CardTableRecord;
@@ -48,13 +48,13 @@ public class FilterTest {
 			                               .username(conf.getUsername())
 			                               .password(conf.getPassword())
 			                               .build();
-		notesContainer = maconomyClient.container(NOTES);
+		notesContainer = maconomyClient.container(ImportantContainers.NOTES.getName());
 	}
 
 	@Test
 	public void testThatContainerNameMatchesRequestedContainer() {
 		final FilterData notes = maconomyClient.transition(notesContainer, dataFilter(none()));
-		assertEquals(NOTES, notes.getMeta().getContainerName());
+		assertEquals(ImportantContainers.NOTES.getName(), notes.getMeta().getContainerName());
 	}
 
 	@Test

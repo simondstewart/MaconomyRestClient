@@ -21,7 +21,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import com.deltek.integration.maconomy.Constants;
 import com.deltek.integration.maconomy.client.MaconomyClient;
-import com.deltek.integration.maconomy.client.ServerException;
+import com.deltek.integration.maconomy.client.util.ServerException;
 import com.deltek.integration.maconomy.configuration.Server;
 import com.deltek.integration.maconomy.custom.codegen.CodeGenerator;
 import com.deltek.integration.maconomy.psorestclient.Employees.Card.InitRecord;

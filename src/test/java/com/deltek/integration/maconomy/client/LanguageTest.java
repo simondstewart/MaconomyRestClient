@@ -11,8 +11,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
-import com.deltek.integration.maconomy.Constants;
 import com.deltek.integration.maconomy.client.api.Container;
+import com.deltek.integration.maconomy.client.util.ImportantContainers;
 import com.deltek.integration.maconomy.configuration.Server;
 import com.deltek.integration.maconomy.containers.v1.handshake.Containers;
 import com.deltek.integration.maconomy.containers.v1.handshake.Language;
@@ -48,7 +48,7 @@ public class LanguageTest {
 	public void testDanishNotesPaneTitles() {
 		if (hasLanguage(DANISH_TAG)) {
 			final MaconomyClient danishClient = getClientWithLanguage(DANISH_TAG);
-			final Container notesContainer = danishClient.container(Constants.NOTES);
+			final Container notesContainer = danishClient.container(ImportantContainers.NOTES.getName());
 			final Specification specification = notesContainer.transition(LinkRelations.specification());
 			final Panes specificationPanes = specification.getPanes();
 			assertEquals("Liste med noter", specificationPanes.getFilter().getTitle());

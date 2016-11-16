@@ -1,6 +1,6 @@
 package com.deltek.integration.maconomy.filedrop.v1;
 
-import static com.deltek.integration.maconomy.client.Utils.URL_PATTERN;
+import static com.deltek.integration.maconomy.client.util.Utils.URL_PATTERN;
 
 import java.util.regex.Pattern;
 import javax.ws.rs.core.MediaType;

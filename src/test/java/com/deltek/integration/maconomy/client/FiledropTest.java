@@ -27,6 +27,9 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import com.deltek.integration.maconomy.Constants;
 import com.deltek.integration.maconomy.client.api.Container;
 import com.deltek.integration.maconomy.client.api.Filedrop;
+import com.deltek.integration.maconomy.client.util.ImportantContainers;
+import com.deltek.integration.maconomy.client.util.ServerException;
+import com.deltek.integration.maconomy.client.util.Utils;
 import com.deltek.integration.maconomy.configuration.Server;
 import com.deltek.integration.maconomy.containers.v1.Link;
 import com.deltek.integration.maconomy.containers.v1.data.CardTableData;
@@ -93,7 +96,7 @@ public class FiledropTest {
 
 	@Test
 	public void testPrintCorrectness() {
-		final Container notesContainer = maconomyClient.container(Constants.NOTES);
+		final Container notesContainer = maconomyClient.container(ImportantContainers.NOTES.getName());
 		final CardTableData notesCardTable = notesContainer.transition(dataAnyKey());
 		final CardTablePane notesTable = notesCardTable.getPanes().getTable();
 		if (notesTable.getRecords().size() > 0) {
@@ -108,7 +111,7 @@ public class FiledropTest {
 
 	@Test
 	public void testPrintContent() {
-		final Container notesContainer = maconomyClient.container(Constants.NOTES);
+		final Container notesContainer = maconomyClient.container(ImportantContainers.NOTES.getName());
 		final CardTableData notesCardTable = notesContainer.transition(dataAnyKey());
 		final CardTablePane notesTable = notesCardTable.getPanes().getTable();
 		if (notesTable.getRecords().size() > 0) {

@@ -1,6 +1,6 @@
 package com.deltek.integration.maconomy.client;
 
-import static com.deltek.integration.maconomy.Constants.TIMEREGISTRATION;
+import static com.deltek.integration.maconomy.client.util.ImportantContainers.TIMEREGISTRATION;
 import static com.deltek.integration.maconomy.relations.LinkRelations.dataAnyKey;
 import static org.hamcrest.Matchers.endsWith;
 import static org.hamcrest.Matchers.isEmptyString;
@@ -41,13 +41,13 @@ public class SingletonCardTableTest {
 			                  .username(conf.getUsername())
 			                  .password(conf.getPassword())
 			                  .build();
-		final Container timeregistrationContainer = maconomyClient.container(TIMEREGISTRATION);
+		final Container timeregistrationContainer = maconomyClient.container(TIMEREGISTRATION.getName());
 		timeregistration = timeregistrationContainer.transition(dataAnyKey());
 	}
 
 	@Test
 	public void testThatContainerNameMatchesRequestedContainer() {
-		assertEquals(TIMEREGISTRATION, timeregistration.getMeta().getContainerName());
+		assertEquals(TIMEREGISTRATION.getName(), timeregistration.getMeta().getContainerName());
 	}
 
 	@Test

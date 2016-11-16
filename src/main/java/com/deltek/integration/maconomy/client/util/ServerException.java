@@ -1,4 +1,4 @@
-package com.deltek.integration.maconomy.client;
+package com.deltek.integration.maconomy.client.util;
 
 import javax.ws.rs.core.Response;
 
