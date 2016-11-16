@@ -15,10 +15,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
-import com.deltek.integration.maconomy.client.api.Container;
+import com.deltek.integration.maconomy.client.util.ImportantContainers;
 import com.deltek.integration.maconomy.configuration.Server;
 import com.deltek.integration.maconomy.containers.v1.data.CardTableData;
 import com.deltek.integration.maconomy.containers.v1.data.CardTablePane;
+import com.deltek.integration.maconomy.containers.v1.data.Container;
 import com.deltek.integration.maconomy.relations.LinkRelations;
 
 
@@ -41,8 +42,8 @@ public class SingletonCardTableTest {
 			                  .username(conf.getUsername())
 			                  .password(conf.getPassword())
 			                  .build();
-		final Container timeregistrationContainer = maconomyClient.container(TIMEREGISTRATION.getName());
-		timeregistration = timeregistrationContainer.transition(dataAnyKey());
+		final Container timeregistrationContainer = maconomyClient.container(ImportantContainers.TIMEREGISTRATION.getName());
+		timeregistration = maconomyClient.transition(timeregistrationContainer, dataAnyKey());
 	}
 
 	@Test

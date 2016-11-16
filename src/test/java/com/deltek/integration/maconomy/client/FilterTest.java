@@ -18,11 +18,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
-import com.deltek.integration.maconomy.client.api.Container;
 import com.deltek.integration.maconomy.client.util.ImportantContainers;
 import com.deltek.integration.maconomy.configuration.Server;
 import com.deltek.integration.maconomy.containers.v1.data.CardTableData;
 import com.deltek.integration.maconomy.containers.v1.data.CardTableRecord;
+import com.deltek.integration.maconomy.containers.v1.data.Container;
 import com.deltek.integration.maconomy.containers.v1.data.FilterData;
 import com.deltek.integration.maconomy.containers.v1.data.FilterRecord;
 import com.deltek.integration.maconomy.relations.FilterRestriction;

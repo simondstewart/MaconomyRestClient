@@ -8,9 +8,9 @@ import java.time.LocalDateTime;
 import java.util.function.Function;
 
 import com.deltek.integration.maconomy.client.MaconomyClient;
-import com.deltek.integration.maconomy.client.api.Container;
 import com.deltek.integration.maconomy.containers.v1.data.CardTableData;
 import com.deltek.integration.maconomy.containers.v1.data.CardTableRecord;
+import com.deltek.integration.maconomy.containers.v1.data.Container;
 import com.deltek.integration.maconomy.containers.v1.data.FilterData;
 import com.deltek.integration.maconomy.containers.v1.data.FilterRecord;
 import com.deltek.integration.maconomy.custom.BaseCardPane;

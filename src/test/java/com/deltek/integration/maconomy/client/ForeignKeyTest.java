@@ -19,13 +19,13 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import com.deltek.integration.maconomy.Constants;
-import com.deltek.integration.maconomy.client.api.Container;
 import com.deltek.integration.maconomy.client.util.ImportantContainers;
 import com.deltek.integration.maconomy.configuration.Server;
 import com.deltek.integration.maconomy.containers.v1.Link;
 import com.deltek.integration.maconomy.containers.v1.data.CardTableData;
 import com.deltek.integration.maconomy.containers.v1.data.CardTablePane;
 import com.deltek.integration.maconomy.containers.v1.data.CardTableRecord;
+import com.deltek.integration.maconomy.containers.v1.data.Container;
 import com.deltek.integration.maconomy.containers.v1.data.FilterData;
 import com.deltek.integration.maconomy.containers.v1.specification.Field;
 import com.deltek.integration.maconomy.containers.v1.specification.ForeignKey;
@@ -71,7 +71,7 @@ public class ForeignKeyTest {
 	@Test
 	public void testForeignKeyNavigation() {
 		final Container expensesheetsContainer = maconomyClient.container(ImportantContainers.EXPENSESHEETS.getName());
-		final CardTableData expensesheetsData = expensesheetsContainer.transition(dataAnyKey());
+		final CardTableData expensesheetsData = maconomyClient.transition(expensesheetsContainer, dataAnyKey());
 		final CardTablePane expensesheetsTablePane = expensesheetsData.getPanes().getTable();
 		assertNotNull(expensesheetsTablePane);
 		final List<CardTableRecord> expensesheetTableRecords = expensesheetsTablePane.getRecords();
@@ -88,7 +88,7 @@ public class ForeignKeyTest {
 
 	private Optional<FilterData> getForeignKeySearchData(final FilterRestriction restriction) {
 		final Container jobsContainer = maconomyClient.container(ImportantContainers.JOBS.getName());
-		final Specification jobsSpecification = jobsContainer.transition(specification());
+		final Specification jobsSpecification = maconomyClient.transition(jobsContainer, specification());
 		final Pane jobsCardSpecification = jobsSpecification.getPanes().getCard();
 		if (jobsCardSpecification.getFields().containsKey(PROJECT_MANAGER_NUMBER)) {
 			final Field field = jobsCardSpecification.getFields().get(PROJECT_MANAGER_NUMBER);

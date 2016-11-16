@@ -2,7 +2,7 @@ package com.deltek.integration.maconomy.custom;
 
 import java.util.function.Function;
 
-import com.deltek.integration.maconomy.client.api.Container;
+import com.deltek.integration.maconomy.containers.v1.data.Container;
 import com.deltek.integration.maconomy.containers.v1.data.FilterData;
 import com.deltek.integration.maconomy.relations.FilterRestriction;
 import com.deltek.integration.maconomy.relations.LinkRelations;

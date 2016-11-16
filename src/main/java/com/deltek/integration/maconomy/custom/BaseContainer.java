@@ -1,7 +1,7 @@
 package com.deltek.integration.maconomy.custom;
 
 import com.deltek.integration.maconomy.client.MaconomyClient;
-import com.deltek.integration.maconomy.client.api.Container;
+import com.deltek.integration.maconomy.containers.v1.data.Container;
 
 public abstract class BaseContainer
 implements ICustomContainer, IHasClient, IHasContext<Container> {
