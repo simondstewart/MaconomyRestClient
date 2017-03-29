@@ -7,6 +7,7 @@ import static org.testng.Assert.assertTrue;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
+import java.util.List;
 
 import org.apache.commons.io.FileUtils;
 import org.junit.After;
@@ -25,6 +26,9 @@ import com.deltek.integration.maconomy.client.util.ServerException;
 import com.deltek.integration.maconomy.configuration.Server;
 import com.deltek.integration.maconomy.custom.codegen.CodeGenerator;
 import com.deltek.integration.maconomy.psorestclient.Employees.Card.InitRecord;
+import com.deltek.integration.maconomy.psorestclient.JobBudgets.Filter;
+import com.deltek.integration.maconomy.psorestclient.JobBudgets.Filter.Record;
+import com.deltek.integration.maconomy.relations.FilterRestriction;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringBootTest
@@ -59,7 +63,7 @@ public class MaconomyPSORestContextTest {
 		}
 
 		// remove comments here and run once to regenerate the custom containers used in this test class
-		//regenerateTestCode(new String[]{"employees"});
+		regenerateTestCode(new String[]{"JobBudgets"});
 	}
 
 	private void regenerateTestCode(final String... containers) throws IOException {
@@ -70,7 +74,7 @@ public class MaconomyPSORestContextTest {
 
 			System.out.println("#########################################################################");
 			final File output = new File(
-					outputDir.getAbsolutePath() + "\\com\\deltek\\integration\\maconomy\\psorestclient\\Employees.java");
+					outputDir.getAbsolutePath(), String.format("\\com\\deltek\\integration\\maconomy\\psorestclient\\%s.java", container));
 			FileUtils.readLines(output, "UTF-8").forEach(System.out::println);
 			System.out.println("#########################################################################");
 		}
@@ -90,14 +94,14 @@ public class MaconomyPSORestContextTest {
 
 	@Test
 	public void missingMandatoryEmployeeError() throws IOException {
-		expectedEx.expect(ServerException.class);
-		expectedEx.expectMessage("Missing mandatory field");
-		final Employees employees = new Employees(maconomyClient);
-		final InitRecord templateEmployee = employees.insert();
-		templateEmployee.employeeNumber().set("10101011");
-		templateEmployee.name1().set(""); //missing field
-		//templateEmployee.country().set("invalid country"); // TODO: (ANH) Implement popup support
-		templateEmployee.create();
+//		expectedEx.expect(ServerException.class);
+//		expectedEx.expectMessage("Missing mandatory field");
+//		final Employees employees = new Employees(maconomyClient);
+//		final InitRecord templateEmployee = employees.insert();
+//		templateEmployee.employeeNumber().set("10101011");
+//		templateEmployee.name1().set(""); //missing field
+//		//templateEmployee.country().set("invalid country"); // TODO: (ANH) Implement popup support
+//		templateEmployee.create();
 
 //		expectedEx.expect(MaconomyRestClientException.class);
 //		final Record<EmployeeCard> templateEmployee = restClientContext.employee().init();
@@ -152,6 +156,12 @@ public class MaconomyPSORestContextTest {
 //		Assert.assertNotNull(filterResponse);
 //		Assert.assertTrue(filterResponse.getPanes() instanceof FilterPanes);
 
+		JobBudgets jobBudgets = new JobBudgets(maconomyClient);
+		Filter budgetsFilter = jobBudgets.filter(FilterRestriction.restrict("", 5, 0));
+		List<Record> budgets = budgetsFilter.records();
+		
+		
+		
 	}
 
 	@Test

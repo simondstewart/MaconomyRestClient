@@ -12,7 +12,7 @@ public class Constants {
 	public static final String CUSTOM_PACKAGE = "com.deltek.integration.maconomy.custom.codegen";
 
 	/** Path to output directory for generated code which should not be under version control */
-	public static final String GENERATED = "generated/src/test/java/";
+	public static final String GENERATED = "generated/src/main/java/";
 
 	/** Path to test output directory. */
 	public static final String TEST_OUTPUT = "test/output/";
