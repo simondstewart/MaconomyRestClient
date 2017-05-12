@@ -3,6 +3,8 @@ package com.deltek.integration.maconomy.psorestclient.domain;
 import com.fasterxml.jackson.annotation.*;
 
 import javax.annotation.Generated;
+
+import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -49,6 +51,11 @@ public class JobBudgetLine {
     private String linetype;
     @JsonProperty("markuppercentage")
     private Double markuppercentage;
+    @JsonProperty("thedate")
+    private String thedate;
+    @JsonProperty("closingdate")
+    private String closingdate;
+    
     @JsonIgnore
     private Map<String, Object> additionalProperties = new HashMap<String, Object>();
 
@@ -279,7 +286,23 @@ public class JobBudgetLine {
         this.markuppercentage = markuppercentage;
     }
 
-    @JsonAnyGetter
+    public String getThedate() {
+		return thedate;
+	}
+
+	public void setThedate(String thedate) {
+		this.thedate = thedate;
+	}
+
+	public String getClosingdate() {
+		return closingdate;
+	}
+
+	public void setClosingdate(String closingdate) {
+		this.closingdate = closingdate;
+	}
+
+	@JsonAnyGetter
     public Map<String, Object> getAdditionalProperties() {
         return this.additionalProperties;
     }
@@ -289,5 +312,16 @@ public class JobBudgetLine {
         this.additionalProperties.put(name, value);
     }
 
+    public String lookupTrafficUUID(String maconomyUuidproperty) {
+    	if(getAdditionalProperties().containsKey(maconomyUuidproperty) && 
+    		getAdditionalProperties().get(maconomyUuidproperty) != null) {
+    			return getAdditionalProperties().get(maconomyUuidproperty).toString();
+    	}
+    	return "";
+    }
+    
+    public void applyTrafficUUID(String maconomyUuidproperty, String trafficUUID) {
+        setAdditionalProperty(maconomyUuidproperty, trafficUUID);
+    }    
 
 }

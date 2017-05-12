@@ -14,22 +14,28 @@ import com.fasterxml.jackson.databind.SerializerProvider;
 import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
 import com.fasterxml.jackson.databind.ser.std.StdSerializer;
 
-public class MLocalDateTimeSerialiser extends StdSerializer<MLocalDateTime>  {
+/**
+ * Maconomy has a custom date format we need to serialise to our LocalDateTime class
+ * 
+ * @author simonstewart
+ *
+ */
+public class MLocalDateTimeSerialiser extends StdSerializer<LocalDateTime>  {
 
 	//e.g. "2016-03-22 12:13:18.130"
 	private final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SSS");
 
 	public MLocalDateTimeSerialiser() {
-		super(MLocalDateTime.class);
+		super(LocalDateTime.class);
 	}
 
 	@Override
-	public void serialize(MLocalDateTime value, JsonGenerator gen, SerializerProvider provider)
+	public void serialize(LocalDateTime value, JsonGenerator gen, SerializerProvider provider)
 			throws IOException {
-		if(value.getValue() != null) {
+		if(value == null) {
 			gen.writeNull();
 		} else {
-			gen.writeString(formatter.format(value.getValue()));
+			gen.writeString(formatter.format(value));
 		}
 	}
 		

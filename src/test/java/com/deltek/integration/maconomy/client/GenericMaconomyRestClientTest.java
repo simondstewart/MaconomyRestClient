@@ -2,15 +2,13 @@ package com.deltek.integration.maconomy.client;
 
 import javax.ws.rs.core.GenericType;
 
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
-import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.junit.runners.BlockJUnit4ClassRunner;
+import org.testng.Assert;
+import org.testng.annotations.Test;
 
 import com.deltek.integration.maconomy.configuration.MaconomyServerConfiguration;
 import com.deltek.integration.maconomy.domain.CardTableContainer;
@@ -21,11 +19,9 @@ import com.deltek.integration.maconomy.psorestclient.domain.HoursJournal;
 import com.deltek.integration.maconomy.psorestclient.domain.JobBudget;
 import com.deltek.integration.maconomy.psorestclient.domain.Journal;
 
-@RunWith(SpringJUnit4ClassRunner.class)
-@SpringBootTest
+@RunWith(BlockJUnit4ClassRunner.class)
 public class GenericMaconomyRestClientTest {
 	
-	@Autowired
 	private MaconomyServerConfiguration serverConfiguration;
 	
 	@Rule
@@ -35,7 +31,8 @@ public class GenericMaconomyRestClientTest {
 
 	@Before
 	public void setup() {
-		 mrc = new MaconomyRestClient(serverConfiguration);
+		 MaconomyRestClient mrc = new MaconomyRestClient("Administrator", "123456", 
+					"http://193.17.206.161:4111/containers/v1/x1demo");
 	}
 
 	@Test

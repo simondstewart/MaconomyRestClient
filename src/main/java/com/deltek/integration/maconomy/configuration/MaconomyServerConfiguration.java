@@ -1,10 +1,5 @@
 package com.deltek.integration.maconomy.configuration;
 
-import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.stereotype.Component;
-
-@Component
-@ConfigurationProperties(prefix = "maconomy.server")
 public class MaconomyServerConfiguration {
 
 	private String url;
@@ -13,6 +8,20 @@ public class MaconomyServerConfiguration {
 	private String maconomyUser;
 	private String maconomyPassword;
 	
+	public MaconomyServerConfiguration(String url, String port, String shortName, String maconomyUser,
+			String maconomyPassword) {
+		super();
+		this.url = url;
+		this.port = port;
+		this.shortName = shortName;
+		this.maconomyUser = maconomyUser;
+		this.maconomyPassword = maconomyPassword;
+	}
+	
+	public MaconomyServerConfiguration() {
+		super();
+	}
+
 	public String getMaconomyUser() {
 		return maconomyUser;
 	}

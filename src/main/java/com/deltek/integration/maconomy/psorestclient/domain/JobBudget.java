@@ -1,19 +1,19 @@
 package com.deltek.integration.maconomy.psorestclient.domain;
 
-import com.deltek.integration.maconomy.configuration.jackson.MLocalDateTimeDeserialiser;
-import com.deltek.integration.maconomy.configuration.jackson.MLocalDateTimeSerialiser;
-import com.deltek.integration.maconomy.domain.commontypes.Currency;
-import com.deltek.integration.maconomy.domain.commontypes.MLocalDateTime;
-import com.fasterxml.jackson.annotation.*;
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-
-import javax.annotation.Generated;
-
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
+
+import javax.annotation.Generated;
+
+import com.deltek.integration.maconomy.domain.commontypes.Currency;
+import com.fasterxml.jackson.annotation.JsonAnyGetter;
+import com.fasterxml.jackson.annotation.JsonAnySetter;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @Generated("org.jsonschema2pojo")
@@ -48,7 +48,7 @@ public class JobBudget {
     //  @JsonDeserialize(using = MLocalDateTimeDeserialiser.class)
     //  @JsonSerialize(using = MLocalDateTimeSerialiser.class)
     //e.g. "transactiontimestamp": "2016-03-22 12:13:18.130"
-    private MLocalDateTime transactiontimestamp;
+    private LocalDateTime transactiontimestamp;
 
     private Currency currency;
     
@@ -87,11 +87,11 @@ public class JobBudget {
 		this.createddate = createddate;
 	}
 
-	public MLocalDateTime getTransactiontimestamp() {
+	public LocalDateTime getTransactiontimestamp() {
 		return transactiontimestamp;
 	}
 
-	public void setTransactiontimestamp(MLocalDateTime transactiontimestamp) {
+	public void setTransactiontimestamp(LocalDateTime transactiontimestamp) {
 		this.transactiontimestamp = transactiontimestamp;
 	}
 

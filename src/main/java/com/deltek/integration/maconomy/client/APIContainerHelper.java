@@ -55,7 +55,7 @@ public class APIContainerHelper<CARD_RECORD extends Object, TABLE_RECORD extends
 		return restClient.postDataToAction("action:add", table, "", tableRecordGenericType);
 	}
 
-	public CardTableContainer<CARD_RECORD, TABLE_RECORD> createCard(Record<CARD_RECORD> cardRecord) {
+	public CardTableContainer<CARD_RECORD, TABLE_RECORD> create(Record<?> cardRecord) {
 		return createInternal(cardRecord);
 	}
 
@@ -67,13 +67,31 @@ public class APIContainerHelper<CARD_RECORD extends Object, TABLE_RECORD extends
 		return createInternal(tableRecord);
 	}
 
-	// TODO: Traverse the any link,
-	public CardTableContainer<CARD_RECORD, TABLE_RECORD> any() {
-		return null;
+	public CardTableContainer<CARD_RECORD, TABLE_RECORD> update(Record<?> record) {
+		return postToAction("action:update", record);
+	}
+//
+//	public Record<TABLE_RECORD> updateTableRecord(Record<TABLE_RECORD> tableRecord) {
+//		return restClient.postDataToAction("action:update", tableRecord, tableRecord, tableRecordGenericType);
+//	}
+//	
+	public CardTableContainer<CARD_RECORD, TABLE_RECORD> postToAction(String action, Record<?> record) {
+		return restClient.postDataToAction(action, record, record, dataGenericType);
+	}
+	
+	public CardTableContainer<CARD_RECORD, TABLE_RECORD> data(String dataParams) {
+		Endpoint endPoint = endPoint();
+		String link = endPoint.linkForAction("data:any-key");
+		link = link.replace(";any", String.format(";%s", dataParams));
+		return restClient.getResponseFromURL(link, dataGenericType);
 	}
 
 	public FilterContainer<CARD_RECORD> filter() {
 		return restClient.getDataFromAction("data:filter", endPoint(), filterContainerType);
+	}
+
+	public CardTableContainer<CARD_RECORD, TABLE_RECORD> deleteTableRecord(Record<TABLE_RECORD> tableRecord) {
+		return restClient.deleteRecord(tableRecord, dataGenericType);
 	}
 
 }

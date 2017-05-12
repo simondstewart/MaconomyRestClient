@@ -10,23 +10,29 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
 
-public class MLocalDateTimeDeserialiser extends StdDeserializer<MLocalDateTime> {
+/**
+ * Maconomy has a custom date format we need to de-serialise to our LocalDateTime class
+ * 
+ * @author simonstewart
+ *
+ */
+public class MLocalDateTimeDeserialiser extends StdDeserializer<LocalDateTime> {
 
-	private final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SSS");
+	public static final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SSS");
 
 	public MLocalDateTimeDeserialiser(Class<?> vc) {
 		super(vc);
 	}
 
 	public MLocalDateTimeDeserialiser() {
-		this(MLocalDateTime.class);
+		this(LocalDateTime.class);
 	}
 
 	@Override
-	public MLocalDateTime deserialize(JsonParser p, DeserializationContext ctxt)
+	public LocalDateTime deserialize(JsonParser p, DeserializationContext ctxt)
 			throws IOException, JsonProcessingException {
         String date = p.getText();
-        return new MLocalDateTime(LocalDateTime.parse(date, formatter));
+        return LocalDateTime.parse(date, formatter);
 	}
 	
 }

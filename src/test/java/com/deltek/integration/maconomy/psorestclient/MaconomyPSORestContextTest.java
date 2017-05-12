@@ -6,9 +6,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.junit.runners.BlockJUnit4ClassRunner;
 
 import com.deltek.integration.maconomy.client.APIContainerHelper;
 import com.deltek.integration.maconomy.client.MaconomyRestClient;
@@ -25,11 +23,9 @@ import com.deltek.integration.maconomy.psorestclient.domain.HoursJournal;
 import com.deltek.integration.maconomy.psorestclient.domain.JobBudget;
 import com.deltek.integration.maconomy.psorestclient.domain.Journal;
 
-@RunWith(SpringJUnit4ClassRunner.class)
-@SpringBootTest
+@RunWith(BlockJUnit4ClassRunner.class)
 public class MaconomyPSORestContextTest {
 
-	@Autowired
 	private MaconomyServerConfiguration serverConfiguration;
 		
 	private MaconomyPSORestContext restClientContext;
@@ -39,7 +35,8 @@ public class MaconomyPSORestContextTest {
 	
 	@Before
 	public void setup() {
-		 MaconomyRestClient mrc = new MaconomyRestClient(serverConfiguration);
+		 MaconomyRestClient mrc = new MaconomyRestClient("Administrator", "123456", 
+					"http://193.17.206.161:4111/containers/v1/x1demo");
 		 restClientContext = new MaconomyPSORestContext(mrc);
 	}
 	
@@ -54,7 +51,7 @@ public class MaconomyPSORestContextTest {
 		templateEmployee.getData().setEmployeenumber("10101011");
 		templateEmployee.getData().setName1(""); //missing field
 		templateEmployee.getData().setCountry("invalid country");
-		CardTableContainer<EmployeeCard, EmployeeTable> createdEmployee = restClientContext.employee().createCard(templateEmployee);
+		CardTableContainer<EmployeeCard, EmployeeTable> createdEmployee = restClientContext.employee().create(templateEmployee);
 	}
 	
 	@Test
@@ -74,7 +71,7 @@ public class MaconomyPSORestContextTest {
 		Assert.assertNotNull(templateJournal.getData());
 		Assert.assertTrue(templateJournal.getData() instanceof Journal);
 		
-		CardTableContainer<Journal, HoursJournal> createdJournal = restClientContext.jobJournal().createCard(templateJournal);
+		CardTableContainer<Journal, HoursJournal> createdJournal = restClientContext.jobJournal().create(templateJournal);
 		Assert.assertNotNull(createdJournal);
 		
 		Record<HoursJournal> hoursJournal = restClientContext.jobJournal().initTable(createdJournal.getPanes().getTable());
@@ -122,7 +119,7 @@ public class MaconomyPSORestContextTest {
 		templateEmployee.getData().setName1("Simon");
 		templateEmployee.getData().setCountry("united kingdom");
 		
-		CardTableContainer<EmployeeCard, EmployeeTable> createdEmployee = restClientContext.employee().createCard(templateEmployee);
+		CardTableContainer<EmployeeCard, EmployeeTable> createdEmployee = restClientContext.employee().create(templateEmployee);
 		Assert.assertNotNull(createdEmployee);
 		Assert.assertTrue(createdEmployee.getPanes().getCard().getRecords().get(0).getData() instanceof EmployeeCard);
 		
@@ -138,7 +135,7 @@ public class MaconomyPSORestContextTest {
 		Assert.assertNotNull(cardTemplateRecord.getData());
 //		Assert.assertTrue(templateJournal.getData() instanceof Journal);
 		
-		CardTableContainer<CARD_RECORD_TYPE, TABLE_RECORD_TYPE> createdCardRecord = apiHelper.createCard(cardTemplateRecord);
+		CardTableContainer<CARD_RECORD_TYPE, TABLE_RECORD_TYPE> createdCardRecord = apiHelper.create(cardTemplateRecord);
 		Assert.assertNotNull(createdCardRecord);
 		
 		Record<TABLE_RECORD_TYPE> tableTemplateRecord = apiHelper.initTable(createdCardRecord.getPanes().getTable());
