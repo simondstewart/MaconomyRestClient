@@ -322,6 +322,116 @@ public class JobBudgetLine {
     
     public void applyTrafficUUID(String maconomyUuidproperty, String trafficUUID) {
         setAdditionalProperty(maconomyUuidproperty, trafficUUID);
-    }    
+    }
+
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ((additionalProperties == null) ? 0 : additionalProperties.hashCode());
+		result = prime * result + ((billingpricecurrency == null) ? 0 : billingpricecurrency.hashCode());
+		result = prime * result + ((closingdate == null) ? 0 : closingdate.hashCode());
+		result = prime * result + ((employeecategorynumber == null) ? 0 : employeecategorynumber.hashCode());
+		result = prime * result + ((instancekey == null) ? 0 : instancekey.hashCode());
+		result = prime * result + ((jobnumber == null) ? 0 : jobnumber.hashCode());
+		result = prime * result + ((linenumber == null) ? 0 : linenumber.hashCode());
+		result = prime * result + ((linetype == null) ? 0 : linetype.hashCode());
+		result = prime * result + ((markuppercentage == null) ? 0 : markuppercentage.hashCode());
+		result = prime * result + ((numberof == null) ? 0 : numberof.hashCode());
+		result = prime * result
+				+ ((parentjobbudgetlineinstancekey == null) ? 0 : parentjobbudgetlineinstancekey.hashCode());
+		result = prime * result + ((showcostpricelowervar == null) ? 0 : showcostpricelowervar.hashCode());
+		result = prime * result + ((taskname == null) ? 0 : taskname.hashCode());
+		result = prime * result + ((text == null) ? 0 : text.hashCode());
+		result = prime * result + ((thedate == null) ? 0 : thedate.hashCode());
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		JobBudgetLine other = (JobBudgetLine) obj;
+		if (additionalProperties == null) {
+			if (other.additionalProperties != null)
+				return false;
+		} else if (!additionalProperties.equals(other.additionalProperties))
+			return false;
+		if (billingpricecurrency == null) {
+			if (other.billingpricecurrency != null)
+				return false;
+		} else if (!billingpricecurrency.equals(other.billingpricecurrency))
+			return false;
+		if (closingdate == null) {
+			if (other.closingdate != null)
+				return false;
+		} else if (!closingdate.equals(other.closingdate))
+			return false;
+		if (employeecategorynumber == null) {
+			if (other.employeecategorynumber != null)
+				return false;
+		} else if (!employeecategorynumber.equals(other.employeecategorynumber))
+			return false;
+		if (instancekey == null) {
+			if (other.instancekey != null)
+				return false;
+		} else if (!instancekey.equals(other.instancekey))
+			return false;
+		if (jobnumber == null) {
+			if (other.jobnumber != null)
+				return false;
+		} else if (!jobnumber.equals(other.jobnumber))
+			return false;
+		if (linenumber == null) {
+			if (other.linenumber != null)
+				return false;
+		} else if (!linenumber.equals(other.linenumber))
+			return false;
+		if (linetype == null) {
+			if (other.linetype != null)
+				return false;
+		} else if (!linetype.equals(other.linetype))
+			return false;
+		if (markuppercentage == null) {
+			if (other.markuppercentage != null)
+				return false;
+		} else if (!markuppercentage.equals(other.markuppercentage))
+			return false;
+		if (numberof == null) {
+			if (other.numberof != null)
+				return false;
+		} else if (!numberof.equals(other.numberof))
+			return false;
+		if (parentjobbudgetlineinstancekey == null) {
+			if (other.parentjobbudgetlineinstancekey != null)
+				return false;
+		} else if (!parentjobbudgetlineinstancekey.equals(other.parentjobbudgetlineinstancekey))
+			return false;
+		if (showcostpricelowervar == null) {
+			if (other.showcostpricelowervar != null)
+				return false;
+		} else if (!showcostpricelowervar.equals(other.showcostpricelowervar))
+			return false;
+		if (taskname == null) {
+			if (other.taskname != null)
+				return false;
+		} else if (!taskname.equals(other.taskname))
+			return false;
+		if (text == null) {
+			if (other.text != null)
+				return false;
+		} else if (!text.equals(other.text))
+			return false;
+		if (thedate == null) {
+			if (other.thedate != null)
+				return false;
+		} else if (!thedate.equals(other.thedate))
+			return false;
+		return true;
+	}    
 
 }

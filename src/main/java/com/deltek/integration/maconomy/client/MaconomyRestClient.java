@@ -1,5 +1,6 @@
 package com.deltek.integration.maconomy.client;
 
+import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.time.LocalDateTime;
@@ -8,6 +9,8 @@ import java.util.logging.Level;
 import javax.ws.rs.ProcessingException;
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
+import javax.ws.rs.client.ClientRequestContext;
+import javax.ws.rs.client.ClientRequestFilter;
 import javax.ws.rs.client.Entity;
 import javax.ws.rs.client.Invocation;
 import javax.ws.rs.client.WebTarget;
@@ -19,6 +22,7 @@ import javax.ws.rs.ext.ContextResolver;
 import org.glassfish.jersey.client.authentication.HttpAuthenticationFeature;
 import org.glassfish.jersey.jackson.JacksonFeature;
 import org.glassfish.jersey.logging.LoggingFeature;
+import org.glassfish.jersey.logging.LoggingFeature.Verbosity;
 
 import com.deltek.integration.maconomy.configuration.MaconomyServerConfiguration;
 import com.deltek.integration.maconomy.configuration.jackson.MLocalDateTimeDeserialiser;
@@ -54,11 +58,12 @@ public class MaconomyRestClient {
 	private final Client buildClientForCurrentUser(String maconomyUser, String maconomyPassword) {
 
 		HttpAuthenticationFeature authFeature = HttpAuthenticationFeature.basic(maconomyUser, maconomyPassword);
-		LoggingFeature loggingFeature = new LoggingFeature(log, Level.INFO, null, null);
+		LoggingFeature loggingFeature = new LoggingFeature(log, Level.INFO, Verbosity.PAYLOAD_TEXT, (1024 * 1024 * 10)); //10mb
 
 		Client client = ClientBuilder.newBuilder().register(JacksonFeature.class)
 				.register(new CustomObjectMapperContextResolver())
 				.register(authFeature)
+				.register(new MaconomyCredentialFilter())
 //				.register(EncodingFilter.class)
 //				.register(GZipEncoder.class)
 				.register(loggingFeature)
@@ -66,7 +71,20 @@ public class MaconomyRestClient {
 		return client;
 	}
 	
-	private class CustomObjectMapperContextResolver implements ContextResolver<ObjectMapper> {
+    private class MaconomyCredentialFilter implements ClientRequestFilter {
+
+    	public static final String HEADER_KEY = "Maconomy-Authentication";
+    	public static final String HEADER_VALUE = "X-Force-Maconomy-Credentials";
+    	
+		@Override
+		public void filter(ClientRequestContext rc) throws IOException {
+			if(!rc.getHeaders().containsKey(HEADER_KEY)) {
+				rc.getHeaders().add(HEADER_KEY, HEADER_VALUE);
+			}
+		}
+    }
+    
+    private class CustomObjectMapperContextResolver implements ContextResolver<ObjectMapper> {
 
 		private final ObjectMapper objectMapper;
 		
