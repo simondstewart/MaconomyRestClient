@@ -70,11 +70,7 @@ public class APIContainerHelper<CARD_RECORD extends Object, TABLE_RECORD extends
 	public CardTableContainer<CARD_RECORD, TABLE_RECORD> update(Record<?> record) {
 		return postToAction("action:update", record);
 	}
-//
-//	public Record<TABLE_RECORD> updateTableRecord(Record<TABLE_RECORD> tableRecord) {
-//		return restClient.postDataToAction("action:update", tableRecord, tableRecord, tableRecordGenericType);
-//	}
-//	
+
 	public CardTableContainer<CARD_RECORD, TABLE_RECORD> postToAction(String action, Record<?> record) {
 		return restClient.postDataToAction(action, record, record, dataGenericType);
 	}

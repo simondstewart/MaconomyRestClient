@@ -16,4 +16,8 @@ public interface HasLinks {
 		throw new MaconomyRestClientException("Link action: "+action + " does not exist for object: "+this);
     }
 
+    default Boolean hasAction(String action) {
+    	return (getLinks() != null && getLinks().getLinks() != null && getLinks().getLinks().containsKey(action));
+    }
+    
 }
