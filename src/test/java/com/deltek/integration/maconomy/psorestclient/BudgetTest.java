@@ -55,8 +55,8 @@ public class BudgetTest {
         Record<JobBudget> budget = budgetData.getPanes().getCard().getRecords().get(0);
         budget.getData().setShowbudgettypevar("baseline");
         budgetData = restClientContext.jobBudget().update(budget);
-        budgetData = restClientContext.jobBudget().postToAction("action:reopenbudget",
-        		budgetData.card());
+        //Not all budgets have the reopen action, it is dependent on state.
+//        budgetData = restClientContext.jobBudget().postToAction("action:reopenbudget", budgetData.card());
         
 	}
 	

@@ -2,13 +2,13 @@ package com.deltek.integration.maconomy.client;
 
 import javax.ws.rs.core.GenericType;
 
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
+import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
 import org.junit.runners.BlockJUnit4ClassRunner;
-import org.testng.Assert;
-import org.testng.annotations.Test;
 
 import com.deltek.integration.maconomy.configuration.MaconomyServerConfiguration;
 import com.deltek.integration.maconomy.domain.CardTableContainer;
@@ -22,31 +22,31 @@ import com.deltek.integration.maconomy.psorestclient.domain.Journal;
 @RunWith(BlockJUnit4ClassRunner.class)
 public class GenericMaconomyRestClientTest {
 	
-	private MaconomyServerConfiguration serverConfiguration;
-	
 	@Rule
 	public ExpectedException expectedEx = ExpectedException.none();
 
+	private static final String URL = "http://193.17.206.161:4111/containers/v1/x1demo";
+	
 	private MaconomyRestClient mrc;
 
 	@Before
 	public void setup() {
-		 MaconomyRestClient mrc = new MaconomyRestClient("Administrator", "123456", 
-					"http://193.17.206.161:4111/containers/v1/x1demo");
+		 mrc = new MaconomyRestClient("Administrator", "123456", 
+					URL);
 	}
 
 	@Test
 	public void notFoundError() {
 		expectedEx.expect(MaconomyRestClientException.class);
 		MaconomyRestClient notFoundMrc = 
-				new MaconomyRestClient("Administrator", "123456", serverConfiguration.getUrl().concat("/INVALID_ENDPOINT"));
+				new MaconomyRestClient("Administrator", "123456", URL.concat("/INVALID_ENDPOINT"));
 		createTestContextHelper(notFoundMrc).init();
 	}
 
 	@Test
 	public void authError() {
 		expectedEx.expect(MaconomyRestClientException.class);
-		MaconomyRestClient badAuthMrc = new MaconomyRestClient("Administrator", "BadPassword", serverConfiguration.getUrl());
+		MaconomyRestClient badAuthMrc = new MaconomyRestClient("Administrator", "BadPassword", URL);
 		createTestContextHelper(badAuthMrc).init();
 	}
 	
