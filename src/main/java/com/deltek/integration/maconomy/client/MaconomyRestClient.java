@@ -58,7 +58,7 @@ public class MaconomyRestClient {
 	private final Client buildClientForCurrentUser(String maconomyUser, String maconomyPassword) {
 
 		HttpAuthenticationFeature authFeature = HttpAuthenticationFeature.basic(maconomyUser, maconomyPassword);
-		LoggingFeature loggingFeature = new LoggingFeature(log, Level.INFO, Verbosity.PAYLOAD_TEXT, (1024 * 1024 * 10)); //10mb
+		LoggingFeature loggingFeature = new LoggingFeature(log, Level.FINE, Verbosity.PAYLOAD_TEXT, (1024 * 1024 * 10)); //10mb
 
 		Client client = ClientBuilder.newBuilder().register(JacksonFeature.class)
 				.register(new CustomObjectMapperContextResolver())
@@ -184,7 +184,7 @@ public class MaconomyRestClient {
 		errorBuilder = buildErrorMessageFromAppError(response, errorBuilder);
 
 		String errorMessage = errorBuilder.toString();
-		if (log.isLoggable(Level.INFO)) {
+		if (log.isLoggable(Level.FINE)) {
 			log.info("HTTP Response contained error: \n" + errorMessage);
 		}
 		throw new MaconomyRestClientException(errorMessage);
