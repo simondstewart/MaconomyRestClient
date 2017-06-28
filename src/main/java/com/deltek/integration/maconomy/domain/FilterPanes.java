@@ -28,7 +28,7 @@ public class FilterPanes<T> {
     /**
      * 
      * @return
-     *     The meta
+     *     The filter
      */
     @JsonProperty("filter")
     public FilterPane<T> getFilter() {
@@ -37,8 +37,8 @@ public class FilterPanes<T> {
 
     /**
      * 
-     * @param meta
-     *     The meta
+     * @param filter
+     *     The filter
      */
     @JsonProperty("filter")
     public void setFilter(FilterPane<T> filter) {

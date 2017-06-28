@@ -261,7 +261,7 @@ public class JobBudgetLine {
     /**
      *
      * @return
-     * The lintetype
+     * The linetype
      */
     @JsonProperty("linetype")
     public String getLinetype() {
@@ -270,7 +270,7 @@ public class JobBudgetLine {
 
     /**
      *
-     * @param lintetype
+     * @param linetype
      * The lintetype
      */
     @JsonProperty("linetype")
