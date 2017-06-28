@@ -4,7 +4,7 @@
 
 	<groupId>com.deltek.integration.maconomy</groupId>
 	<artifactId>MaconomyRestClient</artifactId>
-	<version>1.0.1-SNAPSHOT</version>
+	<version>1.0.0</version>
 	<packaging>jar</packaging>
 
 	<name>MaconomyRestClient</name>
@@ -86,7 +86,7 @@
 
 	<scm>
 		<developerConnection>scm:git:https://github.com/simondstewart/MaconomyRestClient</developerConnection>
-	  <tag>HEAD</tag>
+	  <tag>1.0.0</tag>
   </scm>
 
 	<build>
