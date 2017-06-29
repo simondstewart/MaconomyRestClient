@@ -86,7 +86,7 @@
 
 	<scm>
 		<developerConnection>scm:git:https://github.com/simondstewart/MaconomyRestClient</developerConnection>
-	  <tag>HEAD</tag>
+	  <tag>andrea_test</tag>
   </scm>
 
 	<build>
