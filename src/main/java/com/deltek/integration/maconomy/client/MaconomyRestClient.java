@@ -179,15 +179,27 @@ public class MaconomyRestClient {
 		StringBuilder errorBuilder = new StringBuilder();
 		errorBuilder.append(String.format("Error Performing HTTP Request. Response status: %s %s \n",
 				response.getStatus(), response.getStatusInfo()));
-		// attempt to serialise an Error object from the response for extra
-		// information.
-		errorBuilder = buildErrorMessageFromAppError(response, errorBuilder);
+		
+		// attempt to serialise an Error object from the response for extra information.
+		Throwable cause = null;
+		Error error = null;
+		try {
+			Error restError = response.readEntity(Error.class);
+			error = restError;
+			String message = restError.getErrorMessage();
+			errorBuilder.append(String.format("Message: %s ", message));
+			restError.getAdditionalProperties().keySet().forEach(
+					key -> errorBuilder.append("\n" + key + ":" + restError.getAdditionalProperties().get(key)));
+		} catch (ProcessingException pe) {
+			errorBuilder.append("\n ProcessingException extracting error from Response. ");
+			cause = pe;
+		}
 
 		String errorMessage = errorBuilder.toString();
 		if (log.isLoggable(Level.FINE)) {
-			log.info("HTTP Response contained error: \n" + errorMessage);
+			log.fine("HTTP Response contained error: \n" + errorMessage);
 		}
-		throw new MaconomyRestClientException(errorMessage);
+		throw new MaconomyRestClientException(errorMessage, cause, error);
 
 	}
 
@@ -195,19 +207,6 @@ public class MaconomyRestClient {
 		return apiBasePath;
 	}
 
-	private StringBuilder buildErrorMessageFromAppError(Response response, StringBuilder errorStringBuilder) {
-		try {
-			Error restError = response.readEntity(Error.class);
-			String message = restError.getErrorMessage();
-			errorStringBuilder.append(String.format("Message: %s ", message));
-			restError.getAdditionalProperties().keySet().forEach(
-					key -> errorStringBuilder.append("\n" + key + ":" + restError.getAdditionalProperties().get(key)));
-		} catch (ProcessingException pe) {
-			throw new MaconomyRestClientException(pe);
-		}
-		return errorStringBuilder;
-	}
-	
 	private Invocation.Builder decorateConcurrencyControl(Invocation.Builder builder, HasConcurrencyControl cc) {
 		if (cc.getConcurrencyControl() == null || cc.getConcurrencyControl().trim().isEmpty())
 			return builder;
