@@ -58,7 +58,7 @@ public class MaconomyRestClient {
 	private final Client buildClientForCurrentUser(String maconomyUser, String maconomyPassword) {
 
 		HttpAuthenticationFeature authFeature = HttpAuthenticationFeature.basic(maconomyUser, maconomyPassword);
-		LoggingFeature loggingFeature = new LoggingFeature(log, Level.FINE, Verbosity.PAYLOAD_TEXT, (1024 * 1024 * 10)); //10mb
+		LoggingFeature loggingFeature = new LoggingFeature(log, Level.FINE, Verbosity.PAYLOAD_TEXT, (1024 * 1024 * 1000)); //10mb
 
 		Client client = ClientBuilder.newBuilder().register(JacksonFeature.class)
 				.register(new CustomObjectMapperContextResolver())
@@ -94,7 +94,7 @@ public class MaconomyRestClient {
 					//This handles standard Java 8 Time types.
 					.registerModule(new JavaTimeModule())
 					.registerModule(new CustomSerialisationModule())
-					.enable(SerializationFeature.INDENT_OUTPUT)
+//					.enable(SerializationFeature.INDENT_OUTPUT)
 					.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
 		}
 
