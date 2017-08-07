@@ -191,7 +191,7 @@ public class MaconomyRestClient {
 			restError.getAdditionalProperties().keySet().forEach(
 					key -> errorBuilder.append("\n" + key + ":" + restError.getAdditionalProperties().get(key)));
 		} catch (ProcessingException pe) {
-			errorBuilder.append("\n ProcessingException extracting error from Response. ");
+			errorBuilder.append("\n ProcessingException extracting error from Response. Message: "+pe.getMessage());
 			cause = pe;
 		}
 
