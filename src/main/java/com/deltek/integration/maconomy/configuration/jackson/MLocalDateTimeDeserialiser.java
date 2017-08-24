@@ -32,6 +32,9 @@ public class MLocalDateTimeDeserialiser extends StdDeserializer<LocalDateTime> {
 	public LocalDateTime deserialize(JsonParser p, DeserializationContext ctxt)
 			throws IOException, JsonProcessingException {
         String date = p.getText();
+        if(date == null || date.isEmpty())
+        	return null;
+        
         return LocalDateTime.parse(date, formatter);
 	}
 	

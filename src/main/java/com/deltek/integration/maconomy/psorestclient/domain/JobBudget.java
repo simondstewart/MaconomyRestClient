@@ -7,7 +7,6 @@ import java.util.Map;
 
 import javax.annotation.Generated;
 
-import com.deltek.integration.maconomy.domain.commontypes.Currency;
 import com.fasterxml.jackson.annotation.JsonAnyGetter;
 import com.fasterxml.jackson.annotation.JsonAnySetter;
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -50,16 +49,16 @@ public class JobBudget {
     //e.g. "transactiontimestamp": "2016-03-22 12:13:18.130"
     private LocalDateTime transactiontimestamp;
 
-    private Currency currency;
+    private String currency;
     
     @JsonIgnore
     private Map<String, Object> additionalProperties = new HashMap<String, Object>();
 
-    public Currency getCurrency() {
+    public String getCurrency() {
 		return currency;
 	}
 
-	public void setCurrency(Currency currency) {
+	public void setCurrency(String currency) {
 		this.currency = currency;
 	}
 
