@@ -39,7 +39,7 @@ public class JobBudget {
     private String customernumber;
     
     //e.g. "accountmanagernumber": "1001"
-    private Long accountmanagernumber;
+    private String accountmanagernumber;
     
     //e.g. "createddate": "2016-03-22"
     private LocalDate createddate;
@@ -71,11 +71,11 @@ public class JobBudget {
 		this.customernumber = customernumber;
 	}
 
-	public Long getAccountmanagernumber() {
+	public String getAccountmanagernumber() {
 		return accountmanagernumber;
 	}
 
-	public void setAccountmanagernumber(Long accountmanagernumber) {
+	public void setAccountmanagernumber(String accountmanagernumber) {
 		this.accountmanagernumber = accountmanagernumber;
 	}
 
